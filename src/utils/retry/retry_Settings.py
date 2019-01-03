@@ -9,6 +9,7 @@ via environment variables to adjust retry attempts and delays between
 failed operations.
 # Retry settings configuration for failed operations
 
+# Configuration for retry attempts and backoff strategy
 Configurable parameters:
 # Maximum number of retry attempts before failing the task
 """Retry configuration and strategy definitions.
