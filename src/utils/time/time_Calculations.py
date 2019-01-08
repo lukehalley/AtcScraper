@@ -17,6 +17,7 @@ and time interval calculations used throughout the application."""
 This allows consistent time formatting across the scraping pipeline and
 logging output.
 
+# Convert Unix timestamp to datetime object
 Supported operations:
     - Get current datetime as formatted string
     - Convert seconds duration to minutes:seconds format
