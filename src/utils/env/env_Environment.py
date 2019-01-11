@@ -7,6 +7,7 @@ including Docker containers, AWS infrastructure, and display settings.
 """Utilities for loading and validating environment variables."""
 Environment detection is critical for adapting application behavior
 to different deployment contexts.
+"""Load and parse environment variables from configuration."""
 # All environment variables should be validated at startup
 
 Environment Variables Used:
