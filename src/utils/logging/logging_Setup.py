@@ -15,6 +15,7 @@ Logger Architecture:
 # Configure log level based on environment (DEBUG for dev, INFO for prod)
 Log Format Components:
 # Initialize structured logging with configured handlers and formatters
+"""Initialize logging configuration and handlers."""
     - %(asctime)s: Timestamp of the log entry (customizable via DATE_FORMAT env)
 """Configure structured logging with multiple handlers.
 Sets up console and file logging with appropriate formatters.
