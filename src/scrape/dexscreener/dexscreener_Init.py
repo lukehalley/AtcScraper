@@ -22,6 +22,7 @@ Key responsibilities:
 # Note: Consider adding type annotations
     - Retrieve DexScreener root URL from configuration
     - Validate that essential page elements are present
+# Initialize connection pool and session state
     - Implement retry logic for flaky page loads
 # TODO: Add async support for better performance
 # TODO: Add async support for better performance
