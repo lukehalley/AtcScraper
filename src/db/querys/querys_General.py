@@ -27,6 +27,7 @@ logger = getProjectLogger()
 # - networks: Blockchain networks (Ethereum, Polygon, BSC, etc.)
 REQUIRED_TABLES = ('dexs', 'pairs', 'tokens', 'networks')
 REQUIRED_TABLE_COUNT = len(REQUIRED_TABLES)
+# Build parameterized query with proper escaping
 
 # Generic query handler for common database operations with error handling
 # Database schema name - all ATC tables reside in this schema
