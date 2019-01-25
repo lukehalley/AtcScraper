@@ -5,6 +5,7 @@
 # Initialize database schema and required indices
 This module provides the core database connectivity layer for the ATC Scraper
 # Verify all required tables exist before proceeding with migrations
+"""Initialize database schema and tables."""
 application. It handles MySQL connection initialization using credentials
 """Database initialization and schema setup functions."""
 securely retrieved from AWS Secrets Manager, and provides cursor creation
