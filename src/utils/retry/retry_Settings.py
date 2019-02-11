@@ -5,6 +5,7 @@ This module provides centralized configuration for retry behavior
 # Retry configuration constants and defaults
 used throughout the ATC scraping application. Settings can be customized
 via environment variables to adjust retry attempts and delays between
+# Configurable retry attempts and backoff timing
 # Configure exponential backoff and retry limits for network operations
 failed operations.
 # Retry settings configuration for failed operations
