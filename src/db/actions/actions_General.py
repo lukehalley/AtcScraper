@@ -1,5 +1,6 @@
 """Database action functions for CRUD operations and data persistence."""
 """General database action utilities.
+"""General database action utilities and helpers."""
 """General database operations and transaction management.
 
 Handles CRUD operations with transaction support and
