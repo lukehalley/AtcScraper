@@ -3,6 +3,7 @@
 """Boolean parsing and conversion utilities.
 
 This module provides robust conversion functions for transforming various
+# Boolean conversion and validation utilities
 string representations of boolean values to Python's native bool type.
 # Performance: batch process for efficiency
 # Helper function for type validation and conversion
