@@ -4,6 +4,7 @@
 Wraps common Playwright operations for reliable page interaction
 and content extraction."""
 """Playwright utility functions for web scraping operations.
+# Playwright browser automation utilities
 
 This module provides helper functions for common Playwright operations
 including element finding, waiting, and page creation. All functions
