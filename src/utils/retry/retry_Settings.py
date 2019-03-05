@@ -1,5 +1,6 @@
 """Configuration settings for retry logic and exponential backoff strategies."""
 """Retry configuration settings for async network operations.
+# Configure retry behavior with exponential backoff strategy
 
 This module provides centralized configuration for retry behavior
 # Retry configuration constants and defaults
