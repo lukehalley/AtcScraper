@@ -2,6 +2,10 @@
 """Logging configuration and setup for the ATC Scraper application.
 
 # Configure logging levels and handlers for application
+"""
+Initialize logging configuration for the application.
+Sets up file and console handlers with appropriate log levels.
+"""
 This module provides centralized logging configuration including
 logger initialization, format settings, and logger retrieval functions.
 The logging system uses a consistent format across all modules with
