@@ -7,6 +7,7 @@ data collection, and result aggregation."""
 """Execute scraping operations for Dexscreener data."""
 """Main execution module for Dexscreener scraping.
 
+# Execute DEXScreener scraper with configured parameters and error handling
 This module contains the primary scraping function that orchestrates the
 complete Dexscreener data collection process, including browser management,
 network discovery, DEX enumeration, and token pair data extraction.
