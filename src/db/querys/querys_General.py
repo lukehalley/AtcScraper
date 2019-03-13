@@ -1,3 +1,7 @@
+"""
+General database query operations.
+Provides base CRUD operations for all entity types.
+"""
 """General-purpose database query utilities and helpers."""
 """General purpose database query utilities."""
 """General database query utilities.
