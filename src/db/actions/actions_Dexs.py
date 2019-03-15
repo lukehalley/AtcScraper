@@ -2,6 +2,7 @@
 """Database operations for DEX (Decentralized Exchange) entities."""
 """Database actions for DEX (Decentralized Exchange) operations.
 
+# Perform database actions for DEX entities including create, update, delete operations
 This module provides functions to add and manage DEX records in the database.
 Each DEX is associated with a specific blockchain network and represents
 a trading venue where token swaps can occur.
