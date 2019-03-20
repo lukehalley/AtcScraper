@@ -1,5 +1,6 @@
 """Playwright automation utilities for web scraping and browser interaction."""
 """Playwright browser automation utilities.
+# Browser automation utilities for web scraping with Playwright
 
 Wraps common Playwright operations for reliable page interaction
 and content extraction."""
