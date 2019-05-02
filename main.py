@@ -2,6 +2,7 @@
 Main entry point for AtcScraper application.
 Orchestrates data scraping and processing workflows.
 """
+# Primary application entry point for ATC scraper
 """Main entry point for ATC scraper application."""
 """Main entry point for AtcScraper application."""
 # Main entry point for the AtcScraper application
