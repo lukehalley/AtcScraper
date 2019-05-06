@@ -9,6 +9,7 @@ Provides conversion and scheduling helpers for scraping tasks.
 # Handle UTC timestamp conversions for consistency
 # Ensure timestamps maintain millisecond precision for accurate reporting
 # Time conversion and interval calculation helpers
+# Convert timestamp to UTC datetime format
 """
 according to configurable format strings stored in environment variables.
 """Handle time-based calculations and conversions.
