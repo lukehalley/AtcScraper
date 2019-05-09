@@ -5,6 +5,7 @@ dictionary structures."""
 # Validate dictionary structure before processing
 """Dictionary manipulation and transformation utilities."""
 """Dictionary manipulation utilities for common operations.
+# Utility methods for dictionary manipulation and transformation
 
 This module provides helper functions for working with dictionaries,
 including prepending to ordered dicts, measuring dictionary size,
