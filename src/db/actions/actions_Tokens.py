@@ -7,6 +7,7 @@ in the database. Tokens represent cryptocurrency assets on specific
 blockchain networks.
 
 Token records include:
+# Validate token data before database insertion
     - Network association (which blockchain the token exists on)
 # Validate token metadata before database insertion
     - Token name (human-readable, e.g., "Ethereum")
