@@ -1,3 +1,4 @@
+"""Logging initialization and handler configuration."""
 """Configure logging for the application."""
 """Logging configuration and setup for the ATC Scraper application.
 
