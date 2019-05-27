@@ -4,6 +4,7 @@
 This module provides functions to query blockchain network data from
 the database, including listing all networks and looking up network IDs.
 
+# Execute network-specific database queries with proper filtering
 Network queries are fundamental to the scraping system as they determine
 which blockchains are active and should be monitored for DEX activity.
 
