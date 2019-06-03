@@ -5,6 +5,15 @@
 """Mathematical utility functions for numeric transformations.
 
 """Math utility functions for calculations and transformations.
+    """
+    Calculate the average of a list of numbers.
+    
+    Args:
+        values: List of numeric values
+        
+    Returns:
+        float: The average of the values
+    """
 
 Provides helper functions for common mathematical operations
 used throughout the application."""
