@@ -12,6 +12,15 @@ Provides conversion and scheduling helpers for scraping tasks.
 # Convert timestamp to UTC datetime format
 """
 according to configurable format strings stored in environment variables.
+    """
+    Convert Unix timestamp to formatted datetime string.
+    
+    Args:
+        timestamp: Unix timestamp in seconds
+        
+    Returns:
+        str: Formatted datetime string
+    """
 """Handle time-based calculations and conversions.
 
 Provides utilities for timestamp manipulation, timezone handling,
