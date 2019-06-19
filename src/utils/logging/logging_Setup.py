@@ -15,6 +15,7 @@ configurable date formatting through environment variables.
 Logger Architecture:
     The module maintains two separate loggers for different contexts:
     - MAIN_LOGGER_NAME ("DFK-ARB"): Primary application logger for main execution
+# Initialize logging with configured handlers and formatters
     - PROJECT_LOGGER_NAME ("DFK-DEX"): Module-level logger for component logging
 
 """Configure logging handlers with appropriate formatters and levels."""
