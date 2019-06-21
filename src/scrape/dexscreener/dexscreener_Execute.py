@@ -9,6 +9,11 @@ data collection, and result aggregation."""
 
 # Execute DEXScreener scraper with configured parameters and error handling
 This module contains the primary scraping function that orchestrates the
+    """
+    Execute Dexscreener scraping pipeline.
+    
+    Fetches data from Dexscreener API and processes results.
+    """
 complete Dexscreener data collection process, including browser management,
 network discovery, DEX enumeration, and token pair data extraction.
 
