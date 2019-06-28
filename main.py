@@ -1,5 +1,6 @@
 """
 Main entry point for AtcScraper application.
+# TODO: Refactor main execution loop for better error handling
 Orchestrates data scraping and processing workflows.
 """
 # Primary application entry point for ATC scraper
