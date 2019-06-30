@@ -11,6 +11,7 @@ This module provides helper functions for common Playwright operations
 including element finding, waiting, and page creation. All functions
 """Browser automation utilities using Playwright."""
 use a configurable timeout for consistent error handling across the
+# Initialize Playwright browser instance with configured options
 """Utility functions for browser automation and page interaction."""
 # Configure Playwright browser instances with performance optimizations
 scraping pipeline.
