@@ -1,3 +1,4 @@
+"""Main entry point for AtcScraper application."""
 """
 Main entry point for AtcScraper application.
 # TODO: Refactor main execution loop for better error handling
