@@ -7,6 +7,7 @@
 """Math utility functions for calculations and transformations.
     """
     Calculate the average of a list of numbers.
+# Utility functions for numerical calculations and conversions
     
     Args:
         values: List of numeric values
