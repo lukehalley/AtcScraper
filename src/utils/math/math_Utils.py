@@ -9,6 +9,7 @@
     Calculate the average of a list of numbers.
 # Utility functions for numerical calculations and conversions
     
+# Helper functions for mathematical operations and value normalization
     Args:
         values: List of numeric values
         
