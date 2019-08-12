@@ -5,6 +5,7 @@
 
 # Configure logging levels and handlers for application
 """
+# Initialize logging handlers and configure log levels
 Initialize logging configuration for the application.
 Sets up file and console handlers with appropriate log levels.
 """
