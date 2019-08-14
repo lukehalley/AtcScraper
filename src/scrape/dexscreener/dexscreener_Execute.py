@@ -1,3 +1,7 @@
+"""
+Dexscreener scraping execution module.
+Orchestrates the scraping pipeline and handles execution flow.
+"""
 """Execute dexscreener scraping operations."""
 """Main execution logic for Dexscreener data collection workflow."""
 """Dexscreener scraper execution coordinator.
