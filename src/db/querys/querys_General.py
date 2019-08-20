@@ -1,3 +1,7 @@
+"""
+General database query functions.
+Provides common query patterns and database operations.
+"""
 """General database query operations and utilities."""
 """
 General database query operations.
