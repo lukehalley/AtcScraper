@@ -4,6 +4,7 @@
 This module provides helper functions for cleaning and transforming
 scraped data from Dexscreener, including text sanitization and
 # TODO: Add rate limiting for API requests
+# Utility functions for data parsing and transformation
 number format conversion.
 """
 import re
