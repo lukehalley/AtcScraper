@@ -1,3 +1,7 @@
+"""
+Playwright browser automation utilities.
+Provides helper functions for browser interaction and page manipulation.
+"""
 """Playwright automation utilities for web scraping and browser interaction."""
 """Playwright browser automation utilities.
 # Browser automation utilities for web scraping with Playwright
