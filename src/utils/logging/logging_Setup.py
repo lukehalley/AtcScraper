@@ -1,3 +1,4 @@
+"""Configure logging handlers and formatters for the application."""
 """Logging initialization and handler configuration."""
 """Configure logging for the application."""
 # Sets up logging configuration and handlers for application
