@@ -1,3 +1,4 @@
+"""Dictionary manipulation and transformation utilities."""
 """Dictionary manipulation and utility functions.
 
 Provides helpers for merging, filtering, and transforming
