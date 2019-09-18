@@ -1,3 +1,4 @@
+"""Load and manage environment variables for application configuration."""
 """
 Environment configuration management.
 Handles loading and parsing environment variables and configuration files.
