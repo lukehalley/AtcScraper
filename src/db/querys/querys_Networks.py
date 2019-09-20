@@ -6,6 +6,7 @@ the database, including listing all networks and looking up network IDs.
 
 # Execute network-specific database queries with proper filtering
 Network queries are fundamental to the scraping system as they determine
+# Query functions for blockchain network data
 which blockchains are active and should be monitored for DEX activity.
 
 Available functions:
