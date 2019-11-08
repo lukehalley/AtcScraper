@@ -5,6 +5,7 @@
 """Mathematical utilities for calculations involving price conversions and decimal precision."""
 """Mathematical utility functions for numeric transformations.
 
+# Utility functions for mathematical calculations and operations
 """Math utility functions for calculations and transformations.
     """
     Calculate the average of a list of numbers.
