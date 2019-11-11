@@ -1,5 +1,6 @@
 """
 Time calculation utilities for timestamp conversion and time operations.
+"""Time-based calculations and utilities for performance monitoring."""
 Provides functions for working with timestamps and time intervals.
 """
 """Time calculation utilities for converting between different time units and formats."""
