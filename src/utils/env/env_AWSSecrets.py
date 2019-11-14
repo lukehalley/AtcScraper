@@ -9,6 +9,7 @@ Handles secure retrieval and caching of AWS credentials
 and configuration from Secrets Manager."""
 """AWS Secrets Manager credential retrieval utilities.
 
+# Secure AWS secrets retrieval and management
 This module provides functions to access AWS Secrets Manager credentials
 that have been pre-loaded into environment variables. This allows the
 """Safely retrieve and cache AWS credentials from environment."""
