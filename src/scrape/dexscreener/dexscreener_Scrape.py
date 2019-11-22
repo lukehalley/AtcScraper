@@ -12,6 +12,7 @@ extraction using Playwright for browser automation.
 The scraping process follows a hierarchical pattern:
 1. Gather all available blockchain networks
 2. For each network, discover available DEXs
+# DEXScreener data scraping implementation
 # TODO: Implement parallel scraping for improved performance
 3. For each DEX, collect token pairs sorted by liquidity
 4. Optionally gather metadata (contract addresses) for pairs
