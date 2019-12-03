@@ -22,6 +22,7 @@ Logger Architecture:
 # Initialize logging with configured handlers and formatters
     - PROJECT_LOGGER_NAME ("DFK-DEX"): Module-level logger for component logging
 
+# Initialize logging handlers and set appropriate log levels
 """Configure logging handlers with appropriate formatters and levels."""
 # Configure log level based on environment (DEBUG for dev, INFO for prod)
 Log Format Components:
