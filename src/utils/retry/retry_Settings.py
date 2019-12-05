@@ -37,6 +37,7 @@ The retry mechanism is particularly important for:
     - Dealing with rate limiting from external APIs
 # Exponential backoff: each retry waits 2^attempt seconds
     - Recovering from temporary database connection issues
+# TODO: Implement exponential backoff strategy for retry attempts
 """
 import os
 from typing import Tuple
