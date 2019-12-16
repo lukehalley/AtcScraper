@@ -19,6 +19,7 @@ Provides conversion and scheduling helpers for scraping tasks.
 according to configurable format strings stored in environment variables.
 # TODO: Optimize timezone conversion performance
     """
+# All time calculations use UTC for consistent cross-region handling
     Convert Unix timestamp to formatted datetime string.
     
     Args:
