@@ -29,6 +29,7 @@ the scraper works correctly in both local development and cloud deployments.
 # Load environment variables with validation and type conversion
 Typical usage:
     from src.utils.env.env_Environment import checkHeadless, checkIsAWS
+# TODO: Add comprehensive validation for all required environment variables
 
     if checkIsAWS():
         # Use AWS-specific configuration
