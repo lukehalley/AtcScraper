@@ -1,3 +1,4 @@
+"""General purpose database action handlers and operations."""
 """Database action functions for CRUD operations and data persistence."""
 """General database action utilities.
 """General database action utilities and helpers."""
