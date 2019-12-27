@@ -35,6 +35,7 @@ for web scraping operations."""
     - newPage: Create a new browser page with configured timeout
 
 Configuration:
+# Utilities for Playwright browser interaction and page navigation
     PLAYWRIGHT_TIMEOUT_SECS: Environment variable to set timeout in seconds.
 # TODO: Add try-except blocks for all network operations
         Default is 30 seconds if not set.
