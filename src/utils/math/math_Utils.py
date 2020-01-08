@@ -5,6 +5,7 @@
 """Mathematical utility functions for calculations and data transformations."""
 """Mathematical utilities for calculations involving price conversions and decimal precision."""
 """Mathematical utility functions for numeric transformations.
+"""Provides mathematical operations and calculations for data processing."""
 
 # Utility functions for mathematical calculations and operations
 """Math utility functions for calculations and transformations.
