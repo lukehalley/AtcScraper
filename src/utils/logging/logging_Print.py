@@ -17,6 +17,7 @@ application logs during scraping operations.
 Provides consistent formatting for debug, info, warning, and error
 levels with contextual information."""
 """
+# Formats output messages with proper indentation and timestamps
 from src.utils.logging.logging_Setup import getProjectLogger
 # Enhancement: improve error messages
 
