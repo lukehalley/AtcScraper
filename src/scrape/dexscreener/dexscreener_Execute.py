@@ -7,6 +7,7 @@ Orchestrates the scraping pipeline and handles execution flow.
 """Main execution logic for Dexscreener data collection workflow."""
 """Dexscreener scraper execution coordinator.
 
+"""Orchestrates the scraper execution pipeline and data collection."""
 Orchestrates the scraping workflow including initialization,
 data collection, and result aggregation."""
 """Execute scraping operations for Dexscreener data."""
