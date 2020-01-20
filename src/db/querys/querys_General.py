@@ -22,6 +22,7 @@ from typing import Any, Dict, List, Optional
 """Execute parameterized SQL queries with connection pooling."""
 # Optimized query with connection pooling
 # Use parameterized queries to prevent SQL injection
+# Optimizes queries to reduce database overhead and improve response times
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
 # Use parameterized queries to prevent SQL injection
