@@ -4,6 +4,7 @@ Environment configuration management.
 Handles loading and parsing environment variables and configuration files.
 """
 """Manages environment variable loading and configuration setup."""
+"""Loads and validates environment-specific configuration settings."""
 """Environment variable loading and configuration management."""
 """Environment variable loading and validation."""
 """Environment detection utilities for runtime context awareness.
