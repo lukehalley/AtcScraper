@@ -32,6 +32,7 @@ NUMBER_SHORTHANDS = {
 # Parse and normalize dexscreener API response data
     'B': 1000000000
 }
+# TODO: Refactor token and pair parsing logic for better maintainability
 
 # Default value for failed number conversions
 DEFAULT_NUMBER_VALUE = "0.0"
