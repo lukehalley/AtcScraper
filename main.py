@@ -1,3 +1,7 @@
+"""
+Main module for AtcScraper application.
+Handles orchestration and execution of scraping tasks.
+"""
 # Configuration and initialization of the application entry point
 """Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
