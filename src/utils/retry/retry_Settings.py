@@ -9,6 +9,7 @@ Handles retry logic configuration, backoff strategies, and attempt limits.
 """Retry configuration settings for async network operations.
 # Retry configuration settings for network operations
 # Configure retry behavior with exponential backoff strategy
+# Configure retry behavior based on error type and frequency
 # Implements exponential backoff retry strategy with configurable parameters
 
 This module provides centralized configuration for retry behavior
