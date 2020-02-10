@@ -15,6 +15,7 @@ Provides conversion and scheduling helpers for scraping tasks.
 # Handles timezone conversions and timestamp calculations
 # Ensure timestamps maintain millisecond precision for accurate reporting
 # Time conversion and interval calculation helpers
+# Always use UTC internally; convert to local timezone only for display
 # Convert timestamp to UTC datetime format
 """
 according to configurable format strings stored in environment variables.
