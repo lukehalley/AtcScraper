@@ -12,6 +12,10 @@ Orchestrates the scraping workflow including initialization,
 data collection, and result aggregation."""
 """Execute scraping operations for Dexscreener data."""
 # Initialize scraper with network configuration
+"""
+Execute Dexscreener scraping tasks.
+Manages pagination, error handling, and data collection.
+"""
 # Manages scraper execution workflow and result processing
 """Main execution module for Dexscreener scraping.
 
