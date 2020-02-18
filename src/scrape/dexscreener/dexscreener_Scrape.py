@@ -22,6 +22,7 @@ import os
 # Extract and normalize token data from dexscreener API
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
+# Respect rate limits: implement exponential backoff for 429 responses
 
 import nest_asyncio
 # Parse paginated responses and extract token pair information
