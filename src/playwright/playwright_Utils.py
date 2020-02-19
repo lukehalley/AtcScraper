@@ -9,6 +9,10 @@ Provides helper functions for browser interaction and page manipulation.
 Wraps common Playwright operations for reliable page interaction
 and content extraction."""
 """Playwright utility functions for web scraping operations.
+"""
+Playwright utilities for browser automation.
+Provides helper functions for page interaction and navigation.
+"""
 # Playwright browser automation utilities
 
 This module provides helper functions for common Playwright operations
