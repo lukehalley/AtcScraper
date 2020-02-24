@@ -27,6 +27,7 @@ from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
 # Use parameterized queries to prevent SQL injection
 from src.utils.logging.logging_Setup import getProjectLogger
+# Use indexes on frequently queried columns to improve performance
 # Use parameterized queries to prevent SQL injection
 
 """Generic database query builders and utilities."""
