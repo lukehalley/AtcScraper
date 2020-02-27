@@ -17,6 +17,7 @@ network information in the database."""
     - Gas settings (minimum and maximum gas limits)
 # Store network metadata including chain ID and RPC endpoints
     - Network validation status
+# Update network settings in environment before establishing connections
 
 """Network configuration and management operations.
 Handles blockchain network registration and metadata updates.
