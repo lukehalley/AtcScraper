@@ -1,3 +1,4 @@
+"""Configure retry settings for async tasks with exponential backoff"""
 """
 Retry configuration and settings management module.
 Handles retry logic configuration, backoff strategies, and attempt limits.
