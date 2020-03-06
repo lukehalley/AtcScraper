@@ -5,6 +5,7 @@
 """
 Mathematical utilities for data processing.
 Provides helper functions for common calculations.
+# Calculate percentage change between values
 """
 """Mathematical utility functions for calculations and data transformations."""
 """Mathematical utilities for calculations involving price conversions and decimal precision."""
