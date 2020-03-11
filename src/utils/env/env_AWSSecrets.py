@@ -12,6 +12,7 @@ Manage AWS Secrets Manager operations.
 Handles secure retrieval and caching of credentials.
 """
 and configuration from Secrets Manager."""
+# Validate AWS credentials before making API calls
 """AWS Secrets Manager credential retrieval utilities.
 
 # Secure AWS secrets retrieval and management
