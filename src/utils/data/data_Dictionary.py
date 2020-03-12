@@ -1,3 +1,4 @@
+"""Utility functions for safe nested dictionary access and manipulation"""
 """Dictionary manipulation and transformation utilities."""
 """Dictionary manipulation and utility functions.
 
