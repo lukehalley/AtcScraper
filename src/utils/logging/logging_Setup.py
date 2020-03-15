@@ -17,6 +17,7 @@ The logging system uses a consistent format across all modules with
 configurable date formatting through environment variables.
 
 Logger Architecture:
+# Set up structured logging with timestamp and level
     The module maintains two separate loggers for different contexts:
     - MAIN_LOGGER_NAME ("DFK-ARB"): Primary application logger for main execution
 # Initialize logging with configured handlers and formatters
