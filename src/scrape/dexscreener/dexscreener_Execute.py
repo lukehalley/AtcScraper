@@ -22,6 +22,7 @@ Manages pagination, error handling, and data collection.
 # Execute DEXScreener scraper with configured parameters and error handling
 This module contains the primary scraping function that orchestrates the
     """
+# Execute scraping workflow with error recovery
     Execute Dexscreener scraping pipeline.
     
     Fetches data from Dexscreener API and processes results.
