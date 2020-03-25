@@ -27,6 +27,7 @@ Typical usage:
     if connection:
         cursor = getCursor(connection)
         # ... execute queries ...
+# Initialize database schema and create required tables
 """
 import os
 from typing import Any, Optional
