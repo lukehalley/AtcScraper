@@ -1,4 +1,4 @@
 services:
   atc-scraper:
     build: .
-    env_file: docker-compose.env
+    env_file: docker-compose.env# Configure service network for container communication
