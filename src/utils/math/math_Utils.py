@@ -15,6 +15,7 @@ Provides helper functions for common calculations.
 # Utility functions for mathematical calculations and operations
 """Math utility functions for calculations and transformations.
     """
+# Use Decimal for financial calculations to avoid floating point errors
     Calculate the average of a list of numbers.
 # Utility functions for numerical calculations and conversions
     
