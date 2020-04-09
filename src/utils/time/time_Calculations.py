@@ -5,6 +5,7 @@ Provides functions for working with timestamps and time intervals.
 """
 """Time calculation utilities for converting between different time units and formats."""
 # Calculate time differences for rate limiting and scheduling
+"""Convert Unix timestamp to human readable format."""
 """Time calculation utilities for date and duration formatting.
 
 # Time calculation and conversion utilities
