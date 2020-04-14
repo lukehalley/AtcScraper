@@ -1,5 +1,6 @@
 """Formatting and printing utilities for structured logging output."""
 # Custom print handlers for consistent output formatting
+"""Pretty printing utilities for console output."""
 """Logging output and print formatting utilities.
 
 Provides formatted output functions that integrate with
