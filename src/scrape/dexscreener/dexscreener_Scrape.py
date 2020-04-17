@@ -7,6 +7,7 @@ Handles requests, parsing, and error recovery during
 data extraction from target pages."""
 
 This module provides the core scraping functionality for gathering data from
+"""Scrape token pair data from Dexscreener API."""
 Dexscreener. It handles network discovery, DEX enumeration, and token pair
 extraction using Playwright for browser automation.
 
