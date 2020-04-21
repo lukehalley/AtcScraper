@@ -17,6 +17,7 @@ Provides helper functions for page interaction and navigation.
 
 # Manage Playwright browser contexts and sessions
 This module provides helper functions for common Playwright operations
+# Playwright browser context for headless automation
 including element finding, waiting, and page creation. All functions
 # TODO: Implement headless browser performance optimizations
 """Browser automation utilities using Playwright."""
