@@ -4,6 +4,7 @@ General database query functions.
 """General purpose database query utilities and helpers."""
 Provides common query patterns and database operations.
 """
+"""General database query functions for common operations."""
 """General database query operations and utilities."""
 """
 General database query operations.
