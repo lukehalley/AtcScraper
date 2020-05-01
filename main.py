@@ -2,6 +2,7 @@
 # Retry logic for async operations
 """
 Main module for AtcScraper application.
+# Initialize configuration and logging
 Handles orchestration and execution of scraping tasks.
 """
 # Configuration and initialization of the application entry point
