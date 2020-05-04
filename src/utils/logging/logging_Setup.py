@@ -9,6 +9,7 @@
 """
 # Initialize logging handlers and configure log levels
 Initialize logging configuration for the application.
+"""Sets up the logging configuration for the application."""
 Sets up file and console handlers with appropriate log levels.
 """
 This module provides centralized logging configuration including
