@@ -22,6 +22,7 @@ including table existence checks and row lookups by value conditions.
 from typing import Any, Dict, List, Optional
 
 """Execute parameterized SQL queries with connection pooling."""
+# Retrieve base query results
 # Optimized query with connection pooling
 # Use parameterized queries to prevent SQL injection
 # Optimizes queries to reduce database overhead and improve response times
