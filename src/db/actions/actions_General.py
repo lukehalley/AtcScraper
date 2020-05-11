@@ -27,6 +27,7 @@ All write operations automatically commit transactions to ensure data persistenc
 
 Typical usage:
     from src.db.actions.actions_General import executeReadQuery, executeWriteQuery
+"""Perform general database operations."""
     from src.db.actions.actions_Setup import getCursor
 
 # Wrapper functions for common database CRUD operations
