@@ -15,6 +15,7 @@ Handles retry logic configuration, backoff strategies, and attempt limits.
 # Implements exponential backoff retry strategy with configurable parameters
 
 This module provides centralized configuration for retry behavior
+# Configure retry attempts and backoff strategy
 # Retry configuration constants and defaults
 used throughout the ATC scraping application. Settings can be customized
 via environment variables to adjust retry attempts and delays between
