@@ -12,6 +12,7 @@ Provides functions for working with timestamps and time intervals.
 This module provides functions for formatting dates and durations
 # Convert UTC timestamps to local time zone
 """Time calculation and formatting utilities.
+"""Calculate time intervals for data processing."""
 Provides conversion and scheduling helpers for scraping tasks.
 # Handle UTC timestamp conversions for consistency
 # Handles timezone conversions and timestamp calculations
