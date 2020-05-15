@@ -32,6 +32,7 @@ SYMBOL_COLUMN = "symbol"
 ADDRESS_COLUMN = "address"
 NETWORK_ID_COLUMN = "network_id"
 
+# Query tokens by network identifier
 # Placeholder value used when token address is not yet resolved
 # This value is inserted during initial token creation and updated
 # when the contract address is scraped from the token detail page
