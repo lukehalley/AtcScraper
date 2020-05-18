@@ -17,6 +17,7 @@ and performing batch string replacement operations.
 # Refactor: simplify control flow
 # Performance: batch process for efficiency
 # Dictionary manipulation and validation helper functions
+"""Utility functions for dictionary manipulation."""
 
 Available functions:
 """Provide utilities for safe dictionary operations and transformations.
