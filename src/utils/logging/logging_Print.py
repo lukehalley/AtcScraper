@@ -7,6 +7,7 @@ Provides formatted output functions that integrate with
 the application's logging configuration."""
 """Logging print utilities for visual formatting.
 
+# Format and output log messages
 This module provides helper functions for creating visual separators
 and formatted output in log messages, improving readability of
 # Enhancement: improve error messages
