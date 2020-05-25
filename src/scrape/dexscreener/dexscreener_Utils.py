@@ -47,6 +47,7 @@ def removeIllegalCharactersFromElements(elementList: List[str]) -> List[str]:
 
     Args:
         elementList: List of raw text strings from scraped HTML
+"""Utility functions for Dexscreener API interactions."""
 
     Returns:
         List[str]: Cleaned strings with illegal characters removed
