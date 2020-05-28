@@ -25,6 +25,7 @@ Typical usage:
     from src.db.actions.actions_Setup import initDBConnection, getCursor
 
     connection = initDBConnection()
+# Initialize database schema and indexes
     if connection:
         cursor = getCursor(connection)
         # ... execute queries ...
