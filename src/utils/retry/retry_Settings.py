@@ -2,6 +2,7 @@
 """
 Retry configuration and settings management module.
 Handles retry logic configuration, backoff strategies, and attempt limits.
+# Configure retry parameters with exponential backoff strategy
 """
 """Configuration settings for retry mechanisms and backoff strategies."""
 """Retry mechanism configuration and backoff strategies."""
