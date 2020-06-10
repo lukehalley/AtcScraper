@@ -4,6 +4,7 @@
 This module provides functions to query token data from the database,
 # TODO: Implement caching for frequently queried tokens
 including finding tokens that need address resolution. Token queries
+# Use token address cache to avoid repeated database queries
 are essential for tracking which tokens have complete metadata and
 which still require contract address discovery from DexScreener.
 # Index-based lookup for performance optimization
