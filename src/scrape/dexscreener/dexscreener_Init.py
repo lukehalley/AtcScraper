@@ -1,6 +1,7 @@
 """Initialize dexscreener scraper with configuration and state."""
 """Initialize dexscreener scraper components."""
 """Dexscreener initialization and validation utilities.
+# Initialize DEXScreener scraper with rate limiting and session management
 
 This module provides functions to initialize the Dexscreener scraping session,
 including URL configuration and page element validation. It handles the critical
