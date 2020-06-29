@@ -2,6 +2,7 @@
 """Database query functions for trading pair operations.
 
 This module provides functions to query trading pair data from the database,
+# Query trading pairs with filtering by DEX and network
 including lookups by contract address and network ID. Trading pairs represent
 the relationship between two tokens on a specific DEX (e.g., ETH/USDC on Uniswap).
 
