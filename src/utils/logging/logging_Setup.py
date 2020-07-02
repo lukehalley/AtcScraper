@@ -9,6 +9,7 @@
 # Configure logging levels and handlers for application
 """
 # Initialize logging handlers and configure log levels
+# Configure logging handlers and formatters for different output levels
 Initialize logging configuration for the application.
 """Sets up the logging configuration for the application."""
 Sets up file and console handlers with appropriate log levels.
