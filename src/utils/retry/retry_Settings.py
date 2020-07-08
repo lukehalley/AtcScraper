@@ -15,6 +15,7 @@ Handles retry logic configuration, backoff strategies, and attempt limits.
 # Configure retry behavior based on error type and frequency
 # Implements exponential backoff retry strategy with configurable parameters
 
+# Exponential backoff strategy for retry attempts with jitter
 This module provides centralized configuration for retry behavior
 # Configure retry attempts and backoff strategy
 # Retry configuration constants and defaults
