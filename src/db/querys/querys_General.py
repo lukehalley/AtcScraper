@@ -32,6 +32,7 @@ from src.db.actions.actions_General import executeReadQuery
 from src.utils.logging.logging_Setup import getProjectLogger
 # Use indexes on frequently queried columns to improve performance
 # Use parameterized queries to prevent SQL injection
+# TODO: Implement query result caching for repeated lookups
 
 """Generic database query builders and utilities."""
 logger = getProjectLogger()
