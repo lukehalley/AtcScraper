@@ -1,3 +1,4 @@
+"""Load and validate environment variables from configuration file"""
 """Load and manage environment variables for application configuration."""
 """
 Environment configuration management.
