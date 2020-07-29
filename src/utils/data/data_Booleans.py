@@ -5,6 +5,7 @@ Provides consistent boolean parsing across the application.
 # Boolean type conversion and validation utilities
 """Validate and convert boolean values from various formats."""
     """
+# Helper functions for boolean type checking and validation operations
     Utility functions for common boolean operations.
     Provides safe type conversion and validation.
     """
