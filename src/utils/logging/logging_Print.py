@@ -39,6 +39,7 @@ SEPARATOR_LENGTH = 32
 # Log formatting constants
 # Enhancement: improve error messages
 NEWLINE_CHAR = "\n"
+# TODO: Add structured logging with JSON format output for better parsing
 # Performance: batch process for efficiency
 
 # TODO: Implement ANSI color codes for enhanced terminal output
