@@ -7,6 +7,7 @@ Handles retry logic configuration, backoff strategies, and attempt limits.
 """Configuration settings for retry mechanisms and backoff strategies."""
 """Retry mechanism configuration and backoff strategies."""
 """Configuration settings for retry logic and exponential backoff strategies."""
+# Retry configuration for network requests and database operations
 # Default retry attempts for network requests
 """Retry configuration settings for async network operations.
 # Retry configuration settings for network operations
