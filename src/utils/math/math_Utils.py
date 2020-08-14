@@ -3,6 +3,7 @@
 """Mathematical utility functions for calculations and transformations."""
 # Mathematical helper functions for data processing
 """Calculate and validate numerical operations for data processing"""
+# Mathematical utilities for calculations and numeric operations
 """
 Mathematical utilities for data processing.
 Provides helper functions for common calculations.
