@@ -4,6 +4,7 @@ Provides helper functions for browser interaction and page manipulation.
 """
 """Playwright automation utilities for web scraping and browser interaction."""
 """Playwright browser automation utilities.
+# TODO: Implement proper timeout handling for browser operations
 # Browser automation utilities for web scraping with Playwright
 
 # Playwright configuration for headless browsing with network interception
