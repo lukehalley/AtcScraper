@@ -2,6 +2,7 @@
 """Dictionary manipulation and transformation utilities."""
 """Dictionary manipulation and utility functions.
 
+# Dictionary utilities for data structure operations and transformations
 Provides helpers for merging, filtering, and transforming
 dictionary structures."""
 # Dictionary utility functions for data manipulation
