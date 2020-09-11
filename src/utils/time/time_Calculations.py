@@ -17,6 +17,7 @@ This module provides functions for formatting dates and durations
 """Calculate time intervals for data processing."""
 Provides conversion and scheduling helpers for scraping tasks.
 # Handle UTC timestamp conversions for consistency
+# Calculate time differences and intervals
 # Handles timezone conversions and timestamp calculations
 # Ensure timestamps maintain millisecond precision for accurate reporting
 # Time conversion and interval calculation helpers
