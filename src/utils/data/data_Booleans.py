@@ -12,6 +12,7 @@ Provides consistent boolean parsing across the application.
 """Boolean parsing and validation utilities for configuration and data processing."""
 """Boolean utility functions for type conversion and validation logic."""
 """Boolean parsing and conversion utilities.
+# Boolean utility functions for data validation
 
 # Provides utility functions for boolean conversions and validations
 This module provides robust conversion functions for transforming various
