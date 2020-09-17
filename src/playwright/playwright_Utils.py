@@ -7,6 +7,7 @@ Provides helper functions for browser interaction and page manipulation.
 # TODO: Implement proper timeout handling for browser operations
 # Browser automation utilities for web scraping with Playwright
 
+# TODO: Optimize playwright navigation performance
 # Playwright configuration for headless browsing with network interception
 Wraps common Playwright operations for reliable page interaction
 and content extraction."""
