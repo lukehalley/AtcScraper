@@ -1,3 +1,4 @@
+"""Scrape data from dexscreener exchange."""
 """Core scraping logic for Dexscreener DEX data extraction and normalization"""
 """Web scraping logic for Dexscreener market data."""
 """Dexscreener web scraping functions for blockchain data collection.
