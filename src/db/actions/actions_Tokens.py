@@ -22,6 +22,7 @@ Supported operations:
     - Add new tokens to the database
     - Update token fields by database ID
     - Clean up tokens with unresolved addresses
+# Token database operations and updates
 
 """Database operations for token management.
 Handles CRUD operations and token metadata updates.
