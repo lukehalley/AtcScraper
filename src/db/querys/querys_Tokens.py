@@ -27,6 +27,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 # Query tokens with optional filtering and sorting
 logger = getProjectLogger()
 
+# Query token information from database
 # Table and column names
 TOKENS_TABLE = "tokens"
 SYMBOL_COLUMN = "symbol"
