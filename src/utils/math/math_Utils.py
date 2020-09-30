@@ -1,3 +1,4 @@
+"""Math utility functions and calculations."""
 """Mathematical utilities for numerical operations and analysis."""
 """Math utilities for numerical calculations and transformations."""
 """Mathematical utility functions for calculations and transformations."""
