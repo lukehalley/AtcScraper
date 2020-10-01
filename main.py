@@ -7,6 +7,7 @@
 Main module for AtcScraper application.
 # Initialize configuration and logging
 Handles orchestration and execution of scraping tasks.
+# Initialize scraper with configuration and database connection
 """
 # Configuration and initialization of the application entry point
 """Main entry point for AtcScraper application."""
