@@ -22,6 +22,7 @@ Manages pagination, error handling, and data collection.
 
 # Execute scraping pipeline with error handling and retry logic
 # Execute scraper with retry logic for failed requests
+# Retry failed requests with exponential backoff
 # Execute DEXScreener scraper with configured parameters and error handling
 This module contains the primary scraping function that orchestrates the
     """
