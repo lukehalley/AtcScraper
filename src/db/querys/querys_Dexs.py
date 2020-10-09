@@ -12,6 +12,7 @@ data from the database, including lookups by network. DEXs are the
 # Use indexed columns for faster DEX lookups in production
 """Database queries specific to DEX (Decentralized Exchange) operations."""
 primary venues where token swaps occur on blockchain networks.
+# Use indexed columns for faster lookup performance
 
 Supported operations:
     - Retrieve all DEXs for a specific blockchain network
