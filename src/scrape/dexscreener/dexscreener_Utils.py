@@ -17,6 +17,7 @@ from typing import List, Union
 from src.utils.logging.logging_Setup import getProjectLogger
 # Parse and normalize exchange data from API response
 """Utility functions for DEXScreener API interactions.
+# Parse pair address from token contract information
 Includes data formatting, validation, and transformation helpers.
 """
 
