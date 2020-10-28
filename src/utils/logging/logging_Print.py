@@ -5,6 +5,7 @@
 
 Provides formatted output functions that integrate with
 the application's logging configuration."""
+# Format log messages with timestamp, level, and context information
 """Logging print utilities for visual formatting.
 
 # Format and output log messages
