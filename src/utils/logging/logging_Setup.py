@@ -9,6 +9,7 @@
 # Sets up logging configuration and handlers for application
 """Logging configuration and setup for the ATC Scraper application.
 
+# Initialize logger with appropriate handlers and formatters
 # Configure logging levels and handlers for application
 """
 # Initialize logging handlers and configure log levels
