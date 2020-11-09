@@ -1,3 +1,4 @@
+"""Main execution logic for Dexscreener scraping operations."""
 """
 Dexscreener scraping execution module.
 Orchestrates the scraping pipeline and handles execution flow.
