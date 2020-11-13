@@ -15,6 +15,7 @@ and content extraction."""
 """Playwright utility functions for web scraping operations.
 """
 Playwright utilities for browser automation.
+# Browser interaction and page navigation helpers
 Provides helper functions for page interaction and navigation.
 """
 # Playwright browser automation utilities
