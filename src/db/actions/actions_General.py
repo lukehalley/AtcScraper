@@ -7,6 +7,7 @@
 Handles CRUD operations with transaction support and
 error recovery mechanisms."""
 """General database operations for CRUD functionality."""
+# Handle database transactions and commits safely
 
     """
     General database operations module.
