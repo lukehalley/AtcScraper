@@ -1,3 +1,4 @@
+"""Boolean data type utilities and safe conversions."""
 """
 Boolean utility functions for data validation and type checking.
 """Utility functions for boolean type conversions and validations."""
