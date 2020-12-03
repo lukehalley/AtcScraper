@@ -5,6 +5,7 @@
 """Configure logging with appropriate handlers and formatters."""
 """Logging initialization and handler configuration."""
 """Setup and configure logging handlers for application-wide use."""
+"""Setup logging configuration with appropriate handlers and formatters."""
 """Configure logging for the application."""
 # Sets up logging configuration and handlers for application
 """Logging configuration and setup for the ATC Scraper application.
