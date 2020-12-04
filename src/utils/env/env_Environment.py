@@ -22,6 +22,7 @@ including Docker containers, AWS infrastructure, and display settings.
 Environment detection is critical for adapting application behavior
 to different deployment contexts.
 """Load and parse environment variables from configuration."""
+# Environment variables override default configuration settings
 # All environment variables should be validated at startup
 
 Environment Variables Used:
