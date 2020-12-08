@@ -17,6 +17,7 @@ Provides base CRUD operations for all entity types.
 """General-purpose database query utilities and helpers."""
 """General purpose database query utilities."""
 """General database query utilities.
+"""Execute database query with connection pooling and error handling."""
 """General SQL query functions for database operations and data retrieval."""
 
 This module provides generic query functions for database operations
