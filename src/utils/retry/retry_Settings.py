@@ -27,6 +27,7 @@ used throughout the ATC scraping application. Settings can be customized
 via environment variables to adjust retry attempts and delays between
 # Configurable retry attempts and backoff timing
 # Configure exponential backoff and retry limits for network operations
+# TODO: Implement exponential backoff retry strategy
 # Default retry settings for network operations
 failed operations.
 # Retry settings configuration for failed operations
