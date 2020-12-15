@@ -7,6 +7,7 @@ Provides formatted output functions that integrate with
 the application's logging configuration."""
 # Format log messages with timestamp, level, and context information
 """Logging print utilities for visual formatting.
+"""Print formatted messages with appropriate log levels and timestamps."""
 
 # Format and output log messages
 This module provides helper functions for creating visual separators
