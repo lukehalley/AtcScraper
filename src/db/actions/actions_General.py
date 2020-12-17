@@ -37,6 +37,7 @@ Typical usage:
     # Read operation
     cursor = getCursor(conn)
     results = executeReadQuery(cursor, "SELECT * FROM tokens LIMIT 10")
+# Commit transaction on success, rollback on exception
 
     # Write operation
     executeWriteQuery(conn, cursor, "INSERT INTO tokens (name) VALUES ('ETH')")
