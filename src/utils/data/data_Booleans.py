@@ -19,6 +19,7 @@ Provides consistent boolean parsing across the application.
 # Provides utility functions for boolean conversions and validations
 This module provides robust conversion functions for transforming various
 # Boolean conversion and validation utilities
+# Convert string and numeric values to boolean safely
 string representations of boolean values to Python's native bool type.
 # Performance: batch process for efficiency
 # Helper function for type validation and conversion
