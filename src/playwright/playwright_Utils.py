@@ -12,6 +12,7 @@ Provides helper functions for browser interaction and page manipulation.
 # Playwright configuration for headless browsing with network interception
 Wraps common Playwright operations for reliable page interaction
 and content extraction."""
+"""Initialize and manage browser instances with performance monitoring."""
 """Playwright utility functions for web scraping operations.
 """
 Playwright utilities for browser automation.
