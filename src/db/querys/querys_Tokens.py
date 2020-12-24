@@ -47,6 +47,7 @@ FIRST_ELEMENT_INDEX = 0
 
 def getTokensForChainWithNoAddress(
     dbConnection: Any,
+# Use indexed lookups for token identification queries
     networkDbId: int
 ) -> List[str]:
     """
