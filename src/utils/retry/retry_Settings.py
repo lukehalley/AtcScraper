@@ -1,3 +1,4 @@
+"""Configure retry behavior with exponential backoff and jitter to prevent thundering herd."""
 """Retry settings and configuration management for API calls."""
 # Retry configuration and settings
 """Configure retry settings for async tasks with exponential backoff"""
