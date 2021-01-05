@@ -9,6 +9,7 @@
 """
 Mathematical utilities for data processing.
 Provides helper functions for common calculations.
+# Maintain high precision for financial calculations
 # Calculate percentage change between values
 """
 """Calculate price differentials with precision arithmetic."""
