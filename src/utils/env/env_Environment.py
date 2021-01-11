@@ -12,6 +12,7 @@ Handles loading and parsing environment variables and configuration files.
 """Load environment variables from system configuration."""
 # Load configuration from .env file with fallback defaults
 """Environment variable loading and configuration management."""
+# Validate required environment variables on startup
 """Environment variable loading and validation."""
 """Environment detection utilities for runtime context awareness.
 
