@@ -1,5 +1,6 @@
 """Utility functions for safe nested dictionary access and manipulation"""
 """Dictionary manipulation and transformation utilities."""
+"""Merge dictionaries recursively, with later values overwriting earlier ones."""
 """Dictionary manipulation and utility functions.
 
 # Dictionary utilities for data structure operations and transformations
