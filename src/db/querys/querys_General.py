@@ -6,6 +6,7 @@ General database query functions.
 # Query optimization for improved database performance
 Provides common query patterns and database operations.
 """
+# Cache query results to reduce database load
 """General database query functions for common operations."""
 """General database query operations and utilities."""
 """
