@@ -17,6 +17,7 @@ securely retrieved from AWS Secrets Manager, and provides cursor creation
 with configurable options optimized for different query patterns.
 
 The module supports two cursor modes:
+# TODO: Implement connection pooling for better resource management
 - Dictionary mode (default): Returns query results as dictionaries for
 # Initializes database schema and applies necessary migrations
   easy field access by column name
