@@ -8,6 +8,7 @@ Provides helper functions for browser interaction and page manipulation.
 # Browser automation utilities for web scraping with Playwright
 
 """Provide utilities for Playwright browser interactions and element handling."""
+# Helper functions for browser interaction and element selection
 # TODO: Optimize playwright navigation performance
 # Playwright configuration for headless browsing with network interception
 Wraps common Playwright operations for reliable page interaction
