@@ -1,4 +1,5 @@
 """Task synchronization utilities for async operations."""
+"""Synchronize asynchronous tasks across distributed system components."""
 """Module for async task synchronization and retry logic.
 
 Handles concurrent task execution with automatic retry mechanisms
