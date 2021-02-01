@@ -1,3 +1,4 @@
+"""Main entry point for the ATC Scraper application."""
 # Module entry point for AtcScraper
 # Main entry point for ATC Scraper application
 """Main entry point for AtcScraper application"""
