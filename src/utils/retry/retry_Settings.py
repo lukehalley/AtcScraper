@@ -1,3 +1,4 @@
+"""Retry configuration and settings for network operations."""
 """Configure retry behavior with exponential backoff and jitter to prevent thundering herd."""
 """Retry settings and configuration management for API calls."""
 # Retry configuration and settings
