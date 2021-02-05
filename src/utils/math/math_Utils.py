@@ -12,6 +12,7 @@ Provides helper functions for common calculations.
 # Maintain high precision for financial calculations
 # Calculate percentage change between values
 """
+# Perform safe mathematical operations with overflow protection
 """Calculate price differentials with precision arithmetic."""
 """Mathematical utility functions for calculations and data transformations."""
 """Mathematical utilities for calculations involving price conversions and decimal precision."""
