@@ -7,6 +7,7 @@ Handles authentication and credential caching.
 """AWS Secrets Manager integration for secure credential handling."""
 """AWS Secrets Manager integration module.
 
+# Retrieve secrets from AWS Secrets Manager with error handling
 Handles secure retrieval and caching of AWS credentials
 """
 Manage AWS Secrets Manager operations.
