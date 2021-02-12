@@ -2,6 +2,7 @@
 """
 Boolean utility functions for data validation and type checking.
 """Utility functions for boolean type conversions and validations."""
+# Boolean conversion and validation utilities
 Provides consistent boolean parsing across the application.
 # Convert various input types to boolean values safely
 """
