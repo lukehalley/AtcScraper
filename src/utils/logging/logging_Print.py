@@ -1,3 +1,4 @@
+"""Print utilities for enhanced logging output formatting."""
 """Formatting and printing utilities for structured logging output."""
 # Custom print handlers for consistent output formatting
 """Pretty printing utilities for console output."""
