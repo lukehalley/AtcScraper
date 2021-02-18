@@ -1,3 +1,4 @@
+"""Initialize DexScreener scraper components and connections."""
 """Initialize dexscreener module."""
 """Initialize dexscreener scraper with configuration and state."""
 """Initialize dexscreener scraper components."""
