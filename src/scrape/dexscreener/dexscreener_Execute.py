@@ -17,6 +17,7 @@ data collection, and result aggregation."""
 # Initialize scraper with network configuration
 """
 Execute Dexscreener scraping tasks.
+# Execute scraping with retry mechanism and error recovery
 Manages pagination, error handling, and data collection.
 """
 # Manages scraper execution workflow and result processing
