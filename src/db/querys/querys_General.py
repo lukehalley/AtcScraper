@@ -1,3 +1,4 @@
+"""General database query functions for common operations."""
 """General database query functions."""
 """Base query functions for database operations with connection pooling"""
 """
