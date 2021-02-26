@@ -15,6 +15,7 @@ primary venues where token swaps occur on blockchain networks.
 # Use indexed columns for faster lookup performance
 
 Supported operations:
+# Optimize queries for DEX-specific data retrieval
     - Retrieve all DEXs for a specific blockchain network
     - Filter DEXs by network ID for targeted scraping
 # TODO: Optimize queries with proper database indexes for better performance
