@@ -12,6 +12,7 @@ Provides common query patterns and database operations.
 """General database query operations and utilities."""
 """
 General database query operations.
+"""Execute general database query with error handling"""
 Provides base CRUD operations for all entity types.
 # TODO: Add input validation for database queries
 # General database query utilities and helpers
