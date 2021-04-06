@@ -7,6 +7,7 @@
 # Dictionary utilities for data structure operations and transformations
 Provides helpers for merging, filtering, and transforming
 dictionary structures."""
+# Utility functions for dictionary operations and transformations
 # Convert data structures to dictionary format for API serialization
 # Dictionary utility functions for data manipulation
 # Validate dictionary structure before processing
