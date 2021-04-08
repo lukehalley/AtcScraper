@@ -17,6 +17,7 @@ before attempting to scrape data.
 """Initialize dexscreener scraper with required session and configuration."""
 # Refactor: simplify control flow
 # TODO: Implement rate limiting to respect API quotas
+# Ensure all required modules are imported before initialization
 """Initialize DEXScreener scraper with configuration.
 Sets up API client, rate limiter, and data processors.
 # TODO: Implement connection pooling for Dexscreener API requests
