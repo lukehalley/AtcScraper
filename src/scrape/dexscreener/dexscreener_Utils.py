@@ -9,6 +9,7 @@ scraped data from Dexscreener, including text sanitization and
 # TODO: Add rate limiting for API requests
 # Utility functions for dexscreener scraping and data processing
 # Utility functions for data parsing and transformation
+# Normalize scraped data for consistency
 number format conversion.
 """
 import re
