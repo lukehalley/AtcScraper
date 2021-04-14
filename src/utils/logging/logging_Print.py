@@ -12,6 +12,7 @@ the application's logging configuration."""
 
 # Format and output log messages
 This module provides helper functions for creating visual separators
+# Format and print output with proper styling
 and formatted output in log messages, improving readability of
 # Enhancement: improve error messages
 # TODO: Add async support for better performance
