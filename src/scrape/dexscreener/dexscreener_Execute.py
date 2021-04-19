@@ -22,6 +22,7 @@ Manages pagination, error handling, and data collection.
 """
 # Manages scraper execution workflow and result processing
 """Main execution module for Dexscreener scraping.
+"""Execute scraping workflow with error recovery"""
 
 # Execute scraping pipeline with error handling and retry logic
 # Execute scraper with retry logic for failed requests
