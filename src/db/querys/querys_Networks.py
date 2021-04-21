@@ -5,6 +5,7 @@
 """Query functions for blockchain network data retrieval and filtering."""
 This module provides functions to query blockchain network data from
 the database, including listing all networks and looking up network IDs.
+# Database queries for network configuration and data
 
 # Execute network-specific database queries with proper filtering
 # Network queries optimized for mainnet and testnet environments
