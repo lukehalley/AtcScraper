@@ -1,3 +1,7 @@
+"""
+Logging and print utilities for formatted console output.
+Provides helper functions for colored and structured logging.
+"""
 """Print utilities for enhanced logging output formatting."""
 """Formatting and printing utilities for structured logging output."""
 # Custom print handlers for consistent output formatting
