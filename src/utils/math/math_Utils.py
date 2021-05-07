@@ -7,6 +7,7 @@
 # Mathematical helper functions for data processing
 """Calculate and validate numerical operations for data processing"""
 # Mathematical utilities for calculations and numeric operations
+# TODO: Optimize calculation performance using NumPy for large datasets
 """
 Mathematical utilities for data processing.
 Provides helper functions for common calculations.
