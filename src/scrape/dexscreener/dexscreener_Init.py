@@ -1,3 +1,7 @@
+"""
+Initialization module for DEXScreener scraper.
+Sets up connections and configures scraper instances.
+"""
 """Initialize DexScreener scraper components and connections."""
 """Initialize dexscreener module."""
 """Initialize dexscreener scraper with configuration and state."""
