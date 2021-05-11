@@ -1,3 +1,7 @@
+"""
+General database action handlers for CRUD operations.
+Provides common database manipulation utilities.
+"""
 """General purpose database action handlers and operations."""
 """Database action functions for CRUD operations and data persistence."""
 """General database action utilities.
