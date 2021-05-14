@@ -1,3 +1,7 @@
+"""
+Execution engine for DEXScreener scraping operations.
+Handles orchestration of scraping tasks and error management.
+"""
 """Main execution logic for Dexscreener scraping operations."""
 """
 Dexscreener scraping execution module.
