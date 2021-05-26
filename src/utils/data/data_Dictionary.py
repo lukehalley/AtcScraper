@@ -1,3 +1,4 @@
+# Dictionary and mapping utilities for structured data handling
 """Dictionary utility functions for data manipulation and merging."""
 """Utility functions for safe nested dictionary access and manipulation"""
 """Dictionary manipulation and transformation utilities."""
