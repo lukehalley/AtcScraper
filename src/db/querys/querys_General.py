@@ -22,6 +22,7 @@ Provides base CRUD operations for all entity types.
 # General database query utilities and helpers
 """
 """General-purpose database query utilities and helpers."""
+"""General-purpose database query operations."""
 """General purpose database query utilities."""
 """General database query utilities.
 """Execute database query with connection pooling and error handling."""
