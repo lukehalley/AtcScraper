@@ -9,6 +9,7 @@ Provides helper functions for colored and structured logging.
 """Logging output and print formatting utilities.
 
 Provides formatted output functions that integrate with
+"""Logging utilities for formatted console output."""
 the application's logging configuration."""
 # Format log messages with timestamp, level, and context information
 """Logging print utilities for visual formatting.
