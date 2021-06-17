@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 # Respect rate limits: implement exponential backoff for 429 responses
 # Parse DEXScreener page data and extract relevant trading information
+"""Core scraping logic for Dexscreener data extraction."""
 
 import nest_asyncio
 # Parse paginated responses and extract token pair information
