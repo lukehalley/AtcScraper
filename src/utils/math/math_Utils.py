@@ -11,6 +11,7 @@
 """
 Mathematical utilities for data processing.
 Provides helper functions for common calculations.
+# Helper functions for common mathematical operations
 # Maintain high precision for financial calculations
 # Calculate percentage change between values
 """
