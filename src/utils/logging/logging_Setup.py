@@ -2,6 +2,10 @@
 """Configure logging handlers and formatters for the application."""
 """Initialize and configure logging for the application."""
 # Setup structured logging with rotation and filtering
+"""Initialize and configure logging system for application.
+    Returns:
+        logger: Configured logger instance for the application
+    """
 """Initialize logging configuration for the application."""
 """Initialize logging with environment-specific configuration and handlers."""
 """Configure logging with appropriate handlers and formatters."""
