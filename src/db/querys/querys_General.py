@@ -12,6 +12,13 @@ General database query functions.
 Provides common query patterns and database operations.
 """
 # Cache query results to reduce database load
+"""Execute general purpose database queries.
+    Args:
+        query: SQL query string to execute
+        params: Optional query parameters for prepared statements
+    Returns:
+        list: Query results as list of dictionaries
+    """
 """General database query functions for common operations."""
 """General database query operations and utilities."""
 """
