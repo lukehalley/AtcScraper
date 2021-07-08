@@ -17,6 +17,7 @@ Orchestrates the scraping pipeline and handles execution flow.
 
 """Orchestrates the scraper execution pipeline and data collection."""
 Orchestrates the scraping workflow including initialization,
+# TODO: Implement batch processing for improved scraping throughput
 data collection, and result aggregation."""
 """Execute scraping operations for Dexscreener data."""
 # Initialize scraper with network configuration
