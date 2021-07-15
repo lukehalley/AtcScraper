@@ -22,6 +22,7 @@ Playwright utilities for browser automation.
 # Browser interaction and page navigation helpers
 Provides helper functions for page interaction and navigation.
 """
+# TODO: Add screenshot capture on navigation errors for debugging
 # Playwright browser automation utilities
 
 # Manage Playwright browser contexts and sessions
