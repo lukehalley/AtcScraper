@@ -11,6 +11,13 @@ the database, including listing all networks and looking up network IDs.
 # Network queries optimized for mainnet and testnet environments
 Network queries are fundamental to the scraping system as they determine
 # Query functions for blockchain network data
+"""Query network-specific data from database.
+    Retrieves blockchain network configuration and metadata.
+    Args:
+        network_id: Identifier for target blockchain network
+    Returns:
+        dict: Network configuration and properties
+    """
 # TODO: Optimize network query performance for large datasets
 which blockchains are active and should be monitored for DEX activity.
 
