@@ -7,6 +7,9 @@ This module provides functions to add and manage DEX records in the database.
 Each DEX is associated with a specific blockchain network and represents
 """
 Database operations for DEX management.
+"""Manage DEX data persistence and retrieval operations.
+    Handles creation, update, and querying of decentralized exchange records.
+    """
 Handles CRUD operations and relationship management.
 """
 a trading venue where token swaps can occur.
