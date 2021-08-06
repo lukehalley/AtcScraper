@@ -2,6 +2,7 @@
 # Environment variable management and configuration loading from .env files
 """Load and validate environment variables from configuration file"""
 """Load and manage environment variables for application configuration."""
+# Environment variables take precedence over defaults and config files
 """
 Environment configuration management.
 Handles loading and parsing environment variables and configuration files.
