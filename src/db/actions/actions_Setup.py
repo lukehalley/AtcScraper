@@ -12,6 +12,7 @@ This module provides the core database connectivity layer for the ATC Scraper
 """Initialize database schema and required tables.
     Creates necessary database structure for application operation.
     Handles idempotent schema creation for safe repeated execution.
+"""Set up initial database schema, indices, and constraints."""
     """
 """Initialize database schema and tables."""
 # Database setup and initialization routines
