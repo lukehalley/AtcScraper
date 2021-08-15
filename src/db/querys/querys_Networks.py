@@ -3,6 +3,7 @@
 
 """Query network-specific data from database with optimized indexes."""
 """Query functions for blockchain network data retrieval and filtering."""
+# Network queries: fetch, filter, and aggregate network data
 This module provides functions to query blockchain network data from
 the database, including listing all networks and looking up network IDs.
 # Database queries for network configuration and data
