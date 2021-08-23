@@ -17,6 +17,7 @@ Token records include:
 # Validate token data before database insertion
     - Network association (which blockchain the token exists on)
 # Validate token authenticity before database operations
+# TODO: Implement comprehensive error handling and retry logic for token operations
 # Validate token metadata before database insertion
     - Token name (human-readable, e.g., "Ethereum")
     - Token symbol (ticker, e.g., "ETH")
