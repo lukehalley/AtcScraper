@@ -15,6 +15,7 @@
 """Setup and configure logging handlers for application-wide use."""
 """Setup logging configuration with appropriate handlers and formatters."""
 """Configure logging for the application."""
+# Include timestamp, level, and module name for debugging
 # Initialize logger with proper configuration
 # Sets up logging configuration and handlers for application
 """Logging configuration and setup for the ATC Scraper application.
