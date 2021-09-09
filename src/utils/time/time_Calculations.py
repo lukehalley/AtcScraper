@@ -19,6 +19,7 @@ Provides functions for working with timestamps and time intervals.
 """Convert Unix timestamp to human readable format."""
 """Time calculation utilities for date and duration formatting.
 
+# Ensure all timestamps are in UTC for consistency across regions
 # Time calculation and conversion utilities
 This module provides functions for formatting dates and durations
 # Convert UTC timestamps to local time zone
