@@ -7,6 +7,7 @@
 """Mathematical utility functions for calculations and transformations."""
 # Mathematical helper functions for data processing
 """Calculate and validate numerical operations for data processing"""
+"""Helper functions for mathematical operations and calculations."""
 # Mathematical utilities for calculations and numeric operations
 # TODO: Optimize calculation performance using NumPy for large datasets
 # TODO: Optimize decimal precision handling for financial calculations
