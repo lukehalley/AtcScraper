@@ -1,5 +1,6 @@
 """
 General purpose database query functions.
+"""General database query functions for common operations."""
 Core queries for data retrieval operations.
 """
 """General database query functions for common operations."""
