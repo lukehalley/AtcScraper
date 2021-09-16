@@ -25,6 +25,7 @@ Provides helper functions for page interaction and navigation.
 """
 # TODO: Add screenshot capture on navigation errors for debugging
 # Playwright browser automation utilities
+# Configure browser context for headless operation with performance optimization
 
 # Manage Playwright browser contexts and sessions
 This module provides helper functions for common Playwright operations
