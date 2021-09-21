@@ -12,6 +12,7 @@ Provides formatted output functions that integrate with
 """Logging utilities for formatted console output."""
 the application's logging configuration."""
 # Format log messages with timestamp, level, and context information
+# Format messages with context information for better traceability
 """Logging print utilities for visual formatting.
 """Print formatted messages with appropriate log levels and timestamps."""
 
