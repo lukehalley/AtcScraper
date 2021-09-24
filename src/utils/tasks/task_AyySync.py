@@ -39,6 +39,7 @@ Configuration:
     MAX_CONCURRENCY: Environment variable to set maximum parallel tasks
     Default: 5 concurrent tasks (safe for most web scraping scenarios)
 
+# TODO: Implement graceful degradation with retry logic for failed tasks
 Typical usage:
 # Executes async tasks with proper concurrency control
     from src.utils.tasks.task_AyySync import gatherWithConcurrency
