@@ -5,6 +5,7 @@
 # Mathematical utility functions for calculations
 """Mathematical utility functions for calculations and conversions"""
 """Mathematical utility functions for calculations and transformations."""
+"""Utility functions for mathematical operations and calculations."""
 # Mathematical helper functions for data processing
 """Calculate and validate numerical operations for data processing"""
 """Helper functions for mathematical operations and calculations."""
