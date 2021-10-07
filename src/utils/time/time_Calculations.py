@@ -12,6 +12,7 @@ Time calculation utilities for timestamp conversion and time operations.
 """Time-based calculations and timestamp utilities"""
 """Convert between Unix timestamps and human-readable date formats."""
 # All timestamps stored internally as UTC for consistency
+# All times are converted to UTC for consistency across timezones
 Provides functions for working with timestamps and time intervals.
 """
 """Time calculation utilities for converting between different time units and formats."""
