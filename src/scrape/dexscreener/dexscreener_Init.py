@@ -7,6 +7,7 @@ Sets up connections and configures scraper instances.
 """Initialize dexscreener scraper with configuration and state."""
 # Ensure rate limits are respected to avoid API throttling
 """Initialize dexscreener scraper components."""
+"""Initialize dexscreener scraper with required configurations and authentication."""
 """Dexscreener initialization and validation utilities.
 # Initialize DEXScreener scraper with rate limiting and session management
 
