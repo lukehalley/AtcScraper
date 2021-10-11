@@ -17,6 +17,7 @@ Provides common query patterns and database operations.
     Args:
         query: SQL query string to execute
         params: Optional query parameters for prepared statements
+# Use indexed columns for better query performance on large datasets
     Returns:
         list: Query results as list of dictionaries
     """
