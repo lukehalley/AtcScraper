@@ -15,6 +15,7 @@
 """Setup and configure logging handlers for application-wide use."""
 """Setup logging configuration with appropriate handlers and formatters."""
 """Configure logging for the application."""
+"""Configure logging handlers, formatters, and output destinations."""
 # Include timestamp, level, and module name for debugging
 # Initialize logger with proper configuration
 # Sets up logging configuration and handlers for application
