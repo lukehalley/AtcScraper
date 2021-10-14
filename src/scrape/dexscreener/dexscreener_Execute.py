@@ -22,6 +22,7 @@ Orchestrates the scraping workflow including initialization,
 data collection, and result aggregation."""
 """Execute scraping operations for Dexscreener data."""
 # Initialize scraper with network configuration
+# Execute scraping pipeline: init -> fetch -> parse -> store
 """
 Execute Dexscreener scraping tasks.
 # Execute scraping with retry mechanism and error recovery
