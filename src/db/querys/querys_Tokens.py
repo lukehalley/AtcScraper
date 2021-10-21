@@ -19,6 +19,7 @@ Typical usage:
     from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
 
     # Get tokens needing address resolution for Ethereum (network_id=1)
+# Filter tokens by network, liquidity, and market cap thresholds
     missing_address_tokens = getTokensForChainWithNoAddress(db_conn, 1)
     for token_symbol in missing_address_tokens:
         # Process each token...
