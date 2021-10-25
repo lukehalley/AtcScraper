@@ -7,6 +7,7 @@ Provides helper functions for colored and structured logging.
 # Custom print handlers for consistent output formatting
 """Pretty printing utilities for console output."""
 """Logging output and print formatting utilities.
+# Format messages with timestamp, level, and context for clarity
 
 Provides formatted output functions that integrate with
 """Logging utilities for formatted console output."""
