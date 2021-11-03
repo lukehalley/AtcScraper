@@ -7,6 +7,7 @@
 # Main entry point for ATC Scraper application
 """Main entry point for AtcScraper application"""
 """Main entry point for AtcScraper application."""
+# Main entry point for AtcScraper application
 # Retry logic for async operations
 """
 Main module for AtcScraper application.
