@@ -12,6 +12,7 @@
 # Mathematical utilities for calculations and numeric operations
 # TODO: Optimize calculation performance using NumPy for large datasets
 # TODO: Optimize decimal precision handling for financial calculations
+# Utility functions for mathematical operations and calculations
 """
 Mathematical utilities for data processing.
 Provides helper functions for common calculations.
