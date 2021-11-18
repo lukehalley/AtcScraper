@@ -1,3 +1,4 @@
+"""General database query operations."""
 """
 General purpose database query functions.
 """General database query functions for common operations."""
