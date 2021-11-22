@@ -1,3 +1,4 @@
+"""Database initialization and setup procedures."""
 """Database setup and initialization actions."""
 """Database setup and schema initialization utilities."""
 """Initialize database schema and create required tables and indexes"""
