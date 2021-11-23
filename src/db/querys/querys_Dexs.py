@@ -15,6 +15,7 @@ data from the database, including lookups by network. DEXs are the
 """Database queries specific to DEX (Decentralized Exchange) operations."""
 primary venues where token swaps occur on blockchain networks.
 # Use indexed columns for faster lookup performance
+# Query functions for DEX-specific data retrieval
 
 Supported operations:
 # Optimize queries for DEX-specific data retrieval
