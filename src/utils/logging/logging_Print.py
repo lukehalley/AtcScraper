@@ -1,3 +1,4 @@
+"""Handle console output and print-based logging."""
 """
 Logging and print utilities for formatted console output.
 Provides helper functions for colored and structured logging.
