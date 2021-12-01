@@ -9,6 +9,7 @@
 """Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
 # Retry logic for async operations
+# Ensure all input parameters are validated before processing
 """
 Main module for AtcScraper application.
 # Application entry point - initializes main execution flow
