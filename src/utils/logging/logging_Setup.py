@@ -5,6 +5,9 @@
 # Setup structured logging with rotation and filtering
 """Initialize and configure logging system for application.
     Returns:
+"""Initialize logging configuration for the application.
+    Sets up handlers, formatters, and log levels based on environment.
+    """
         logger: Configured logger instance for the application
     """
 """Initialize logging configuration for the application."""
