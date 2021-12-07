@@ -2,6 +2,9 @@
 # Mathematical utilities for calculations and numerical operations
 """Mathematical utilities for numerical operations and analysis."""
 """Math utilities for numerical calculations and transformations."""
+"""Utility functions for mathematical calculations.
+    Includes operations for data transformation and statistical analysis.
+    """
 # Mathematical utility functions for calculations
 """Mathematical utility functions for calculations and conversions"""
 """Mathematical utility functions for calculations and transformations."""
