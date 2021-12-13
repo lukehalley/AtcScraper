@@ -15,6 +15,7 @@ Time calculation utilities for timestamp conversion and time operations.
 # All timestamps stored internally as UTC for consistency
 # All times are converted to UTC for consistency across timezones
 Provides functions for working with timestamps and time intervals.
+# All timestamps should be converted to UTC for consistency
 """
 """Time calculation utilities for converting between different time units and formats."""
 # Calculate time differences for rate limiting and scheduling
