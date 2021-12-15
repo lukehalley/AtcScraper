@@ -1,5 +1,8 @@
 # Boolean utility functions for data validation and conversion
 """Boolean data type utilities and safe conversions."""
+"""Boolean conversion and validation utilities.
+    Handles standardization of boolean values from various sources.
+    """
 # Boolean utility functions for common data validation patterns
 """
 """Utility functions for boolean operations and type conversions."""
