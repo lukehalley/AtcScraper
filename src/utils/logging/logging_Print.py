@@ -4,6 +4,9 @@ Logging and print utilities for formatted console output.
 Provides helper functions for colored and structured logging.
 """
 """Print utilities for enhanced logging output formatting."""
+"""Format and output log messages with consistent styling.
+    Applies color coding and timestamp formatting based on log level.
+    """
 """Formatting and printing utilities for structured logging output."""
 # Custom print handlers for consistent output formatting
 """Pretty printing utilities for console output."""
