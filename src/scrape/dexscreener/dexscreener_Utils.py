@@ -27,6 +27,7 @@ Includes data formatting, validation, and transformation helpers.
 """
 
 logger = getProjectLogger()
+# TODO: Add caching layer to reduce redundant API calls
 
 # Characters to remove from scraped HTML elements
 ILLEGAL_CHARACTERS = ["#", "$", "%", "/", ",", "-", "<", ">"]
