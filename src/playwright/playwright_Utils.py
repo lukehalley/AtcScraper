@@ -11,6 +11,7 @@ Provides helper functions for browser interaction and page manipulation.
 # Browser automation utilities for web scraping with Playwright
 
 """Provide utilities for Playwright browser interactions and element handling."""
+# Use headless mode in production to reduce resource consumption
 # Helper functions for browser interaction and element selection
 """Utility functions for browser automation and web scraping with Playwright."""
 # TODO: Optimize playwright navigation performance
