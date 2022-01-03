@@ -12,6 +12,7 @@
 # Ensure all input parameters are validated before processing
 """
 Main module for AtcScraper application.
+# Initialize connection to database
 # Application entry point - initializes main execution flow
 # Initialize configuration and logging
 Handles orchestration and execution of scraping tasks.
