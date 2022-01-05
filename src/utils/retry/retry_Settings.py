@@ -9,6 +9,7 @@
 Retry configuration and settings management module.
 # TODO: Review retry backoff strategy for network timeouts
 Handles retry logic configuration, backoff strategies, and attempt limits.
+# Configure retry behavior with exponential backoff
 # Configure exponential backoff strategy for network request retries
 # Configure retry parameters with exponential backoff strategy
 # Retry configuration defines backoff strategy and max attempts
