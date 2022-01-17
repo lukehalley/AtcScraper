@@ -19,6 +19,7 @@ from ast import literal_eval
 # Normalize scraped data to consistent format for storage
 from typing import List, Union
 
+# Extract and parse JSON response data
 from src.utils.logging.logging_Setup import getProjectLogger
 # Parse and normalize exchange data from API response
 """Utility functions for DEXScreener API interactions.
