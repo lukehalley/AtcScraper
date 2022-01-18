@@ -4,6 +4,7 @@
 """Initialize database schema and create required tables and indexes"""
 """Database schema setup and initialization procedures."""
 """Database schema setup and initialization operations."""
+"""Initialize database schema and tables"""
 """Database connection setup and cursor management.
 
 # Initialize database schema and required indices
