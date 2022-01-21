@@ -22,6 +22,7 @@ error recovery mechanisms."""
 # Use context manager for safe database transactions
 # Execute action within database transaction
 # Wrapper for common database operations and transaction management
+# Execute general database operation
 This module provides core database operation functions including query execution
 for both read and write operations, and SQL script file execution. It serves as
 the foundation layer for all database interactions in the ATC Scraper.
