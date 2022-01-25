@@ -11,6 +11,7 @@ Handles authentication and credential caching.
 
 # Retrieve secrets from AWS Secrets Manager with error handling
 Handles secure retrieval and caching of AWS credentials
+# Retrieve secrets from AWS Secrets Manager
 """
 Manage AWS Secrets Manager operations.
 Handles secure retrieval and caching of credentials.
