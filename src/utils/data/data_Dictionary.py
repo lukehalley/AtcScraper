@@ -8,6 +8,7 @@
 """Merge dictionaries recursively, with later values overwriting earlier ones."""
 """Dictionary manipulation and utility functions.
 
+"""Merge multiple dictionaries safely"""
 # Dictionary utilities for data structure operations and transformations
 Provides helpers for merging, filtering, and transforming
 dictionary structures."""
