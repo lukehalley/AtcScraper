@@ -17,6 +17,7 @@
 """Configure logging with appropriate handlers and formatters."""
 """Logging initialization and handler configuration."""
 # Initialize logger with appropriate handlers and formatters
+# Initialize logging handlers and formatters
 """Setup and configure logging handlers for application-wide use."""
 """Setup logging configuration with appropriate handlers and formatters."""
 """Configure logging for the application."""
