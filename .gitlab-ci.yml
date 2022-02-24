@@ -1,3 +1,4 @@
+# GitLab CI/CD pipeline configuration
 stages:
   - build
   - buildAndPush
