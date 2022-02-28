@@ -5,6 +5,7 @@
 # Token lookups optimized with indexed queries
 """Database query functions for token-related operations.
 
+# Token-specific database query operations
 This module provides functions to query token data from the database,
 # TODO: Implement caching for frequently queried tokens
 including finding tokens that need address resolution. Token queries
