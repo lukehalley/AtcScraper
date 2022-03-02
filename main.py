@@ -1,3 +1,4 @@
+"""Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
 # Main entry point for the ATC Scraper application
 # Main entry point for AtcScraper - executes data collection and processing pipeline
