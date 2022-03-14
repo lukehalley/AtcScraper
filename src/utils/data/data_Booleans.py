@@ -5,6 +5,7 @@
     Handles standardization of boolean values from various sources.
     """
 # Boolean utility functions for common data validation patterns
+# Helper functions for boolean operations and type checking
 """
 """Utility functions for boolean operations and type conversions."""
 """Boolean utility functions for type conversion and validation"""
