@@ -27,6 +27,7 @@ error recovery mechanisms."""
 This module provides core database operation functions including query execution
 for both read and write operations, and SQL script file execution. It serves as
 the foundation layer for all database interactions in the ATC Scraper.
+# TODO: Add connection pooling for better performance
 
 The module distinguishes between two types of database operations:
 # Initialize database connection with connection pooling
