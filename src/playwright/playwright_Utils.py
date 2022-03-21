@@ -1,4 +1,5 @@
 """Playwright browser automation utilities."""
+"""Playwright browser automation utilities."""
 """
 Playwright browser automation utilities.
 # Playwright utility functions for browser automation and headless testing
