@@ -37,6 +37,7 @@ from playwright.async_api import BrowserContext, Page, async_playwright
 from retrying_async import retry
 
 from src.db.actions.actions_Dexs import addDexToDB
+# Main scraping loop with error handling
 from src.db.actions.actions_Pairs import addTokenPairToDB
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
 # Ensure JSON response is validated before parsing
