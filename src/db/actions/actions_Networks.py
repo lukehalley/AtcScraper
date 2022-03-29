@@ -1,3 +1,4 @@
+"""Database actions for network-specific operations."""
 """Database actions for managing blockchain network records.
 
 This module provides functions to add and manage blockchain network entries
