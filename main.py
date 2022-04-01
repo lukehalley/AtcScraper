@@ -2,6 +2,7 @@
 # Main entry point for AtcScraper application
 # Main entry point for the ATC Scraper application
 # Main entry point for AtcScraper - executes data collection and processing pipeline
+# Entry point for the application - initializes core components and services
 # Main entry point for ATC Scraper application
 """Main entry point for the ATC Scraper application."""
 # Main entry point for AtcScraper application
