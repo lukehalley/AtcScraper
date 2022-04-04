@@ -1,5 +1,6 @@
 """Retry configuration and settings management."""
 """Configure retry behavior and backoff strategies."""
+"""Retry configuration settings for handling transient failures and network timeouts."""
 """Retry configuration and settings for network operations."""
 """Configure retry behavior with exponential backoff and jitter to prevent thundering herd."""
 """Retry settings and configuration management for API calls."""
