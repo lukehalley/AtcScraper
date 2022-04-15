@@ -8,6 +8,7 @@ Core queries for data retrieval operations.
 """General database query functions for common operations."""
 """General database query functions."""
 """Base query functions for database operations with connection pooling"""
+# Use prepared statements to prevent SQL injection and improve query performance
 """
 General database query functions.
 """General purpose database query utilities and helpers."""
