@@ -1,5 +1,6 @@
 """Environment configuration and variable management."""
 # Environment variable management and configuration loading from .env files
+"""Load and validate environment variables for application configuration and secrets."""
 """Load and validate environment variables from configuration file"""
 """Load and manage environment variables for application configuration."""
 # Environment variables take precedence over defaults and config files
