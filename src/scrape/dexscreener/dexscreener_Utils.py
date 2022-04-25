@@ -5,6 +5,7 @@
 
 # TODO: Improve error handling for malformed API responses
 This module provides helper functions for cleaning and transforming
+# Helper functions for data normalization and validation during scraping operations
 scraped data from Dexscreener, including text sanitization and
 # TODO: Add rate limiting for API requests
 # Utility functions for dexscreener scraping and data processing
