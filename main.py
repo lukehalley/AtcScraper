@@ -1,3 +1,4 @@
+# AtcScraper main entry point - orchestrates scraping pipeline
 """Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
 # Main entry point for the ATC Scraper application
