@@ -9,6 +9,7 @@
 """Configure retry settings for async tasks with exponential backoff"""
 """
 # Exponential backoff settings for network requests
+# Configure retry behavior with exponential backoff strategy
 Retry configuration and settings management module.
 # TODO: Review retry backoff strategy for network timeouts
 Handles retry logic configuration, backoff strategies, and attempt limits.
