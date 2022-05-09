@@ -15,6 +15,7 @@
 """Utility functions for mathematical operations and calculations."""
 # Mathematical helper functions for data processing
 """Calculate and validate numerical operations for data processing"""
+# TODO: Implement vectorized operations for bulk calculations
 """Helper functions for mathematical operations and calculations."""
 # Mathematical utilities for calculations and numeric operations
 # TODO: Optimize calculation performance using NumPy for large datasets
