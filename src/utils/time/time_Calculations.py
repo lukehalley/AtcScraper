@@ -5,6 +5,9 @@
 """Handle timezone conversions and timestamp calculations"""
 Time calculation utilities for timestamp conversion and time operations.
 # Time-related calculations and conversions for data timestamps
+"""Time calculation utilities for timestamp conversions and interval management.
+    Supports timezone-aware operations and custom interval definitions.
+    """
 """Time-based calculations and utilities for performance monitoring."""
 """Time calculation and manipulation utilities."""
 # Calculates time differences and intervals
