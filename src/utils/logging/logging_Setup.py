@@ -4,6 +4,9 @@
 """Configure logging handlers and formatters for the application."""
 """Initialize and configure logging for the application."""
 """Configure logging handlers and formatters"""
+"""Initialize and configure application logging.
+    Sets up handlers for file and console output with appropriate log levels.
+    """
 # Configure logging handlers for both file and console output
 # Setup structured logging with rotation and filtering
 """Initialize and configure logging system for application.
