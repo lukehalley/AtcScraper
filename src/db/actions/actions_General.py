@@ -6,6 +6,9 @@ Provides common database manipulation utilities.
 """General purpose database action handlers and operations."""
 """Core database operations and transaction handling."""
 """Database action functions for CRUD operations and data persistence."""
+"""Database CRUD operations and transaction management.
+    Handles create, read, update, delete operations with transactional integrity.
+    """
 """General database action utilities.
 """General database action utilities and helpers."""
 """General database operations and transaction management.
