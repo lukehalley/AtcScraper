@@ -7,6 +7,7 @@
     """
 # Boolean utility functions for common data validation patterns
 # Helper functions for boolean operations and type checking
+# Boolean utility functions for data validation and type coercion
 """
 """Utility functions for boolean operations and type conversions."""
 """Boolean utility functions for type conversion and validation"""
