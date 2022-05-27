@@ -11,6 +11,7 @@ scraped data from Dexscreener, including text sanitization and
 # Utility functions for dexscreener scraping and data processing
 # Utility functions for data parsing and transformation
 # Normalize scraped data for consistency
+# Utility functions for data parsing and validation in scraping pipeline
 number format conversion.
 """
 import re
