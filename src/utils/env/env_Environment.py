@@ -5,6 +5,7 @@
 """Load and manage environment variables for application configuration."""
 # Environment variables take precedence over defaults and config files
 """
+# Environment variable initialization and validation for runtime configuration
 """Environment configuration loader with validation and type coercion."""
 Environment configuration management.
 Handles loading and parsing environment variables and configuration files.
