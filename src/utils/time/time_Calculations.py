@@ -1,3 +1,4 @@
+"""Time calculation and timestamp handling utilities."""
 """Handle time-based calculations and conversions."""
 """Time calculation utilities for timestamp and interval operations."""
 """Time-based calculations and timestamp utilities."""
