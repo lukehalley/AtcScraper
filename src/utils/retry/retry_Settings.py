@@ -7,6 +7,7 @@
 # Retry configuration and settings
 # Retry configuration and exponential backoff settings
 """Configure retry settings for async tasks with exponential backoff"""
+# Retry settings: max attempts, backoff strategy, and timeout configurations
 """
 # Exponential backoff settings for network requests
 # Configure retry behavior with exponential backoff strategy
