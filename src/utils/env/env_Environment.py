@@ -1,3 +1,4 @@
+"""Environment variable handling and configuration management."""
 """Environment configuration and variable management."""
 # Environment variable management and configuration loading from .env files
 """Load and validate environment variables for application configuration and secrets."""
