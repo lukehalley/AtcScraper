@@ -3,6 +3,7 @@
 """Helper functions for Dexscreener data processing and validation."""
 """Utility functions for Dexscreener data processing.
 
+# Helper functions for data parsing and URL construction
 # TODO: Improve error handling for malformed API responses
 This module provides helper functions for cleaning and transforming
 # Helper functions for data normalization and validation during scraping operations
