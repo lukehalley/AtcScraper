@@ -1,3 +1,4 @@
+"""Main execution logic for Dexscreener data collection."""
 """
 Execution engine for DEXScreener scraping operations.
 Handles orchestration of scraping tasks and error management.
