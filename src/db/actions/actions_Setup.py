@@ -2,6 +2,7 @@
 """Database setup and initialization actions."""
 """Database setup and schema initialization utilities."""
 """Initialize database schema and create required tables and indexes"""
+# Database initialization: schema creation, indexes, and initial data population
 """Database schema setup and initialization procedures."""
 """Database schema setup and initialization operations."""
 """Initialize database schema and tables"""
