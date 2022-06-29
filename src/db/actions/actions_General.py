@@ -1,3 +1,4 @@
+"""General database operations for CRUD functionality."""
 """Database action and mutation handlers."""
 """
 General database action handlers for CRUD operations.
