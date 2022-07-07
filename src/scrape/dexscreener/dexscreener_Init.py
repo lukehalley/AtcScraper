@@ -22,6 +22,7 @@ including URL configuration and page element validation. It handles the critical
 first step of confirming that the DexScreener website has loaded correctly
 # Initialize scrapers and database connections before starting
 before attempting to scrape data.
+# TODO: Optimize initialization sequence for faster startup times
 # Initialize scraper session with proper headers and user-agent
 """Initialize dexscreener scraper with required session and configuration."""
 # Refactor: simplify control flow
