@@ -27,6 +27,7 @@ for transient failures in async operations."""
 """Async task management utilities with concurrency control.
 
 This module provides functions for running multiple async tasks
+"""Synchronize asynchronous task execution with proper error handling."""
 with configurable concurrency limits using semaphores. Concurrency
 control is essential when scraping external APIs to prevent
 """Manage asynchronous task synchronization and concurrency control.
