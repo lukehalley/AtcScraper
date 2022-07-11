@@ -3,7 +3,7 @@ import time
 
 from dotenv import load_dotenv
 
-from src.scrape.dexscreener.dexscreener_Init import validateDexscreenerInit
+from src.scrape.dexscreener.dexscreener_Init import validateDexscreenerInit, getDexscreenerRoot
 from src.scrape.dexscreener.dexscreener_Scrape import getNetworkListFromSidebar, getDexListFromTabs, getTokensFromTable
 from src.selenium.selenium_Setup import configureChromeOptions, initDriver
 from src.utils.env import checkIsDocker
@@ -22,6 +22,10 @@ def lambda_handler(event, context):
         options=options
     )
 
+    # Get + Navigate To DS Root
+    dsRoot = getDexscreenerRoot()
+    driver.get(dsRoot)
+
     # Dexscreener Scraping ##############
     # Init Dexscreener
     validateDexscreenerInit(
@@ -32,6 +36,14 @@ def lambda_handler(event, context):
     networkDictionary = getNetworkListFromSidebar(
         driver=driver
     )
+
+
+
+    networkDictionary = {
+        'ethereum': {'url': 'https://dexscreener.com/ethereum'},
+        'avalanche': {'url': 'https://dexscreener.com/avalanche'},
+        'harmony': {'url': 'https://dexscreener.com/harmony'}
+    }
 
     networkData = {}
 
@@ -54,13 +66,13 @@ def lambda_handler(event, context):
 
             driver.get(dexDetails["url"])
 
-            networkData[networkName][dexName]["tokens"] = getTokensFromTable(
+            networkData[networkName][dexName] = getTokensFromTable(
                 driver=driver,
                 networkName=networkName,
                 dexName=dexName
             )
 
-            x = 1
+    x = 1
 
     response = {
         "statusCode": 200,

@@ -2,6 +2,7 @@ import os
 from tempfile import mkdtemp
 from faker import Faker
 from selenium import webdriver
+from selenium.webdriver import DesiredCapabilities
 
 from src.utils.env import checkIsDocker
 
@@ -45,6 +46,8 @@ def configureChromeOptions():
     return options
 
 def initDriver(options):
+    capabilities = DesiredCapabilities.CHROME
+    capabilities["pageLoadStrategy"] = "none"
     driver = webdriver.Chrome("/opt/chromedriver", options=options)
     driver.maximize_window()
 
