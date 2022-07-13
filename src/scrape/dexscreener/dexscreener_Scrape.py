@@ -136,6 +136,9 @@ def getTokensFromTable(driver, networkName, dexName):
 
                     dexTableElement, dexTableRows = getDexTableRows(driver=driver)
 
+                    if index >= len(dexTableRows):
+                        index = -1
+
                     pairAddress = dexTableRows[index].get_attribute("href").split("/")[-1]
 
                     dexTableElement, dexTableRows = getDexTableRows(driver=driver)

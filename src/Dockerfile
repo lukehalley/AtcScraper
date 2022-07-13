@@ -16,11 +16,12 @@ RUN pip install selenium
 COPY --from=build /opt/chrome-linux /opt/chrome
 COPY --from=build /opt/chromedriver /opt/
 
-COPY app.py requirements.txt ./
+COPY .env app.py requirements.txt ./
 
 RUN mkdir ./src/
 ADD selenium ./src/selenium
 ADD utils ./src/utils
+ADD scrape ./src/scrape
 
 RUN python3.9 -m pip install -r requirements.txt -t .
 
