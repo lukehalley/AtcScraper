@@ -38,8 +38,6 @@ def lambda_handler(event, context):
     )
 
     # networkDictionary = {
-    #     'ethereum': {'url': 'https://dexscreener.com/ethereum'},
-    #     'avalanche': {'url': 'https://dexscreener.com/avalanche'},
     #     'harmony': {'url': 'https://dexscreener.com/harmony'}
     # }
 
@@ -72,7 +70,8 @@ def lambda_handler(event, context):
                 dexName=dexName
             )
 
-    x = 1
+        with open("networkData.json", "w") as outfile:
+            json.dump(networkData, outfile)
 
     response = {
         "statusCode": 200,
