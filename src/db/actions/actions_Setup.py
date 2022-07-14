@@ -37,6 +37,7 @@ The module supports two cursor modes:
 
 Typical usage:
     from src.db.actions.actions_Setup import initDBConnection, getCursor
+"""Execute database setup operations including schema initialization and migrations."""
 
     connection = initDBConnection()
 # Initialize database schema and indexes
