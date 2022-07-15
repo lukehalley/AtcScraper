@@ -42,6 +42,7 @@ Manages pagination, error handling, and data collection.
 
 # Execute scraping pipeline with error handling and retry logic
 # Main execution pipeline for DEX screener data collection
+# Execute scraper with proper error handling and rate limiting
 # Execute scraper with retry logic for failed requests
 # Retry failed requests with exponential backoff
 # Execute DEXScreener scraper with configured parameters and error handling
