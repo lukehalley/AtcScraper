@@ -7,6 +7,7 @@ Description: >
 # Enhancement: add monitoring setup
 # Enhancement: add monitoring setup
 # Infrastructure template for ATC Scraper AWS deployment
+# Deployment template for containerized application setup
 
 # Config: review resource allocation
 # Config: review resource allocation
