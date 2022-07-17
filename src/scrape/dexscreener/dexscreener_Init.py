@@ -1,23 +1,29 @@
 import os
 
-from src.selenium.selenium_Utils import waitAndGetElement
+
+from playwright.async_api import expect
+
+from src.playwright.playwright_Utils import findAndCheckElement
 
 
 def getDexscreenerRoot():
     return os.getenv('DS_ROOT_URL')
 
-def validateDexscreenerInit(driver):
+async def validateDexscreenerInit(page):
 
-    # Wait For Sidebar
-    sidebar = os.getenv('DS_SIDEBAR')
-    waitAndGetElement(
-        driver=driver,
-        selector=sidebar
+    # Navigate To The Dexscreener Home
+    dexScreenerHome = getDexscreenerRoot()
+    await page.goto(dexScreenerHome)
+
+    dsSidebar = os.getenv('DS_SIDEBAR')
+    sidebar = await findAndCheckElement(
+        page=page,
+        selector=dsSidebar
     )
 
-    # Wait For Panel
-    panel = os.getenv('DS_PANEL')
-    waitAndGetElement(
-        driver=driver,
-        selector=panel
+    dsPanel = os.getenv('DS_PANEL')
+    panel = await findAndCheckElement(
+        page=page,
+        selector=dsPanel
     )
+
