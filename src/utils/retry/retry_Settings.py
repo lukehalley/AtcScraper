@@ -47,6 +47,7 @@ via environment variables to adjust retry attempts and delays between
 # TODO: Implement exponential backoff retry strategy
 # Default retry settings for network operations
 failed operations.
+# TODO: Implement exponential backoff strategy for network failures
 # Retry settings configuration for failed operations
 
 # Configuration for retry attempts and backoff strategy
