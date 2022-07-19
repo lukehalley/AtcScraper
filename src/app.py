@@ -5,72 +5,37 @@ from pathlib import Path
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright, BrowserContext
 
-from src.scrape.dexscreener.dexscreener_Init import validateDexscreenerInit
-from src.scrape.dexscreener.dexscreener_Scrape import getNetworkListFromSidebar
+from src.scrape.dexscreener.dexscreener_Init import validateDexscreenerInit, getDexscreenerRoot
+from src.scrape.dexscreener.dexscreener_Scrape import getNetworkList, getDexListFromTabs, getTokensForDex
 from src.utils.env import checkIsDocker
 
 load_dotenv()
 isDocker = checkIsDocker()
 
-async def runScrapes(websiteName, websiteUrl, browser: BrowserContext) -> None:
+async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext):
 
-    async with async_playwright() as p:
+    page = await browser.new_page()
+    print(networkName)
+    await page.goto(networkDetails["url"])
 
-        page = await browser.new_page()
-        print(websiteName)
-        await page.goto(websiteUrl)
+    # Init Dexscreener
+    await validateDexscreenerInit(
+        page=page
+    )
 
-        # Dexscreener Scraping ##############
-        # Init Dexscreener
-        # validateDexscreenerInit(
-        #     driver=driver
-        # )
-        #
-        # # Get Network List
-        # networkDictionary = getNetworkListFromSidebar(
-        #     driver=driver
-        # )
-        #
-        # # networkDictionary = {
-        # #     'harmony': {'url': 'https://dexscreener.com/harmony'}
-        # # }
-        #
-        # networkData = {}
-        #
-        # for networkName, networkDetails in networkDictionary.items():
-        #
-        #     if networkName not in networkData:
-        #         networkData[networkName] = {}
-        #
-        #     print(f"Scraping: {networkName}...")
-        #     driver.get(networkDetails["url"])
-        #
-        #     dexDictionary = getDexListFromTabs(
-        #         driver=driver
-        #     )
-        #
-        #     for dexName, dexDetails in dexDictionary.items():
-        #
-        #         print(f"  - {dexName}")
-        #
-        #         if dexName not in networkData[networkName]:
-        #             networkData[networkName][dexName] = {}
-        #
-        #         driver.get(dexDetails["url"])
-        #
-        #         networkData[networkName][dexName] = getTokensFromTable(
-        #             driver=driver,
-        #             networkName=networkName,
-        #             dexName=dexName
-        #         )
-        #
-        #     with open("networkData.json", "w") as outfile:
-        #         json.dump(networkData, outfile)
-        #
-        #     print(websiteName)
-        #     page = await browser.new_page()
-        #     await page.goto(websiteUrl)
-        #     await page.screenshot(path=f'imgs/{websiteName}.jpg', type="jpeg")
+    print(f"Scraping: {networkName.title()}...")
+
+    networksDexs = await getDexListFromTabs(
+        page=page
+    )
+
+    await page.close()
+
+    obj = {
+        networkName: networksDexs
+    }
+
+    return obj
 
 async def main() -> None:
     async with async_playwright() as p:
@@ -89,34 +54,32 @@ async def main() -> None:
 
         page = await browser.new_page()
 
+        # Navigate To The Dexscreener Home
+        dexScreenerHome = getDexscreenerRoot()
+        await page.goto(dexScreenerHome)
+
         await validateDexscreenerInit(
             page=page
         )
 
-        networks = await getNetworkListFromSidebar(
+        networkDictionary = await getNetworkList(
             page=page
         )
 
-        data = {
-            "google": "https://www.google.com/",
-            "geeks": "https://www.geeksforgeeks.org/how-to-scrape-the-web-with-playwright-in-python/",
-            "1": "https://stackoverflow.com/questions/50757497/simplest-async-await-example-possible-in-python",
-            "2": "https://www.google.com/",
-            "3": "https://www.geeksforgeeks.org/how-to-scrape-the-web-with-playwright-in-python/",
-            "4": "https://stackoverflow.com/questions/50757497/simplest-async-await-example-possible-in-python",
-            "5": "https://www.google.com/",
-            "6": "https://www.geeksforgeeks.org/how-to-scrape-the-web-with-playwright-in-python/",
-            "7": "https://stackoverflow.com/questions/50757497/simplest-async-await-example-possible-in-python",
-            "8": "https://www.google.com/",
-            "9": "https://www.geeksforgeeks.org/how-to-scrape-the-web-with-playwright-in-python/",
-            "10": "https://stackoverflow.com/questions/50757497/simplest-async-await-example-possible-in-python",
-            "11": "https://www.google.com/",
-            "12": "https://www.geeksforgeeks.org/how-to-scrape-the-web-with-playwright-in-python/",
-            "13": "https://stackoverflow.com/questions/50757497/simplest-async-await-example-possible-in-python",
-        }
+        await page.close()
 
-        await asyncio.gather(*(runScrapes(websiteName, websiteUrl, browser) for websiteName, websiteUrl in data.items()))
-        await browser.close()
+        allNetworkDexs = await asyncio.gather(*(gatherNetworkDexs(networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()))
+
+        finalData = {}
+
+        for network in allNetworkDexs:
+            networkName = list(network.keys())[0]
+            networkDexs = network[networkName]
+            finalData[network] = await asyncio.gather(*(getTokensForDex(dexDetail, browser) for dexDetail in networkDexs))
+        #
+        # x = 1
+        #
+        # await browser.close()
 
 # Function that setup the browser parameters and return browser object.
 def lambda_handler(event, context):
@@ -135,5 +98,4 @@ def lambda_handler(event, context):
     return response
 
 if __name__ == "__main__" and not isDocker:
-
     lambda_handler(None, None)
