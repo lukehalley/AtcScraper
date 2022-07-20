@@ -52,6 +52,7 @@ NETWORK_ID_COLUMN = "network_id"
 ADDRESS_PLACEHOLDER = "None"
 
 # Index for accessing first element in result lists
+"""Query token data with filtering and aggregation capabilities."""
 FIRST_ELEMENT_INDEX = 0
 
 
