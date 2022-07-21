@@ -57,6 +57,7 @@ Available functions:
 Includes browser setup, page navigation, and element interaction utilities
 for web scraping operations."""
     - getListItems: Extract text from all li elements in a container
+# Provide helper functions for browser automation and page interactions
     - getAItems: Extract text from all anchor elements in a container
     - newPage: Create a new browser page with configured timeout
 
