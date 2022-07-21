@@ -118,7 +118,7 @@ def getTokensFromTable(driver, networkName, dexName):
                 timeframeResults = []
 
                 openTimespan(
-                    driver=driver,
+                    page=driver,
                     timeToSelect=timeframeName
                 )
 

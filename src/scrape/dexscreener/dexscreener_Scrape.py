@@ -2,8 +2,10 @@ import os
 
 from playwright.async_api import BrowserContext
 
-from src.playwright.playwright_Utils import findAndCheckElement, getListItems
+from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot
+from src.scrape.dexscreener.dexscreener_Utils import openTimespan, removeIllegalCharactersFromElements, smartEval, \
+    replaceNumberShorthands
 
 
 async def getNetworkList(page):
@@ -78,7 +80,7 @@ async def getDexListFromTabs(page):
     return dexs
 
 
-async def getTokensForDex(dexDetails, browser: BrowserContext):
+async def getTokensForDex(networkName, dexDetails, browser: BrowserContext):
 
     dexName = dexDetails["name"]
     dexURL = dexDetails["url"]
@@ -87,127 +89,81 @@ async def getTokensForDex(dexDetails, browser: BrowserContext):
     print(dexName)
     await page.goto(dexURL)
 
-    # await waitForElementToGoAway(
-    #     page=page,
-    #     selector=os.getenv("DS_LOADER")
-    # )
-
     await page.locator('text=Liquidity').click()
 
-    x = 1
+    tokenResults = {}
 
-    # tokenResults = {}
-    #
-    # # First selector is '#menu-list-18-menuitem-13' - so iterate up to 16 to get the four buttons
-    # allTimeframes = {
-    #     "5M": 13,
-    #     "1H": 14,
-    #     "6H": 15,
-    #     "24H": 16,
-    # }
-    #
-    # validateDexscreenerInit(driver=driver)
-    #
-    # txCountElement = waitAndGetElement(
-    #     driver=driver,
-    #     selector=os.getenv("DS_TX_COUNT")
-    # )
-    #
-    # txCount = int(txCountElement.text.replace(",", ""))
-    # txFloor = int(os.getenv("DS_TX_COUNT_FLOOR"))
-    #
-    # if txCount > txFloor:
-    #
-    #     # Sort By Liquidity
-    #     waitAndClickText(
-    #         driver=driver,
-    #         text="Liquidity"
-    #     )
-    #
-    #     activeTimeframes = os.getenv("DS_TIMEFRAMES").split(",")
-    #
-    #     for timeframeName, timeframeIndex in allTimeframes.items():
-    #
-    #         if timeframeName in activeTimeframes:
-    #
-    #             timeframeResults = []
-    #
-    #             openTimespan(
-    #                 driver=driver,
-    #                 timeToSelect=timeframeName
-    #             )
-    #
-    #             # Get All The Rows
-    #             dexTableElement, dexTableRows = getDexTableRows(driver=driver)
-    #
-    #             bigList = dexTableElement.get_attribute("innerText").splitlines()
-    #             splitList = [l.split(',') for l in ','.join(bigList).split('#')][1:]
-    #             row = [removeIllegalCharactersFromElements(item) for item in splitList]
-    #             finalRows = [list(filter(None, item)) for item in row]
-    #
-    #             for row in finalRows:
-    #
-    #                 index = finalRows.index(row)
-    #
-    #                 dexTableElement, dexTableRows = getDexTableRows(driver=driver)
-    #
-    #                 if index >= len(dexTableRows):
-    #                     index = -1
-    #
-    #                 pairAddress = dexTableRows[index].get_attribute("href").split("/")[-1]
-    #
-    #                 dexTableElement, dexTableRows = getDexTableRows(driver=driver)
-    #
-    #                 hasUniswapBadge = len(getChildItemsByClass(
-    #                     parentElement=dexTableRows[index],
-    #                     className=os.getenv("DS_DEX_UNISWAP_BADGE_CLASS")
-    #                 )) > 0
-    #
-    #                 uniswapVersion = "N/A"
-    #                 if hasUniswapBadge:
-    #                     uniswapVersion = row.pop(1)
-    #
-    #                 tokenDetails = {
-    #                     "rank": smartEval(row[0]),
-    #                     "market": {
-    #                         "volume": replaceNumberShorthands(row[6]),
-    #                         "liquidity": replaceNumberShorthands(row[11]),
-    #                         "fdv": replaceNumberShorthands(row[12])
-    #                     },
-    #                     "network": {
-    #                         "network": networkName,
-    #                         "txCount": smartEval(row[5]),
-    #                     },
-    #                     "dex": {
-    #                         "dex": dexName,
-    #                     },
-    #                     "token": {
-    #                         "name": row[3],
-    #                         "primaryToken": row[1],
-    #                         "secondaryToken": row[2],
-    #                         "tokenPair": f"{row[1]}/{row[2]}",
-    #                         "pairAddress": f"{pairAddress}"
-    #                     },
-    #                     "price": {
-    #                         "currentPrice": smartEval(row[4]),
-    #                         "priceChange": {
-    #                             "5M": smartEval(row[7]),
-    #                             "1H": smartEval(row[8]),
-    #                             "6H": smartEval(row[9]),
-    #                             "24M": smartEval(row[10])
-    #                         },
-    #                     }
-    #                 }
-    #
-    #                 if hasUniswapBadge:
-    #                     tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
-    #
-    #                 timeframeResults.append(tokenDetails)
-    #
-    #             tokenResults[timeframeName] = timeframeResults
-    #
-    #         else:
-    #
-    #             x = 1
-    #
-    # return tokenResults
+    # First selector is '#menu-list-18-menuitem-13' - so iterate up to 16 to get the four buttons
+    allTimeframes = {
+        "5M": 13,
+        "1H": 14,
+        "6H": 15,
+        "24H": 16,
+    }
+
+    # Get The Sidebar List Element
+    dexTable = os.getenv('DS_DEX_TABLE')
+    dexTableElement = await findAndCheckElement(
+        page=page,
+        selector=dexTable
+    )
+
+    # Get All The 'li' Items
+    dexTabItems = await getAItems(
+        listElement=dexTableElement
+    )
+
+    rows = [i for i in dexTabItems if i.startswith('#')]
+    rowsSplit = [l.split("\n") for l in rows]
+    cleanRows = [removeIllegalCharactersFromElements(item) for item in rowsSplit]
+    finalRows = [list(filter(None, item)) for item in cleanRows]
+
+    results = []
+
+    for row in finalRows:
+
+        hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
+
+        uniswapVersion = "N/A"
+        if hasUniswapBadge:
+            uniswapVersion = row.pop(1)
+
+        tokenDetails = {
+            "rank": smartEval(row[0]),
+            "market": {
+                "volume": replaceNumberShorthands(row[6]),
+                "liquidity": replaceNumberShorthands(row[11]),
+                "fdv": replaceNumberShorthands(row[12])
+            },
+            "network": {
+                "network": networkName,
+                "txCount": smartEval(row[5]),
+            },
+            "dex": {
+                "dex": dexName,
+            },
+            "token": {
+                "name": row[3],
+                "primaryToken": row[1],
+                "secondaryToken": row[2],
+                "tokenPair": f"{row[1]}/{row[2]}",
+            },
+            "price": {
+                "currentPrice": smartEval(row[4]),
+                "priceChange": {
+                    "5M": smartEval(row[7]),
+                    "1H": smartEval(row[8]),
+                    "6H": smartEval(row[9]),
+                    "24M": smartEval(row[10])
+                },
+            }
+        }
+
+        if hasUniswapBadge:
+            tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+
+        results.append(tokenDetails)
+
+    await page.close()
+
+    return results
