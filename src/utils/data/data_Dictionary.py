@@ -62,6 +62,7 @@ Typical usage:
 
     # Safe dictionary length
     length = getDictLength(None)  # Returns 0 instead of error
+# TODO: Add type checking and validation for dictionary keys and values
 """
 import functools
 from collections import OrderedDict
