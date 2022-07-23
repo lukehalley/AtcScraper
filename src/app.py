@@ -12,6 +12,15 @@ from src.utils.env import checkIsDocker
 load_dotenv()
 isDocker = checkIsDocker()
 
+async def gather_with_concurrency(n, *tasks):
+    semaphore = asyncio.Semaphore(n)
+
+    async def sem_task(task):
+        async with semaphore:
+            return await task
+
+    return await asyncio.gather(*(sem_task(task) for task in tasks))
+
 async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext):
 
     page = await browser.new_page()
@@ -75,7 +84,10 @@ async def main() -> None:
         for network in allNetworkDexs:
             networkName = list(network.keys())[0]
             networkDexs = network[networkName]
-            result = await asyncio.gather(*(getTokensForDex(networkName, dexDetail, browser) for dexDetail in networkDexs))
+
+            tasks = [getTokensForDex(networkName, dexDetail, browser) for dexDetail in networkDexs]
+
+            result = await gather_with_concurrency(5, *tasks)
             finalData.append(result)
 
         x = 1
