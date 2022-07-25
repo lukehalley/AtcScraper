@@ -1,10 +1,12 @@
 import asyncio
 import json
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright, BrowserContext
 
+from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import validateDexscreenerInit, getDexscreenerRoot
 from src.scrape.dexscreener.dexscreener_Scrape import getNetworkList, getDexListFromTabs, getTokensForDex
 from src.utils.env import checkIsDocker
@@ -23,7 +25,8 @@ async def gather_with_concurrency(n, *tasks):
 
 async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext):
 
-    page = await browser.new_page()
+    page = await newPage(browser=browser)
+
     print(networkName)
     await page.goto(networkDetails["url"])
 
@@ -61,7 +64,7 @@ async def main() -> None:
 
         # Get + Navigate To DS Root
 
-        page = await browser.new_page()
+        page = await newPage(browser=browser)
 
         # Navigate To The Dexscreener Home
         dexScreenerHome = getDexscreenerRoot()
@@ -75,9 +78,19 @@ async def main() -> None:
             page=page
         )
 
+        networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
+
+
+        for network in networksToSkip:
+            del networkDictionary[network]
+
+        x = 1
+
         await page.close()
 
-        allNetworkDexs = await asyncio.gather(*(gatherNetworkDexs(networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()))
+        tasks = [gatherNetworkDexs(networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
+
+        allNetworkDexs = await gather_with_concurrency(5, *tasks)
 
         finalData = []
 
@@ -90,7 +103,7 @@ async def main() -> None:
             result = await gather_with_concurrency(5, *tasks)
             finalData.append(result)
 
-        x = 1
+        return finalData
 
 
 # Function that setup the browser parameters and return browser object.

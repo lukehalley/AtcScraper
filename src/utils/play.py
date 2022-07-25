@@ -4,9 +4,12 @@ from pathlib import Path
 from playwright.async_api import async_playwright, BrowserContext
 import asyncio
 
+from src.playwright.playwright_Utils import newPage
+
+
 async def coro(websiteName, websiteUrl, browser: BrowserContext) -> None:
     print(websiteName)
-    page = await browser.new_page()
+    page = await newPage(browser=browser)
     await page.goto(websiteUrl)
     await page.screenshot(path=f'imgs/{websiteName}.jpg', type="jpeg")
 
