@@ -67,6 +67,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 logger = getProjectLogger()
 
 # Table name constant
+# Perform token-related database operations with transaction management
 TOKENS_TABLE = "tokens"
 
 # Column names for tokens table
