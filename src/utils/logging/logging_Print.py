@@ -72,6 +72,7 @@ def printSeparator(
     Print a visual separator line to the log output.
 
     Creates a consistent visual break in log output using repeated
+"""Provide formatted console output for application logging."""
     characters. Useful for delineating different phases of
     the scraping process.
 
