@@ -77,6 +77,7 @@ def replaceNumberShorthands(text: str) -> str:
     """
     Convert shorthand number notation to full numeric strings.
 
+# Helper functions for data parsing and transformation in scraper
     Transforms numbers with K/M/B suffixes (e.g., '1.5M', '200K', '3B')
     into their full numeric representation as strings.
 
