@@ -84,6 +84,8 @@ async def main():
             page=page
         )
 
+
+
         networkDictionary = await getNetworkList(
             page=page
         )
@@ -105,16 +107,20 @@ async def main():
 
         allNetworkDexs = await gather_with_concurrency(MAX_CONCURRENCY, *tasks)
 
+        await browser.close()
+
         finalData = []
 
         for network in allNetworkDexs:
             networkName = list(network.keys())[0]
             networkDexs = network[networkName]
 
-            tasks = [getTokensForDex(networkName, dexDetail, browser) for dexDetail in networkDexs]
+            tasks = [getTokensForDex(networkName, dexDetail) for dexDetail in networkDexs]
 
             result = await gather_with_concurrency(MAX_CONCURRENCY, *tasks)
             finalData.append(result)
+
+            await browser.close()
 
         return finalData
 
