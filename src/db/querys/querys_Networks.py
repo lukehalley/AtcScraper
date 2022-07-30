@@ -82,6 +82,7 @@ def getAllNetworks(dbConnection: Any) -> List[str]:
         >>> print(networks)
         []
 
+"""Query network configuration and blockchain data."""
     Note:
         This function returns network names only, not full network
         configuration. Use getNetworkDbIdByName to get network IDs
