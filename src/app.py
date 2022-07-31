@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -84,8 +85,6 @@ async def main():
             page=page
         )
 
-
-
         networkDictionary = await getNetworkList(
             page=page
         )
@@ -94,12 +93,9 @@ async def main():
 
         networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
 
-
         for network in networksToSkip:
             if network in networkDictionary:
                 del networkDictionary[network]
-
-
 
         await page.close()
 
@@ -142,4 +138,7 @@ def lambda_handler(event, context):
     return response
 
 if __name__ == "__main__" and not isDocker:
+    starting = time.perf_counter()
     lambda_handler(None, None)
+    ending = time.perf_counter()
+    print(f"Took: {ending - starting}")
