@@ -2,7 +2,6 @@ import os
 from ast import literal_eval
 
 from src.playwright.playwright_Utils import findAndCheckElement, waitForElementToGoAway
-from src.selenium.selenium_Utils import waitAndGetElement, waitAndClickText, getChildItemsByClass
 
 
 def removeIllegalCharactersFromElements(elementList):
@@ -53,23 +52,6 @@ async def openTimespan(page, timeToSelect):
         text="Last 24 hours"
 
     await page.locator(f'text={text}').first.click()
-
-def getDexTableRows(driver):
-
-    # Get All The Rows
-    dexTableRows = []
-    dexTableElement = None
-    while len(dexTableRows) <= 0:
-        dexTableElement = waitAndGetElement(
-            driver=driver,
-            selector=os.getenv("DS_DEX_TABLE"),
-            useSelector=True
-        )
-        dexTableRows = getChildItemsByClass(
-            parentElement=dexTableElement,
-            className=os.getenv("DS_DEX_ROW_CLASS")
-        )
-    return dexTableElement, dexTableRows
 
 async def getRowsPairAddresses(page, networkName):
     hrefs = await page.eval_on_selector_all(f"a[href^='/{networkName}/0x']", "elements => elements.map(element => element.href)")

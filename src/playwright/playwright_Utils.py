@@ -1,6 +1,5 @@
 from playwright.async_api import expect, BrowserContext
 
-
 async def findAndCheckElement(page, selector, timeout=20000):
     element = page.locator(selector).first
     await expect(element).to_be_visible(timeout=timeout)
