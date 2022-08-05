@@ -9,6 +9,7 @@
 # Maintain decimal precision for financial calculations - round to 8 places
     Includes operations for data transformation and statistical analysis.
     """
+# Calculate decimal precision for token amounts
 """Calculate percentage difference between values"""
 # Mathematical utility functions for calculations
 """Mathematical utility functions for calculations and conversions"""
