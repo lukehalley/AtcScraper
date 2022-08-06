@@ -20,114 +20,136 @@ nest_asyncio.apply()
 
 logger = getProjectLogger()
 
+# Gather all the available networks from the Dexscreener sidebar
 async def gatherNetworkList(page):
 
-    # Get The Sidebar List Element
+    # Get the sidebar list element
     dsNetworkList = os.getenv('DS_LIST')
     networkList = await findAndCheckElement(
         page=page,
         selector=dsNetworkList
     )
 
+    # Get all the 'li' items
     allLists = networkList.locator(selector='li')
     sidebarListItems = await allLists.all_text_contents()
 
-    # Get Index Of Ethereum - Always The First
+    # Get index of ethereum - always the first
     ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item == 'Ethereum'), -1)
 
-    # Filter List So We Only Have Networks
+    # Filter list so we only have networks, no hot 100 tabs
     filteredList = sidebarListItems[ethereumIndex:]
 
-    # filteredList = filteredList[0:5]
-
-    # Dict To Hold Network Info
+    # Dict to hold network info
     networkDictionary = {}
 
-    # Base URL
+    # Base url of dexscreener
     baseUrl = getDexscreenerRoot()
 
+    # Get the urls to each network
     for network in filteredList:
         networkName = (network.lower()).replace(" ", "")
         networkDictionary[networkName] = {
             "url": f"{baseUrl}/{networkName}"
         }
 
+    # Return the network dictionary
     return networkDictionary
 
+
+# Gather all dexs for each network
+async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext):
+
+    # Create a new page
+    page = await newPage(browser=browser)
+
+    # Go to the networks url
+    await page.goto(networkDetails["url"])
+
+    # Init dexscreener
+    await validateDexscreenerInit(
+        page=page
+    )
+
+    # Gather the list of dexs for the tabs at the top of the screen
+    networksDexs = await gatherDexListFromTabs(
+        page=page
+    )
+
+    # Count dexs
+    amountOfDexs = len(networksDexs)
+
+    # Close our page as dont need it anymore
+    await page.close()
+
+    # Create an object with the network and its dexs
+    networkDetails = {
+        networkName: networksDexs
+    }
+
+    # Log out hwo many dexs we got for this network
+    logger.info(f"{networkName.title()}: {amountOfDexs}")
+
+    # Return the network details object
+    return networkDetails
+
+# Gather the list of dexs from the top of each network page of dexscreener
 async def gatherDexListFromTabs(page):
 
-    # Get The Sidebar List Element
+    # Get the sidebar list element
     dexTabs = os.getenv('DS_DEX_TABS')
     dexTabElement = await findAndCheckElement(
         page=page,
         selector=dexTabs
     )
 
-    # Get All The 'li' Items
+    # Get all the 'li' items
     dexTabItems = await getListItems(
         listElement=dexTabElement
     )
 
-    # Get Index Of Ethereum - Always The First
+    # Get index of ethereum - always the first
     allDexsIndex = next((i for i, item in enumerate(dexTabItems) if item == 'All DEXes'), -1)
 
-    # Filter List So We Only Have Networks
+    # Filter list so we only have networks
     filteredList = dexTabItems[allDexsIndex + 1:]
 
-    # List Of Available Dexs
-    dexs = []
+    # List of available dexs
+    dexListDictionary = []
 
-    # Base URL
+    # Base url
     baseUrl = page.url
 
+    # Get the url for each dex in each network
     for dex in filteredList:
         dexName = (dex.lower()).replace(" ", "")
         dexObject = {
             "name": dexName,
             "url": f"{baseUrl}/{dexName}"
         }
-        dexs.append(dexObject)
+        dexListDictionary.append(dexObject)
 
-    return dexs
+    # Return the dex dictionary
+    return dexListDictionary
 
-async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext):
-
-    page = await newPage(browser=browser)
-
-    await page.goto(networkDetails["url"])
-
-    # Init Dexscreener
-    await validateDexscreenerInit(
-        page=page
-    )
-
-    networksDexs = await gatherDexListFromTabs(
-        page=page
-    )
-    amountOfDexs = len(networksDexs)
-
-    await page.close()
-
-    obj = {
-        networkName: networksDexs
-    }
-
-    logger.info(f"{networkName.title()}: {amountOfDexs}")
-
-    return obj
-
+# For a dex - get the top 100 tokens by liquidity
 async def gatherTokensForDex(networkName, dexDetails):
+    # Get the current dexs name and url
+    dexName = dexDetails["name"]
+    dexURL = dexDetails["url"]
 
-    async with async_playwright() as p:
+    # Create fake user agent
+    fakerInstance = Faker()
+    fakeUserAgent = fakerInstance.user_agent()
 
-        # Create fake user agent
-        fakerInstance = Faker()
-        fakeUserAgent = fakerInstance.user_agent()
+    # Check if we want to start our browser in headless
+    runHeadless = checkHeadless()
 
-        runHeadless = checkHeadless()
+    # Create async instance of playwright
+    async with async_playwright() as playwright:
 
-        # Setup Browser
-        browser: BrowserContext = await p.chromium.launch_persistent_context(
+        # Setup browser
+        browser: BrowserContext = await playwright.chromium.launch_persistent_context(
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
@@ -137,49 +159,62 @@ async def gatherTokensForDex(networkName, dexDetails):
             user_agent=fakeUserAgent
         )
 
-        dexName = dexDetails["name"]
-        dexURL = dexDetails["url"]
-
+        # Open a new tab
         page = await newPage(browser=browser)
 
+        # Navigate to the dexs url
         await page.goto(dexURL)
 
+        # Sort the tokens by liquidity
         await page.locator('text=Liquidity').first.click()
 
-        # Get The Sidebar List Element
+        # Get the sidebar list element
         dexTable = os.getenv('DS_DEX_TABLE')
         dexTableElement = await findAndCheckElement(
             page=page,
             selector=dexTable
         )
 
-        # Get All The 'li' Items
+        # Get all the 'li' items
         dexTabItems = await getAItems(
             listElement=dexTableElement
         )
 
-        # Get Hrefs
+        # Get the pair address for each token in the list
         pairAddresses = await getRowsPairAddresses(
             page=page,
             networkName=networkName
         )
 
+        # Filter the inner text we got back by only items which start with #
         rows = [i for i in dexTabItems if i.startswith('#')]
+
+        # Split them by the \n character
         rowsSplit = [l.split("\n") for l in rows]
+
+        # Remove "#" "$" "%" or "/"
         cleanRows = [removeIllegalCharactersFromElements(item) for item in rowsSplit]
+
+        # Remove any blank lines
         finalRows = [list(filter(None, item)) for item in cleanRows]
 
-        results = []
+        # List which will store our token objects
+        collectedTokens = []
 
+        # Iterate through the list of raw tokens we collected
         for row in finalRows:
 
+            # Check if the row has info on its uniswap version
             hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
-
             uniswapVersion = "N/A"
+
+            # If it does, remove it - we can add it back later if it exists
             if hasUniswapBadge:
                 uniswapVersion = row.pop(1)
 
-            # Fix Some Rows Coming Back With Missing Data
+            # Fix some rows coming back with missing data
+            # Sometimes data is missing so we just fill the list with blanks
+            # or cut it short
             expectedListSize = 13
             rowLength = len(row)
             if rowLength != 13:
@@ -187,13 +222,16 @@ async def gatherTokensForDex(networkName, dexDetails):
                     row = row[0:13]
                 else:
                     slotsToFill = abs(13 - len(row))
-
                     for _ in range(slotsToFill):
                         row.append("N/A")
 
+            # Get the token rank
             tokenRank = smartEval(row[0])
+
+            # Get the pair address for this row
             pairAddress = pairAddresses[tokenRank - 1]
 
+            # Create a token object from all the properties we scraped
             tokenDetails = {
                 "rank": tokenRank,
                 "market": {
@@ -230,16 +268,20 @@ async def gatherTokensForDex(networkName, dexDetails):
                 }
             }
 
+            # Add the uniswap version back in if we have it
             if hasUniswapBadge:
                 tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
 
-            results.append(tokenDetails)
+            # Finally, append the token to the final list
+            collectedTokens.append(tokenDetails)
 
+        # Close the page and browser as we are done
         await page.close()
-
         await browser.close()
 
-        amountOfTokens = len(results)
+        # Count how many tokens we collected and log it
+        amountOfTokens = len(collectedTokens)
         logger.info(f"- {dexName.title()}: {amountOfTokens}")
 
-        return results
+        # Return our collected tokens
+        return collectedTokens
