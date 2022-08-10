@@ -1,19 +1,15 @@
 import os
-import time
 from pathlib import Path
 
+import nest_asyncio
 from faker import Faker
-from playwright.async_api import BrowserContext, expect, async_playwright
+from playwright.async_api import BrowserContext, async_playwright
 
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getRowsPairAddresses
-
-import nest_asyncio
-
 from src.utils.env.utils_Env import checkHeadless
-from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import getProjectLogger
 
 nest_asyncio.apply()

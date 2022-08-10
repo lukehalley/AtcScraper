@@ -7,7 +7,7 @@ from playwright.async_api import async_playwright, BrowserContext
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex
-from src.utils.env.utils_Env import checkIsDocker, checkHeadless
+from src.utils.env.utils_Env import checkHeadless
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrency

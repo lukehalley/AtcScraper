@@ -5,8 +5,8 @@ logger = getProjectLogger()
 # Print a separator line
 def printSeparator(newLine=False):
     if newLine:
-        line = ("--------------------------------\n")
+        line = "--------------------------------\n"
     else:
-        line = ("--------------------------------")
+        line = "--------------------------------"
 
     logger.info(line)

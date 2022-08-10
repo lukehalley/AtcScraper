@@ -10,5 +10,5 @@ def getCurrentDateTime():
 
 # Get time in min and sec format
 def getMinSecString(time):
-    format = os.getenv("TIMER_STR_FORMAT")
-    return strftime(format, gmtime(time))
+    timFormat = os.getenv("TIMER_STR_FORMAT")
+    return strftime(timFormat, gmtime(time))
