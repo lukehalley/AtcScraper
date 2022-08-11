@@ -1,3 +1,4 @@
+"""Helper functions for dictionary operations and transformations."""
 """Dictionary operations and data transformation utilities."""
 # Dictionary and mapping utilities for structured data handling
 """Dictionary utility functions for data manipulation and merging."""
