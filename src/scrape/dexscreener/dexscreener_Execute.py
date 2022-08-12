@@ -91,7 +91,7 @@ async def scrapeDexScreener():
         amountOfNetworks = len(networkDictionary.keys())
 
         # TODO: Remove, just testing
-        networkDictionary = {'ethereum': {'url': 'https://dexscreener.com/ethereum'}}
+        networkDictionary = {'harmony': {'url': 'https://dexscreener.com/harmony'}}
 
         # Delete any networks we have declared to be skipped
         networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
@@ -164,11 +164,6 @@ async def scrapeDexScreener():
                 printSeparator(True)
             else:
                 printSeparator()
-
-        # Log that out scraping is done
-        printSeparator()
-        logger.info(f"Dex Screener Scrape Complete ✅")
-        printSeparator()
 
         # Return our final data
         return finalData
