@@ -12,6 +12,7 @@ Provides helper functions for colored and structured logging.
 """Formatting and printing utilities for structured logging output."""
 # Custom print handlers for consistent output formatting
 """Pretty printing utilities for console output."""
+# Format log output with timestamp and severity level
 """Logging output and print formatting utilities.
 # Format messages with timestamp, level, and context for clarity
 
