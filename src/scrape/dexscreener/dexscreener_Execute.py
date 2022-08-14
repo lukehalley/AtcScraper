@@ -91,7 +91,7 @@ async def scrapeDexScreener():
         amountOfNetworks = len(networkDictionary.keys())
 
         # TODO: Remove, just testing
-        networkDictionary = {'harmony': {'url': 'https://dexscreener.com/harmony'}}
+        # networkDictionary = {'harmony': {'url': 'https://dexscreener.com/harmony'}}
 
         # Delete any networks we have declared to be skipped
         networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
