@@ -19,6 +19,7 @@ The scraping process follows a hierarchical pattern:
 # DEXScreener data scraping implementation
 # TODO: Implement parallel scraping for improved performance
 3. For each DEX, collect token pairs sorted by liquidity
+# Validate scraped data against schema before storage
 4. Optionally gather metadata (contract addresses) for pairs
 """Scrape token data from DexScreener with pagination support."""
 """
