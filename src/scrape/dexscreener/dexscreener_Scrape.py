@@ -59,35 +59,44 @@ async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext
     # Create a new page
     page = await newPage(browser=browser)
 
-    # Go to the networks url
-    await page.goto(networkDetails["url"])
+    try:
 
-    # Init dexscreener
-    await validateDexscreenerInit(
-        page=page
-    )
+        # Go to the networks url
+        await page.goto(networkDetails["url"])
 
-    # Gather the list of dexs for the tabs at the top of the screen
-    networksDexs = await gatherDexListFromTabs(
-        page=page
-    )
+        # Init dexscreener
+        await validateDexscreenerInit(
+            page=page
+        )
 
-    # Count dexs
-    amountOfDexs = len(networksDexs)
+        # Gather the list of dexs for the tabs at the top of the screen
+        networksDexs = await gatherDexListFromTabs(
+            page=page
+        )
 
-    # Close our page as dont need it anymore
-    await page.close()
+        # Count dexs
+        amountOfDexs = len(networksDexs)
 
-    # Create an object with the network and its dexs
-    networkDetails = {
-        networkName: networksDexs
-    }
+        # Close our page as dont need it anymore
+        await page.close()
 
-    # Log out hwo many dexs we got for this network
-    logger.info(f"{networkName.title()}: {amountOfDexs}")
+        # Create an object with the network and its dexs
+        networkDetails = {
+            networkName: networksDexs
+        }
 
-    # Return the network details object
-    return networkDetails
+        # Log out hwo many dexs we got for this network
+        logger.info(f"{networkName.title()}: {amountOfDexs}")
+
+        # Return the network details object
+        return networkDetails
+
+    except:
+
+        logger.info(f"{networkName.title()}: Skipped")
+
+        # Return nothing
+        return None
 
 # Gather the list of dexs from the top of each network page of dexscreener
 async def gatherDexListFromTabs(page):
