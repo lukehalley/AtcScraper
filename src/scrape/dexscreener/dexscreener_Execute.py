@@ -1,5 +1,6 @@
 import os
 import sys
+from collections import ChainMap
 from pathlib import Path
 
 from faker import Faker
@@ -103,10 +104,10 @@ async def scrapeDexScreener():
             logger.info(f"Skipping networks: {networksToSkip}")
 
         # TODO: Remove, just testing
-        networkDictionary = \
-            {
-                'thundercore': {'url': 'https://dexscreener.com/thundercore'}
-            }
+        networkDictionary = {
+            'ethereum': {'url': 'https://dexscreener.com/ethereum'},
+            'avalanche': {'url': 'https://dexscreener.com/avalanche'}
+        }
 
         # Close the tab as we don't need it anymore
         await page.close()
@@ -136,7 +137,7 @@ async def scrapeDexScreener():
             printSeparator(True)
 
             # List which will hold all the data we scraped for all networks
-            finalData = []
+            finalData = {}
 
             # Log that we are going to collect the (top 100 by liquidity) tokens for each dex
             printSeparator()
@@ -161,7 +162,7 @@ async def scrapeDexScreener():
                 # Asynchronously gather each dex's tokens
                 tasks = [gatherTokensForDex(networkName, dexDetail) for dexDetail in networkDexs]
                 result = await gatherWithConcurrency(maxConcurrency, *tasks)
-                finalData.append(result)
+                finalData[networkName] = dict(ChainMap(*result))
 
                 # Close the tab as we don't need it anymore
                 await browser.close()
