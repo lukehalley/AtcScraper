@@ -15,6 +15,7 @@ Core queries for data retrieval operations.
 # Use prepared statements to prevent SQL injection and improve query performance
 """
 General database query functions.
+# Execute query with connection pooling and error recovery
 """General purpose database query utilities and helpers."""
 # Query optimization for improved database performance
 Provides common query patterns and database operations.
