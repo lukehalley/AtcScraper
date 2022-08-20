@@ -204,7 +204,7 @@ async def gatherTokensForDex(networkName, dexDetails):
         finalRows = [list(filter(None, item)) for item in cleanRows]
 
         # List which will store our token objects
-        collectedTokens = {}
+        collectedTokens = []
 
         # Iterate through the list of raw tokens we collected
         for row in finalRows:
@@ -278,7 +278,7 @@ async def gatherTokensForDex(networkName, dexDetails):
                 tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
 
             # Finally, append the token to the final list
-            collectedTokens[dexName] = tokenDetails
+            collectedTokens.append(tokenDetails)
 
         # Close the page and browser as we are done
         await page.close()
