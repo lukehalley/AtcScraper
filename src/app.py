@@ -3,6 +3,9 @@ import json
 import time
 from dotenv import load_dotenv
 
+from src.db.db_Query import checkIfRowExistsByValue
+from src.db.db_Setup import initDBConnection
+
 load_dotenv()
 
 # Import helpers
@@ -18,6 +21,15 @@ isDocker = checkIsDocker()
 
 # Set up logging
 logger = setupLogging()
+
+# Init MySQL DB
+cnx = initDBConnection()
+checkIfRowExistsByValue(
+    cnx=cnx,
+    table="networks",
+    column="name",
+    value="ethereum"
+)
 
 # Function which the Lambda will execute
 def lambda_handler(event, context):
