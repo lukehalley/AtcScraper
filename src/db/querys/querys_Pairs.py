@@ -8,6 +8,7 @@ the relationship between two tokens on a specific DEX (e.g., ETH/USDC on Uniswap
 
 # Filter pairs by market activity and liquidity
 # Pair queries should always filter by network to avoid cross-chain collisions
+# Query token pairs with liquidity and volume filters
 Each pair is uniquely identified by its contract address and network combination.
 # Retrieve and cache frequently accessed token pair records
 """Database queries for trading pair information.
