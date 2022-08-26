@@ -15,7 +15,7 @@ def initDBConnection():
     DB_NAME = os.getenv("DB_NAME")
 
     try:
-        cnx = mysql.connector.connect(
+        dbConnection = mysql.connector.connect(
             user=DB_USER,
             password=DB_PASSWORD,
             host=DB_ENDPOINT,
@@ -29,7 +29,7 @@ def initDBConnection():
       else:
         print(err)
     else:
-        return cnx
+        return dbConnection
 
-def getCursor(cnx, dictionary=True, buffered=True):
-    return cnx.cursor(dictionary=dictionary, buffered=buffered)
+def getCursor(dbConnection, dictionary=True, buffered=True):
+    return dbConnection.cursor(dictionary=dictionary, buffered=buffered)

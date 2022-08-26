@@ -5,6 +5,8 @@ import nest_asyncio
 from faker import Faker
 from playwright.async_api import BrowserContext, async_playwright
 
+from src.db.db_Read import checkIfRowExistsByValue, getRowByValue
+from src.db.db_Write import addNetworkToDB, addDexToDB
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
@@ -17,7 +19,7 @@ nest_asyncio.apply()
 logger = getProjectLogger()
 
 # Gather all the available networks from the Dexscreener sidebar
-async def gatherNetworkList(page):
+async def gatherNetworkList(dbConnection, page):
 
     # Get the sidebar list element
     dsNetworkList = os.getenv('DS_LIST')
@@ -44,62 +46,92 @@ async def gatherNetworkList(page):
 
     # Get the urls to each network
     for network in filteredList:
+
         networkName = (network.lower()).replace(" ", "")
+
         networkDictionary[networkName] = {
             "url": f"{baseUrl}/{networkName}"
         }
+
+        networkExistsInDB = checkIfRowExistsByValue(
+            dbConnection=dbConnection,
+            table="networks",
+            column="name",
+            value=networkName
+        )
+
+        if not networkExistsInDB:
+            addNetworkToDB(
+                dbConnection=dbConnection,
+                networkName=networkName
+            )
+
+        networkRow = getRowByValue(
+            dbConnection=dbConnection,
+            table="networks",
+            column="name",
+            value=networkName
+        )
+
+        if "db" not in networkDictionary[networkName]:
+            networkDictionary[networkName]["db"] = {}
+
+        networkDictionary[networkName]["db"]["networkId"] = networkRow["network_id"]
 
     # Return the network dictionary
     return networkDictionary
 
 
 # Gather all dexs for each network
-async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext):
+async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
 
     # Create a new page
     page = await newPage(browser=browser)
 
-    try:
+    # Go to the networks url
+    await page.goto(networkDetails["url"])
 
-        # Go to the networks url
-        await page.goto(networkDetails["url"])
+    # Init dexscreener
+    await validateDexscreenerInit(
+        page=page
+    )
 
-        # Init dexscreener
-        await validateDexscreenerInit(
-            page=page
-        )
+    # Gather the list of dexs for the tabs at the top of the screen
+    networksDexs = await gatherDexListFromTabs(
+        dbConnection=dbConnection,
+        networkDetails=networkDetails,
+        page=page
+    )
 
-        # Gather the list of dexs for the tabs at the top of the screen
-        networksDexs = await gatherDexListFromTabs(
-            page=page
-        )
+    # Count dexs
+    amountOfDexs = len(networksDexs)
 
-        # Count dexs
-        amountOfDexs = len(networksDexs)
+    # Close our page as don't need it anymore
+    await page.close()
 
-        # Close our page as dont need it anymore
-        await page.close()
+    # Create an object with the network and its dexs
+    networkDetails = {
+        networkName: networksDexs
+    }
 
-        # Create an object with the network and its dexs
-        networkDetails = {
-            networkName: networksDexs
-        }
+    # Log out hwo many dexs we got for this network
+    logger.info(f"{networkName.title()}: {amountOfDexs}")
 
-        # Log out hwo many dexs we got for this network
-        logger.info(f"{networkName.title()}: {amountOfDexs}")
+    # Return the network details object
+    return networkDetails
 
-        # Return the network details object
-        return networkDetails
+    # try:
+    #
 
-    except:
-
-        logger.info(f"{networkName.title()}: Skipped")
-
-        # Return nothing
-        return None
+    # except:
+    #
+    #     logger.info(f"{networkName.title()}: Skipped")
+    #
+    #     # Return nothing
+    #     return None
 
 # Gather the list of dexs from the top of each network page of dexscreener
-async def gatherDexListFromTabs(page):
+async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
     # Get the sidebar list element
     dexTabs = os.getenv('DS_DEX_TABS')
@@ -128,10 +160,37 @@ async def gatherDexListFromTabs(page):
     # Get the url for each dex in each network
     for dex in filteredList:
         dexName = (dex.lower()).replace(" ", "")
+
+        dexExistsInDB = checkIfRowExistsByValue(
+            dbConnection=dbConnection,
+            table="dexs",
+            column="name",
+            value=dexName
+        )
+
+        if not dexExistsInDB:
+            await addDexToDB(
+                dbConnection=dbConnection,
+                networkDbId=networkDetails["db"]["networkId"],
+                dexName=dexName
+            )
+
+        dexRow = getRowByValue(
+            dbConnection=dbConnection,
+            table="dexs",
+            column="name",
+            value=dexName
+        )
+
         dexObject = {
             "name": dexName,
-            "url": f"{baseUrl}/{dexName}"
+            "url": f"{baseUrl}/{dexName}",
+            "db": {
+                "networkId": dexRow["network_id"],
+                "dexId": dexRow["dex_id"],
+            }
         }
+
         dexListDictionary.append(dexObject)
 
     # Return the dex dictionary
