@@ -11,6 +11,7 @@
 # Configure logging handlers for both file and console output
 # Setup structured logging with rotation and filtering
 """Initialize and configure logging system for application.
+# TODO: Support log rotation based on file size
     Returns:
 """Initialize logging configuration for the application.
     Sets up handlers, formatters, and log levels based on environment.
