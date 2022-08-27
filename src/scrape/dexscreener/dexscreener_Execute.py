@@ -10,12 +10,14 @@ from src.db.db_Setup import initDBConnection
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex
+from src.utils.data.data_Booleans import strToBool
 from src.utils.env.utils_Env import checkHeadless
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrency
 
 logger = getProjectLogger()
+lazyMode = strToBool(os.environ.get("LAZY_MODE"))
 
 # Function which runs the scraping of Dexscreener
 async def scrapeDexScreener():
@@ -108,6 +110,11 @@ async def scrapeDexScreener():
         if len(networksToSkip) > 0:
             logger.info(f"Skipping networks: {networksToSkip}")
 
+        if lazyMode:
+            networkDictionary = {
+                "ethereum": [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == 'ethereum'][0]
+            }
+
         # Close the tab as we don't need it anymore
         await page.close()
 
@@ -163,7 +170,7 @@ async def scrapeDexScreener():
                 logger.info(f"{networkName.title()} [{networkCountStr}]")
 
                 # Asynchronously gather each dex's tokens
-                tasks = [gatherTokensForDex(networkName, dexDetail) for dexDetail in networkDexs]
+                tasks = [gatherTokensForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
                 results = await gatherWithConcurrency(maxConcurrency, *tasks)
 
                 # Collect the network results and and place them in their respective places
