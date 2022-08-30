@@ -37,31 +37,13 @@ def getRowByValue(dbConnection, table, conditions):
 
     return results[0]
 
-def checkIfRowExistsByValue(dbConnection, table, conditions):
+def checkIfRowExistsByValue(dbConnection, table, column, value):
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    amountOfConditions = len(conditions)
-
-    columnName = list(conditions[0].keys())[0]
-    rowValue = conditions[0][columnName]
-
     query = f"SELECT COUNT(*) count FROM " \
             f"{table} WHERE " \
-            f"{columnName}='{rowValue}'"
-
-    if amountOfConditions > 1:
-
-        del conditions[0]
-
-        for condition in conditions:
-            columnName = list(condition.keys())[0]
-            rowValue = condition[columnName]
-
-            query = \
-                query + \
-                " AND WHERE " \
-                f"{columnName}='{rowValue}'"
+            f"{column}='{value}'"
 
     results = executeReadQuery(
         cursor=cursor,
