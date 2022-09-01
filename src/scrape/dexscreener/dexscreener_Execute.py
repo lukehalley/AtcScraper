@@ -1,17 +1,17 @@
 import os
 import sys
-from collections import ChainMap
 from pathlib import Path
 
 from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
+from src.db.db_Admin import wipeDb
 from src.db.db_Setup import initDBConnection
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex
 from src.utils.data.data_Booleans import strToBool
-from src.utils.env.utils_Env import checkHeadless
+from src.utils.env.utils_Env import checkHeadless, checkIsDocker
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrency
@@ -86,6 +86,11 @@ async def scrapeDexScreener():
 
         # Init MySQL DB
         dbConnection = initDBConnection()
+
+        # Wipe DB everytime we run for testing
+        WIPE_DB = strToBool(os.getenv("WIPE_DB")) and not checkIsDocker()
+        if WIPE_DB:
+            wipeDb(dbConnection=dbConnection)
 
         # Gather all the networks from the sidebar
         printSeparator()

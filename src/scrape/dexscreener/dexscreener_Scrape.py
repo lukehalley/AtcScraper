@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import nest_asyncio
@@ -281,9 +282,9 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
             tokenDetails = {
                 "rank": tokenRank,
                 "market": {
-                    "volume": replaceNumberShorthands(row[6]),
-                    "liquidity": replaceNumberShorthands(row[11]),
-                    "fdv": replaceNumberShorthands(row[12])
+                    "volume": smartEval(replaceNumberShorthands(row[6])),
+                    "liquidity": smartEval(replaceNumberShorthands(row[11])),
+                    "fdv": smartEval(replaceNumberShorthands(row[12]))
                 },
                 "network": {
                     "network": networkName,
@@ -304,7 +305,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
                     "address": pairAddress
                 },
                 "price": {
-                    "currentPrice": smartEval(row[4]),
+                    "currentPrice": smartEval(re.sub('[^0-9.]', '', replaceNumberShorthands(row[4]))),
                     "priceChange": {
                         "5M": smartEval(row[7]),
                         "1H": smartEval(row[8]),
@@ -314,23 +315,50 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
                 }
             }
 
-            # Add primary token to database
-            primaryTokenId = await addTokenToDB(
+            # Check if primary token already exists
+            primaryTokenDetails = getRowByValue(
                 dbConnection=dbConnection,
-                networkDbId=dexDetails["db"]["networkId"],
-                dexDbId=dexDetails["db"]["dexId"],
-                tokenName=tokenDetails["primaryToken"]["name"],
-                tokenSymbol=tokenDetails["primaryToken"]["symbol"]
+                table="tokens",
+                conditions=[
+                    {
+                        "symbol": tokenDetails["primaryToken"]["symbol"]
+                    }
+                ]
             )
 
-            # Add secondary token to database
-            secondaryTokenId = await addTokenToDB(
+            # If it doesn't - add it
+            if not primaryTokenDetails:
+                # Add primary token to database
+                primaryTokenId = await addTokenToDB(
+                    dbConnection=dbConnection,
+                    networkDbId=dexDetails["db"]["networkId"],
+                    tokenName=tokenDetails["primaryToken"]["name"],
+                    tokenSymbol=tokenDetails["primaryToken"]["symbol"]
+                )
+            else:
+                primaryTokenId = primaryTokenDetails["token_id"]
+
+            # Check if primary token already exists
+            secondaryTokenDetails = getRowByValue(
                 dbConnection=dbConnection,
-                networkDbId=dexDetails["db"]["networkId"],
-                dexDbId=dexDetails["db"]["dexId"],
-                tokenName=None,
-                tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+                table="tokens",
+                conditions=[
+                    {
+                        "symbol": tokenDetails["secondaryToken"]["symbol"]
+                    }
+                ]
             )
+
+            if not secondaryTokenDetails:
+                # Add secondary token to database
+                secondaryTokenId = await addTokenToDB(
+                    dbConnection=dbConnection,
+                    networkDbId=dexDetails["db"]["networkId"],
+                    tokenName=None,
+                    tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+                )
+            else:
+                secondaryTokenId = secondaryTokenDetails["token_id"]
 
             await addTokenPairToDB(
                 dbConnection=dbConnection,

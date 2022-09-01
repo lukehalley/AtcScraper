@@ -35,7 +35,10 @@ def getRowByValue(dbConnection, table, conditions):
         query=query
     )
 
-    return results[0]
+    if results:
+        return results[0]
+    else:
+        return None
 
 def checkIfRowExistsByValue(dbConnection, table, column, value):
 
