@@ -1,3 +1,7 @@
+"""Main entry point for AtcScraper application.
+
+Handles initialization and orchestration of scraping tasks.
+"""
 # Main entry point for AtcScraper application
 # AtcScraper main entry point - orchestrates scraping pipeline
 """Main entry point for AtcScraper application."""
