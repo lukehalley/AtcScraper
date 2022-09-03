@@ -1,5 +1,4 @@
 import re
-from decimal import Decimal, getcontext
 
 from src.db.db_Setup import getCursor
 from src.db.db_Utils import executeWriteQuery
@@ -42,7 +41,7 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
     cursor = getCursor(dbConnection=dbConnection)
 
     networkDbId = int(networkDbId)
-    tokenName = tokenName
+    tokenName = re.sub('[^A-Za-z0-9 ]+', '', str(tokenName))
     tokenSymbol = tokenSymbol
     tokenAddress = tokenAddress
 
@@ -56,6 +55,11 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
             f"(SELECT * FROM tokens WHERE {compareStatement}) " \
             f"LIMIT 1"
 
+    # try:
+    #
+    # except:
+    #     x = 1
+
     executeWriteQuery(
         dbConnection=dbConnection,
         cursor=cursor,
@@ -66,40 +70,38 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
 
 async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, dexRanking, dexPrice, pairLiquidity, pairVolume, pairFdv):
 
-    getcontext().prec = 2
+    # DB Ids
+    primaryTokenDbId = int(primaryTokenDbId)
+    secondaryTokenDbId = int(secondaryTokenDbId)
+    networkDbId = int(networkDbId)
+    dexDbId = int(dexDbId)
+
+    # Strings
+    pairName = str(pairName)
+    pairAddress = str(pairAddress)
+
+    # DexScreener Metadata
+    dexRanking = int(dexRanking)
 
     try:
-        # DB Ids
-        primaryTokenDbId = int(primaryTokenDbId)
-        secondaryTokenDbId = int(secondaryTokenDbId)
-        networkDbId = int(networkDbId)
-        dexDbId = int(dexDbId)
-
-        # Strings
-        pairName = str(pairName)
-        pairAddress = str(pairAddress)
-
-        # DexScreener Metadata
-        dexRanking = int(dexRanking)
-
-        dexPrice = Decimal(dexPrice)
-
-        try:
-            pairLiquidity = int(pairLiquidity)
-        except:
-            pairLiquidity = 0
-
-        try:
-            pairVolume = int(pairVolume)
-        except:
-            pairVolume = 0
-
-        try:
-            pairFdv = int(pairFdv)
-        except:
-            pairFdv = 0
+        dexPrice = int(dexPrice)
     except:
-        x = 1
+        dexPrice = 0
+
+    try:
+        pairLiquidity = int(pairLiquidity)
+    except:
+        pairLiquidity = 0
+
+    try:
+        pairVolume = int(pairVolume)
+    except:
+        pairVolume = 0
+
+    try:
+        pairFdv = int(pairFdv)
+    except:
+        pairFdv = 0
 
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -126,11 +128,14 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
             f"(SELECT * FROM pairs WHERE {compareStatement}) " \
             f"LIMIT 1"
 
-    executeWriteQuery(
-        dbConnection=dbConnection,
-        cursor=cursor,
-        query=query
-    )
+    try:
+        executeWriteQuery(
+            dbConnection=dbConnection,
+            cursor=cursor,
+            query=query
+        )
+    except:
+        x = 1
 
     return cursor.lastrowid
 
