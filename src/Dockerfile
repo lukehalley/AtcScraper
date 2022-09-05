@@ -1,13 +1,11 @@
-#based on https://github.com/umihico/docker-selenium-lambda
-FROM public.ecr.aws/lambda/python:3.8 as build
-
+FROM public.ecr.aws/lambda/python:3.9 as build
 RUN yum install -y unzip && \
     curl -Lo "/tmp/chromedriver.zip" "https://chromedriver.storage.googleapis.com/98.0.4758.48/chromedriver_linux64.zip" && \
     curl -Lo "/tmp/chrome-linux.zip" "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F950363%2Fchrome-linux.zip?alt=media" && \
     unzip /tmp/chromedriver.zip -d /opt/ && \
     unzip /tmp/chrome-linux.zip -d /opt/
 
-FROM public.ecr.aws/lambda/python:3.8
+FROM public.ecr.aws/lambda/python:3.9
 RUN yum install atk cups-libs gtk3 libXcomposite alsa-lib \
     libXcursor libXdamage libXext libXi libXrandr libXScrnSaver \
     libXtst pango at-spi2-atk libXt xorg-x11-server-Xvfb \
@@ -20,7 +18,10 @@ COPY --from=build /opt/chromedriver /opt/
 
 COPY app.py requirements.txt ./
 
-RUN python3.8 -m pip install -r requirements.txt -t .
+RUN mkdir ./src/
+ADD selenium ./src/selenium
+ADD utils ./src/utils
 
-# Command can be overwritten by providing a different command in the template directly.
+RUN python3.9 -m pip install -r requirements.txt -t .
+
 CMD ["app.lambda_handler"]
