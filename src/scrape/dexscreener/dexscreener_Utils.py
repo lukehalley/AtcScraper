@@ -1,3 +1,4 @@
+import os
 import re
 from ast import literal_eval
 
@@ -63,8 +64,54 @@ async def openTimespan(page, timeToSelect):
 
     await page.locator(f'text={text}').first.click()
 
-# Get the pair address for a given page
-async def getRowsPairAddresses(page, networkName):
+# Get the address of the pair, primary and secondary token as well as the network explorer url
+async def getAllRowsMetadata(page, networkName):
+
+    rowMetadata = {}
+
     hrefs = await page.eval_on_selector_all(f"a[href^='/{networkName}/0x']", "elements => elements.map(element => element.href)")
     pairAddresses = [item.split("/")[-1] for item in hrefs]
-    return pairAddresses
+
+    x = 1
+
+    baseLink = '/'.join(hrefs[0].split("/")[0:4])
+
+    allRowMetadata = []
+
+    for pair in pairAddresses:
+
+        metadataObject = {
+
+        }
+
+        pairUrl = f"{baseLink}/{pair}"
+
+        metadataObject["pairAddress"] = pair
+
+        # Go the pair graph page
+        await page.goto(pairUrl)
+
+        # Get all elements with the external link label
+        allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
+
+        # Get the second element on the page which is the address of the primary token
+        tokenExplorerLink = await allBlockExplorerLinks.nth(1).get_attribute("href")
+        metadataObject["primaryTokenAddress"] = tokenExplorerLink.split("/")[-1]
+
+        # Get the network explorer while were at it
+        metadataObject["networkExplorer"] = '/'.join(tokenExplorerLink.split("/")[0:4])
+
+        # # Open up the menu that allows us to invert the pair
+        # swapMenuOpenBtnXpath = os.getenv("DS_SWAP_MENU_OPEN_BTN")
+        # await page.locator(f"xpath={swapMenuOpenBtnXpath}").click()
+        #
+        # # Click the invert pair button
+        # await page.locator(f'text=Invert Pair').first.click()
+        # tokenExplorerLink = await allBlockExplorerLinks.nth(1).get_attribute("href")
+        #
+        # # Get the secondary token address
+        # metadataObject["secondaryTokenAddress"] = tokenExplorerLink.split("/")[-1]
+
+        x = 1
+
+    return allRowMetadata

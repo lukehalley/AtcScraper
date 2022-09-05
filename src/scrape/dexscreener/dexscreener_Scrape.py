@@ -12,7 +12,7 @@ from src.db.db_Write import addNetworkToDB, addDexToDB, addTokenToDB, addTokenPa
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
-    replaceNumberShorthands, getRowsPairAddresses
+    replaceNumberShorthands, getAllRowsMetadata
 from src.utils.env.utils_Env import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 
@@ -237,7 +237,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
         )
 
         # Get the pair address for each token in the list
-        pairAddresses = await getRowsPairAddresses(
+        rowMetadata = await getAllRowsMetadata(
             page=page,
             networkName=networkName
         )
@@ -285,7 +285,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
             tokenRank = smartEval(row[0])
 
             # Get the pair address for this row
-            pairAddress = pairAddresses[tokenRank - 1]
+            pairAddress = rowMetadata[tokenRank - 1]
 
             # Create a token object from all the properties we scraped
             tokenDetails = {
