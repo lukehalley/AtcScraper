@@ -7,6 +7,7 @@
 """Retry settings and configuration management for API calls."""
 # Retry configuration and settings
 # Retry configuration and exponential backoff settings
+# Configure retry behavior: max attempts, backoff strategy, and timeout values
 """Configure retry settings for async tasks with exponential backoff"""
 # Retry settings: max attempts, backoff strategy, and timeout configurations
 """
