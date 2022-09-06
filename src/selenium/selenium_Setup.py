@@ -1,3 +1,4 @@
+import os
 from tempfile import mkdtemp
 from faker import Faker
 from selenium import webdriver
@@ -48,3 +49,6 @@ def initDriver(options):
     driver.maximize_window()
 
     return driver
+
+def getTimeout():
+    return int(os.getenv('SEL_WAIT_TIME'))
