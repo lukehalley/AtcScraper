@@ -37,13 +37,11 @@ def lambda_handler(event, context):
         driver=driver
     )
 
-
-
-    networkDictionary = {
-        'ethereum': {'url': 'https://dexscreener.com/ethereum'},
-        'avalanche': {'url': 'https://dexscreener.com/avalanche'},
-        'harmony': {'url': 'https://dexscreener.com/harmony'}
-    }
+    # networkDictionary = {
+    #     'ethereum': {'url': 'https://dexscreener.com/ethereum'},
+    #     'avalanche': {'url': 'https://dexscreener.com/avalanche'},
+    #     'harmony': {'url': 'https://dexscreener.com/harmony'}
+    # }
 
     networkData = {}
 
@@ -60,6 +58,8 @@ def lambda_handler(event, context):
         )
 
         for dexName, dexDetails in dexDictionary.items():
+
+            print(f"  - {dexName}")
 
             if dexName not in networkData[networkName]:
                 networkData[networkName][dexName] = {}

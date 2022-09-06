@@ -43,6 +43,8 @@ def configureChromeOptions():
         options.binary_location = '/opt/chrome/chrome'
         options.add_argument('--headless')
 
+    options.add_argument('--headless')
+
     return options
 
 def initDriver(options):
