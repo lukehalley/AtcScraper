@@ -60,9 +60,7 @@ def lambda_handler(event, context):
                 dexName=dexName
             )
 
-            time.sleep(1)
-
-        time.sleep(1)
+            x = 1
 
     response = {
         "statusCode": 200,

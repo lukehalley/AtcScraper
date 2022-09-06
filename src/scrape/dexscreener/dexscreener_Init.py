@@ -1,7 +1,7 @@
 import os
 import time
 
-from src.selenium.selenium_Utils import getElementBySelector, getListItems, getCurrentURL
+from src.selenium.selenium_Utils import waitAndGetElement, getListItems, getCurrentURL
 
 
 def getDexscreenerRoot():
@@ -15,14 +15,14 @@ def validateDexscreenerInit(driver):
 
     # Wait For Sidebar
     sidebar = os.getenv('DS_SIDEBAR')
-    getElementBySelector(
+    waitAndGetElement(
         driver=driver,
         selector=sidebar
     )
 
     # Wait For Panel
     panel = os.getenv('DS_PANEL')
-    getElementBySelector(
+    waitAndGetElement(
         driver=driver,
         selector=panel
     )
