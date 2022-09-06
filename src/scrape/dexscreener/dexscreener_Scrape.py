@@ -1,10 +1,11 @@
 import os
+import time
 
-from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot
+from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import replaceNumberShorthands, \
-    smartEval, removeIllegalCharactersFromElements
+    smartEval, removeIllegalCharactersFromElements, openTimespan, getDexTableRows
 from src.selenium.selenium_Utils import waitAndGetElement, getListItems, getCurrentURL, \
-    getChildItemsByClass, waitAndClick, waitForElementToBeGone
+    getChildItemsByClass, waitAndClickSelector, waitForElementToBeGone, waitAndClickText, waitAndClickID
 
 
 def getNetworkListFromSidebar(driver):
@@ -40,7 +41,6 @@ def getNetworkListFromSidebar(driver):
 
     return networkDictionary
 
-
 def getDexListFromTabs(driver):
 
     # Get The Sidebar List Element
@@ -74,7 +74,6 @@ def getDexListFromTabs(driver):
 
     return dexDictionary
 
-
 def getTokensFromTable(driver, networkName, dexName):
 
     waitForElementToBeGone(
@@ -92,108 +91,105 @@ def getTokensFromTable(driver, networkName, dexName):
         "24H": 16,
     }
 
-    # Sort By Liquidity
-    waitAndClick(
+    validateDexscreenerInit(driver=driver)
+
+    txCountElement = waitAndGetElement(
         driver=driver,
-        selector=os.getenv("DS_SORT_BY_LIQUIDITY")
+        selector=os.getenv("DS_TX_COUNT")
     )
 
-    activeTimeframes = os.getenv("DS_TIMEFRAMES").split(",")
+    txCount = int(txCountElement.text.replace(",", ""))
+    txFloor = int(os.getenv("DS_TX_COUNT_FLOOR"))
 
-    for timeframeName, timeframeIndex in allTimeframes.items():
+    if txCount > txFloor:
 
-        if timeframeName in activeTimeframes:
+        # Sort By Liquidity
+        waitAndClickText(
+            driver=driver,
+            text="Liquidity"
+        )
 
-            timeframeResults = []
+        activeTimeframes = os.getenv("DS_TIMEFRAMES").split(",")
 
-            # Button which will open timeframe menu
-            waitAndClick(
-                driver=driver,
-                selector=os.getenv("DS_DEX_TABLE_TIMEFRAME_MENU")
-            )
+        for timeframeName, timeframeIndex in allTimeframes.items():
 
-            timeButton = os.getenv("DS_DEX_TABLE_TIMEFRAME_OPTIONS").replace("{STARTING_NUM}", f"{timeframeIndex}")
-            waitAndClick(
-                driver=driver,
-                selector=timeButton
-            )
+            if timeframeName in activeTimeframes:
 
-            # Get The Dex Table Element
-            dexTableElement = waitAndGetElement(
-                driver=driver,
-                selector=os.getenv("DS_DEX_TABLE")
-            )
+                timeframeResults = []
 
-            # Get All The Rows
-            dexTableRows = []
-            while len(dexTableRows) <= 0:
-                dexTableRows = getChildItemsByClass(
-                    parentElement=dexTableElement,
-                    className=os.getenv("DS_DEX_ROW_CLASS")
+                openTimespan(
+                    driver=driver,
+                    timeToSelect=timeframeName
                 )
 
-            bigList = dexTableElement.get_attribute("innerText").splitlines()
-            splitList = [l.split(',') for l in ','.join(bigList).split('#')][1:]
-            row = [removeIllegalCharactersFromElements(item) for item in splitList]
-            finalRows = [list(filter(None, item)) for item in row]
+                # Get All The Rows
+                dexTableElement, dexTableRows = getDexTableRows(driver=driver)
 
-            for row in finalRows:
+                bigList = dexTableElement.get_attribute("innerText").splitlines()
+                splitList = [l.split(',') for l in ','.join(bigList).split('#')][1:]
+                row = [removeIllegalCharactersFromElements(item) for item in splitList]
+                finalRows = [list(filter(None, item)) for item in row]
 
-                index = finalRows.index(row)
+                for row in finalRows:
 
-                dexTableRows = getChildItemsByClass(
-                    parentElement=dexTableElement,
-                    className=os.getenv("DS_DEX_ROW_CLASS")
-                )
+                    index = finalRows.index(row)
 
-                pairAddress = dexTableRows[index].get_attribute("href").split("/")[-1]
+                    dexTableElement, dexTableRows = getDexTableRows(driver=driver)
 
-                hasUniswapBadge = len(getChildItemsByClass(
-                    parentElement=dexTableRows[index],
-                    className=os.getenv("DS_DEX_UNISWAP_BADGE_CLASS")
-                )) > 0
+                    pairAddress = dexTableRows[index].get_attribute("href").split("/")[-1]
 
-                uniswapVersion = "N/A"
-                if hasUniswapBadge:
-                    uniswapVersion = row.pop(1)
+                    dexTableElement, dexTableRows = getDexTableRows(driver=driver)
 
-                tokenDetails = {
-                    "rank": smartEval(row[0]),
-                    "market": {
-                        "volume": replaceNumberShorthands(row[6]),
-                        "liquidity": replaceNumberShorthands(row[11]),
-                        "fdv": replaceNumberShorthands(row[12])
-                    },
-                    "network": {
-                        "network": networkName,
-                        "txCount": smartEval(row[5]),
-                    },
-                    "dex": {
-                        "dex": dexName,
-                    },
-                    "token" : {
-                        "name": row[3],
-                        "primaryToken": row[1],
-                        "secondaryToken": row[2],
-                        "tokenPair": f"{row[1]}/{row[2]}",
-                        "pairAddress": f"{pairAddress}"
-                    },
-                    "price": {
-                        "currentPrice": smartEval(row[4]),
-                        "priceChange": {
-                            "5M": smartEval(row[7]),
-                            "1H": smartEval(row[8]),
-                            "6H": smartEval(row[9]),
-                            "24M": smartEval(row[10])
+                    hasUniswapBadge = len(getChildItemsByClass(
+                        parentElement=dexTableRows[index],
+                        className=os.getenv("DS_DEX_UNISWAP_BADGE_CLASS")
+                    )) > 0
+
+                    uniswapVersion = "N/A"
+                    if hasUniswapBadge:
+                        uniswapVersion = row.pop(1)
+
+                    tokenDetails = {
+                        "rank": smartEval(row[0]),
+                        "market": {
+                            "volume": replaceNumberShorthands(row[6]),
+                            "liquidity": replaceNumberShorthands(row[11]),
+                            "fdv": replaceNumberShorthands(row[12])
                         },
+                        "network": {
+                            "network": networkName,
+                            "txCount": smartEval(row[5]),
+                        },
+                        "dex": {
+                            "dex": dexName,
+                        },
+                        "token" : {
+                            "name": row[3],
+                            "primaryToken": row[1],
+                            "secondaryToken": row[2],
+                            "tokenPair": f"{row[1]}/{row[2]}",
+                            "pairAddress": f"{pairAddress}"
+                        },
+                        "price": {
+                            "currentPrice": smartEval(row[4]),
+                            "priceChange": {
+                                "5M": smartEval(row[7]),
+                                "1H": smartEval(row[8]),
+                                "6H": smartEval(row[9]),
+                                "24M": smartEval(row[10])
+                            },
+                        }
                     }
-                }
 
-                if hasUniswapBadge:
-                    tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+                    if hasUniswapBadge:
+                        tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
 
-                timeframeResults.append(tokenDetails)
+                    timeframeResults.append(tokenDetails)
 
-            tokenResults[timeframeName] = timeframeResults
+                tokenResults[timeframeName] = timeframeResults
+
+            else:
+
+                x = 1
 
     return tokenResults
