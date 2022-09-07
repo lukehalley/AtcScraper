@@ -89,7 +89,7 @@ async def getTokensForDex(networkName, dexDetails, browser: BrowserContext):
     print(dexName)
     await page.goto(dexURL)
 
-    await page.locator('text=Liquidity').click()
+    await page.locator('text=Liquidity').first.click()
 
     tokenResults = {}
 
