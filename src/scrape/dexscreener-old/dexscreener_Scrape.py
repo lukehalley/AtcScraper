@@ -1,53 +1,45 @@
 import os
 import time
 
-from src.playwright.playwright_Utils import findAndCheckElement
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
+from src.scrape.dexscreener.dexscreener_Utils import replaceNumberShorthands, \
+    smartEval, removeIllegalCharactersFromElements, openTimespan, getDexTableRows
 from src.selenium.selenium_Utils import waitAndGetElement, getListItems, getCurrentURL, \
     getChildItemsByClass, waitAndClickSelector, waitForElementToBeGone, waitAndClickText, waitAndClickID
 
 
-async def getNetworkListFromSidebar(page):
+def getNetworkListFromSidebar(driver):
 
     # Get The Sidebar List Element
-    dsNetworkList = os.getenv('DS_LIST')
-    networkList = await findAndCheckElement(
-        page=page,
-        selector=dsNetworkList
+    sidebarElement = waitAndGetElement(
+        driver=driver,
+        selector=os.getenv('DS_LIST')
     )
 
-    allLists = networkList.locator(selector='li')
-    text = await allLists.all_text_contents()
-    return text
+    # Get All The 'li' Items
+    sidebarListItems = getListItems(
+        listElement=sidebarElement
+    )
 
-    #
-    # texts = res.first()
-    # print(res)
-    #
-    # # Get All The 'li' Items
-    # sidebarListItems = getListItems(
-    #     listElement=sidebarElement
-    # )
-    #
-    # # Get Index Of Ethereum - Always The First
-    # ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item.text == 'Ethereum'), -1)
-    #
-    # # Filter List So We Only Have Networks
-    # filteredList = sidebarListItems[ethereumIndex:]
-    #
-    # # Dict To Hold Network Info
-    # networkDictionary = {}
-    #
-    # # Base URL
-    # baseUrl = getDexscreenerRoot()
-    #
-    # for network in filteredList:
-    #     networkName = (network.text.lower()).replace(" ", "")
-    #     networkDictionary[networkName] = {
-    #         "url": f"{baseUrl}/{networkName}"
-    #     }
-    #
-    # return networkDictionary
+    # Get Index Of Ethereum - Always The First
+    ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item.text == 'Ethereum'), -1)
+
+    # Filter List So We Only Have Networks
+    filteredList = sidebarListItems[ethereumIndex:]
+
+    # Dict To Hold Network Info
+    networkDictionary = {}
+
+    # Base URL
+    baseUrl = getDexscreenerRoot()
+
+    for network in filteredList:
+        networkName = (network.text.lower()).replace(" ", "")
+        networkDictionary[networkName] = {
+            "url": f"{baseUrl}/{networkName}"
+        }
+
+    return networkDictionary
 
 def getDexListFromTabs(driver):
 
