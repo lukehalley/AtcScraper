@@ -11,10 +11,6 @@ def getDexscreenerRoot():
 
 async def validateDexscreenerInit(page):
 
-    # Navigate To The Dexscreener Home
-    dexScreenerHome = getDexscreenerRoot()
-    await page.goto(dexScreenerHome)
-
     dsSidebar = os.getenv('DS_SIDEBAR')
     sidebar = await findAndCheckElement(
         page=page,
