@@ -70,16 +70,16 @@ async def main() -> None:
 
         allNetworkDexs = await asyncio.gather(*(gatherNetworkDexs(networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()))
 
-        finalData = {}
+        finalData = []
 
         for network in allNetworkDexs:
             networkName = list(network.keys())[0]
             networkDexs = network[networkName]
-            finalData[network] = await asyncio.gather(*(getTokensForDex(dexDetail, browser) for dexDetail in networkDexs))
-        #
-        # x = 1
-        #
-        # await browser.close()
+            result = await asyncio.gather(*(getTokensForDex(networkName, dexDetail, browser) for dexDetail in networkDexs))
+            finalData.append(result)
+
+        x = 1
+
 
 # Function that setup the browser parameters and return browser object.
 def lambda_handler(event, context):
