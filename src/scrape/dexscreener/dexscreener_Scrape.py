@@ -2,7 +2,7 @@ import os
 
 from playwright.async_api import BrowserContext
 
-from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems
+from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot
 from src.scrape.dexscreener.dexscreener_Utils import openTimespan, removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands
@@ -26,7 +26,7 @@ async def getNetworkList(page):
     # Filter List So We Only Have Networks
     filteredList = sidebarListItems[ethereumIndex:]
 
-    filteredList = filteredList[0:5]
+    # filteredList = filteredList[0:5]
 
     # Dict To Hold Network Info
     networkDictionary = {}
@@ -85,7 +85,7 @@ async def getTokensForDex(networkName, dexDetails, browser: BrowserContext):
     dexName = dexDetails["name"]
     dexURL = dexDetails["url"]
 
-    page = await browser.new_page()
+    page = await newPage(browser=browser)
     print(dexName)
     await page.goto(dexURL)
 
@@ -127,6 +127,18 @@ async def getTokensForDex(networkName, dexDetails, browser: BrowserContext):
         uniswapVersion = "N/A"
         if hasUniswapBadge:
             uniswapVersion = row.pop(1)
+
+        # Fix Some Rows Coming Back With Missing Data
+        expectedListSize = 13
+        rowLength = len(row)
+        if rowLength != 13:
+            if rowLength > expectedListSize:
+                row = row[0:13]
+            else:
+                slotsToFill = abs(13 - len(row))
+
+                for _ in range(slotsToFill):
+                    row.append("N/A")
 
         tokenDetails = {
             "rank": smartEval(row[0]),
