@@ -7,9 +7,11 @@ from playwright.async_api import async_playwright, BrowserContext
 
 from src.db.db_Admin import wipeDb
 from src.db.db_Setup import initDBConnection
+from src.db.querys.querys_Networks import getTokensForChainWithNoAddress
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
-from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex
+from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex, \
+    gatherMetadataForPair
 from src.utils.data.data_Booleans import strToBool
 from src.utils.env.utils_Env import checkHeadless, checkIsDocker
 from src.utils.logging.logging_Print import printSeparator
@@ -22,13 +24,10 @@ lazyMode = strToBool(os.environ.get("LAZY_MODE"))
 # Function which runs the scraping of Dexscreener
 async def scrapeDexScreener():
 
-    # Get how many task we run in concurrently
-    maxConcurrency = getmaxConcurrency()
-
     # Log setup message
     printSeparator()
     logger.info(f"Dex Screener Setup")
-    logger.info(f"Concurrency: {maxConcurrency}")
+    logger.info(f"Concurrency: {getmaxConcurrency()}")
     printSeparator()
 
     # Enter an async state
@@ -133,7 +132,7 @@ async def scrapeDexScreener():
 
         # Asynchronously gather each network's dexs
         tasks = [gatherNetworkDexs(dbConnection, networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
-        allNetworkDexs = await gatherWithConcurrency(maxConcurrency, *tasks)
+        allNetworkDexs = await gatherWithConcurrency(*tasks)
         nonEmptyNetworks = [network for network in allNetworkDexs if network is not None]
         finalNetworkDexs = [item for item in nonEmptyNetworks if item]
 
@@ -166,6 +165,7 @@ async def scrapeDexScreener():
 
                 # Get the networks name and dexs
                 networkName = list(network.keys())[0]
+                networkDbId = network[networkName][0]["db"]["networkId"]
                 networkDexs = network[networkName]
 
                 # Add network to the final dict
@@ -177,15 +177,69 @@ async def scrapeDexScreener():
 
                 # Asynchronously gather each dex's tokens
                 tasks = [gatherTokensForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
-                results = await gatherWithConcurrency(maxConcurrency, *tasks)
+                results = await gatherWithConcurrency(*tasks)
                 results = [x for x in results if x != []]
+
+                dexscreenerRoot = getDexscreenerRoot()
+
+                # Combine the list of dictionary lists into one big list
+                combinedResults = [item for sublist in results for item in sublist]
+
+                # Set which will hold all the tokens we collected, its a set so each token will appear once
+                uniqueTokenSymbols = set()
+
+                # List which will hold our unique results set
+                uniqueResults = []
+
+                # Loop through the list of results and find the unique ones
+                for dict in combinedResults:
+                    if dict["primaryToken"]["symbol"] not in uniqueTokenSymbols:
+                        uniqueTokenSymbols.add(dict["primaryToken"]["symbol"])
+                        uniqueResults.append(dict)
+
+                # Convert set into list
+                uniqueTokenSymbols = list(uniqueTokenSymbols)
+
+                # Query tokens which don't have token addresses
+                allTokensWithNoAddress = getTokensForChainWithNoAddress(
+                    dbConnection=dbConnection,
+                    networkDbId=networkDbId
+                )
+
+                # Getting list of tokens which are missing from some reason
+                missingTokens = list(set(allTokensWithNoAddress) - set(uniqueTokenSymbols))
+                
+                rowsToGetAddressFor = []
+                for result in uniqueResults:
+                    if result["primaryToken"]["symbol"] in allTokensWithNoAddress:
+                        rowsToGetAddressFor.append(result)
+
+                # TODO: Remove TEST
+                rowsToGetAddressFor = rowsToGetAddressFor[0:9]
+
+                tasks = [gatherMetadataForPair(
+                    baseLink=f"{dexscreenerRoot}/{networkName}",
+                    tokenRow=tokenRow,
+                    dbConnection=dbConnection
+                ) for tokenRow in rowsToGetAddressFor]
+
+                tokenMetadata = await gatherWithConcurrency(*tasks)
+
+                x = 1
+
                 # Collect the network results and and place them in their respective places
                 for result in results:
+
+                    # Collect the dex resulsts
                     dexName = result[0]["dex"]["dex"]
                     finalData[networkName][dexName] = result
 
+                x = 1
+
                 # Close the tab as we don't need it anymore
                 await browser.close()
+
+                x = 1
 
                 # Check if we are on the last network
                 if networkIndex == collectedNetworks:
