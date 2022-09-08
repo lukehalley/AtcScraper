@@ -4,8 +4,10 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
+from src.playwright.playwright_Setup import getBrowsersArgs
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import validateDexscreenerInit, getDexscreenerRoot
 from src.scrape.dexscreener.dexscreener_Scrape import getNetworkList, getDexListFromTabs, getTokensForDex
@@ -13,6 +15,8 @@ from src.utils.env import checkIsDocker
 
 load_dotenv()
 isDocker = checkIsDocker()
+
+MAX_CONCURRENCY = int(os.getenv('MAX_CONCURRENCY'))
 
 async def gather_with_concurrency(n, *tasks):
     semaphore = asyncio.Semaphore(n)
@@ -49,8 +53,14 @@ async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext
 
     return obj
 
-async def main() -> None:
+async def main():
     async with async_playwright() as p:
+
+        browserArgs = getBrowsersArgs()
+
+        # Create fake user agent
+        fakerInstance = Faker()
+        fakeUserAgent = fakerInstance.user_agent()
 
         # Setup Browser
         browser: BrowserContext = await p.chromium.launch_persistent_context(
@@ -60,10 +70,10 @@ async def main() -> None:
                 "width": 1920,
                 "height": 1080
             },
+            user_agent=fakeUserAgent
         )
 
         # Get + Navigate To DS Root
-
         page = await newPage(browser=browser)
 
         # Navigate To The Dexscreener Home
@@ -78,19 +88,22 @@ async def main() -> None:
             page=page
         )
 
+        networkDictionary = {'ethereum': {'url': 'https://dexscreener.com/ethereum'}}
+
         networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
 
 
         for network in networksToSkip:
-            del networkDictionary[network]
+            if network in networkDictionary:
+                del networkDictionary[network]
 
-        x = 1
+
 
         await page.close()
 
         tasks = [gatherNetworkDexs(networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
 
-        allNetworkDexs = await gather_with_concurrency(5, *tasks)
+        allNetworkDexs = await gather_with_concurrency(MAX_CONCURRENCY, *tasks)
 
         finalData = []
 
@@ -100,7 +113,7 @@ async def main() -> None:
 
             tasks = [getTokensForDex(networkName, dexDetail, browser) for dexDetail in networkDexs]
 
-            result = await gather_with_concurrency(5, *tasks)
+            result = await gather_with_concurrency(MAX_CONCURRENCY, *tasks)
             finalData.append(result)
 
         return finalData

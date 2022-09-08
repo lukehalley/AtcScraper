@@ -1,12 +1,15 @@
 import os
 
-from playwright.async_api import BrowserContext
+from playwright.async_api import BrowserContext, expect
 
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot
 from src.scrape.dexscreener.dexscreener_Utils import openTimespan, removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands
 
+import nest_asyncio
+nest_asyncio.apply()
+# __import__('IPython').embed()
 
 async def getNetworkList(page):
 
@@ -88,6 +91,21 @@ async def getTokensForDex(networkName, dexDetails, browser: BrowserContext):
     page = await newPage(browser=browser)
     print(dexName)
     await page.goto(dexURL)
+
+    isLoading = await page.locator("text=Loading...").count() > 0
+
+    while isLoading:
+        print("Loading...")
+        isLoading = await page.locator("text=Loading...").count() > 0
+
+    cantConnect = await page.locator("text=Failed connecting to server").count() > 0
+
+    while cantConnect:
+        print("Trying again...")
+        await page.reload()
+        cantConnect = await page.locator("text=Failed connecting to server").count() > 0
+
+    await expect(page.locator("text=Failed connecting to server")).to_have_count(0)
 
     await page.locator('text=Liquidity').first.click()
 
