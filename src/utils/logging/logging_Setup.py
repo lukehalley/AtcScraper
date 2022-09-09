@@ -1,5 +1,6 @@
 import logging, os, sys
 
+# Setup logger
 def setupLogging():
     logger = logging.getLogger("DFK-ARB")
 
