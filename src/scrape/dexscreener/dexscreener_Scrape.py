@@ -6,15 +6,21 @@ from faker import Faker
 from playwright.async_api import BrowserContext, expect, async_playwright
 
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
-from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot
-from src.scrape.dexscreener.dexscreener_Utils import openTimespan, removeIllegalCharactersFromElements, smartEval, \
+from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
+from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getRowsPairAddresses
 
 import nest_asyncio
-nest_asyncio.apply()
-# __import__('IPython').embed()
 
-async def getNetworkList(page):
+from src.utils.env.utils_Env import checkHeadless
+from src.utils.logging.logging_Print import printSeparator
+from src.utils.logging.logging_Setup import getProjectLogger
+
+nest_asyncio.apply()
+
+logger = getProjectLogger()
+
+async def gatherNetworkList(page):
 
     # Get The Sidebar List Element
     dsNetworkList = os.getenv('DS_LIST')
@@ -48,8 +54,7 @@ async def getNetworkList(page):
 
     return networkDictionary
 
-
-async def getDexListFromTabs(page):
+async def gatherDexListFromTabs(page):
 
     # Get The Sidebar List Element
     dexTabs = os.getenv('DS_DEX_TABS')
@@ -85,8 +90,33 @@ async def getDexListFromTabs(page):
 
     return dexs
 
+async def gatherNetworkDexs(networkName, networkDetails, browser: BrowserContext):
 
-async def getTokensForDex(networkName, dexDetails):
+    page = await newPage(browser=browser)
+
+    await page.goto(networkDetails["url"])
+
+    # Init Dexscreener
+    await validateDexscreenerInit(
+        page=page
+    )
+
+    networksDexs = await gatherDexListFromTabs(
+        page=page
+    )
+    amountOfDexs = len(networksDexs)
+
+    await page.close()
+
+    obj = {
+        networkName: networksDexs
+    }
+
+    logger.info(f"{networkName.title()}: {amountOfDexs}")
+
+    return obj
+
+async def gatherTokensForDex(networkName, dexDetails):
 
     async with async_playwright() as p:
 
@@ -94,9 +124,11 @@ async def getTokensForDex(networkName, dexDetails):
         fakerInstance = Faker()
         fakeUserAgent = fakerInstance.user_agent()
 
+        runHeadless = checkHeadless()
+
         # Setup Browser
         browser: BrowserContext = await p.chromium.launch_persistent_context(
-            headless=True,
+            headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
                 "width": 1920,
@@ -109,8 +141,10 @@ async def getTokensForDex(networkName, dexDetails):
         dexURL = dexDetails["url"]
 
         page = await newPage(browser=browser)
-        print(dexName)
+
         await page.goto(dexURL)
+
+        await expect(page.locator("text=Failed connecting to server")).to_have_count(0)
 
         await page.locator('text=Liquidity').first.click()
 
@@ -206,5 +240,8 @@ async def getTokensForDex(networkName, dexDetails):
         await page.close()
 
         await browser.close()
+
+        amountOfTokens = len(results)
+        logger.info(f"- {dexName.title()}: {amountOfTokens}")
 
         return results
