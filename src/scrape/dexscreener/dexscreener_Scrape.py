@@ -144,8 +144,6 @@ async def gatherTokensForDex(networkName, dexDetails):
 
         await page.goto(dexURL)
 
-        await expect(page.locator("text=Failed connecting to server")).to_have_count(0)
-
         await page.locator('text=Liquidity').first.click()
 
         # Get The Sidebar List Element
