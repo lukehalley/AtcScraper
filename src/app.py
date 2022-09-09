@@ -3,6 +3,8 @@ import json
 import time
 from dotenv import load_dotenv
 
+load_dotenv()
+
 # Import helpers
 from src.scrape.dexscreener.dexscreener_Execute import scrapeDexScreener
 from src.utils.env.utils_Env import checkIsDocker
@@ -10,8 +12,6 @@ from src.utils.env.utils_Env import checkIsDocker
 # Load the .env file
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
-
-load_dotenv()
 
 # Check if were running in a container - ie. in Production
 isDocker = checkIsDocker()
@@ -21,6 +21,9 @@ logger = setupLogging()
 
 # Function which the Lambda will execute
 def lambda_handler(event, context):
+
+    # Gte our starting time
+    starting = time.perf_counter()
 
     printSeparator()
     logger.info(f"ATC Scraper")
@@ -33,6 +36,15 @@ def lambda_handler(event, context):
     loop.run_until_complete(
         scrapeDexScreener()
     )
+
+    # Get our ending time
+    ending = time.perf_counter()
+
+    # Log that out scraping is done
+    printSeparator()
+    logger.info(f"Dex Screener Scrape Complete ✅")
+    logger.info(f"Took {ending - starting}s")
+    printSeparator()
 
     # Send our response
     response = {
@@ -47,7 +59,4 @@ def lambda_handler(event, context):
 
 # Function for running locally
 if __name__ == "__main__" and not isDocker:
-    starting = time.perf_counter()
     lambda_handler(None, None)
-    ending = time.perf_counter()
-    print(f"Took: {ending - starting}")
