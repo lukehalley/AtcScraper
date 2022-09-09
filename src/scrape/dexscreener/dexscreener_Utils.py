@@ -70,3 +70,8 @@ def getDexTableRows(driver):
             className=os.getenv("DS_DEX_ROW_CLASS")
         )
     return dexTableElement, dexTableRows
+
+async def getRowsPairAddresses(page, networkName):
+    hrefs = await page.eval_on_selector_all(f"a[href^='/{networkName}/0x']", "elements => elements.map(element => element.href)")
+    pairAddresses = [item.split("/")[-1] for item in hrefs]
+    return pairAddresses

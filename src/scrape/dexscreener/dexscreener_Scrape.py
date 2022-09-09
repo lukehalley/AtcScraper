@@ -8,7 +8,7 @@ from playwright.async_api import BrowserContext, expect, async_playwright
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot
 from src.scrape.dexscreener.dexscreener_Utils import openTimespan, removeIllegalCharactersFromElements, smartEval, \
-    replaceNumberShorthands
+    replaceNumberShorthands, getRowsPairAddresses
 
 import nest_asyncio
 nest_asyncio.apply()
@@ -112,34 +112,7 @@ async def getTokensForDex(networkName, dexDetails):
         print(dexName)
         await page.goto(dexURL)
 
-        # isLoading = await page.locator("text=Loading...").count() > 0
-        #
-        # while isLoading:
-        #     print("Loading...")
-        #
-        #     isLoading = await page.locator("text=Loading...").count() > 0
-
-        # cantConnect = await page.locator("text=Failed connecting to server").count() > 0
-        #
-        # while cantConnect:
-        #     print("Trying again...")
-        #     time.sleep(5)
-        #     await page.reload()
-        #     cantConnect = await page.locator("text=Failed connecting to server").count() > 0
-        #
-        # await expect(page.locator("text=Failed connecting to server")).to_have_count(0)
-
         await page.locator('text=Liquidity').first.click()
-
-        tokenResults = {}
-
-        # First selector is '#menu-list-18-menuitem-13' - so iterate up to 16 to get the four buttons
-        allTimeframes = {
-            "5M": 13,
-            "1H": 14,
-            "6H": 15,
-            "24H": 16,
-        }
 
         # Get The Sidebar List Element
         dexTable = os.getenv('DS_DEX_TABLE')
@@ -151,6 +124,12 @@ async def getTokensForDex(networkName, dexDetails):
         # Get All The 'li' Items
         dexTabItems = await getAItems(
             listElement=dexTableElement
+        )
+
+        # Get Hrefs
+        pairAddresses = await getRowsPairAddresses(
+            page=page,
+            networkName=networkName
         )
 
         rows = [i for i in dexTabItems if i.startswith('#')]
@@ -180,8 +159,11 @@ async def getTokensForDex(networkName, dexDetails):
                     for _ in range(slotsToFill):
                         row.append("N/A")
 
+            tokenRank = smartEval(row[0])
+            pairAddress = pairAddresses[tokenRank - 1]
+
             tokenDetails = {
-                "rank": smartEval(row[0]),
+                "rank": tokenRank,
                 "market": {
                     "volume": replaceNumberShorthands(row[6]),
                     "liquidity": replaceNumberShorthands(row[11]),
@@ -194,11 +176,16 @@ async def getTokensForDex(networkName, dexDetails):
                 "dex": {
                     "dex": dexName,
                 },
-                "token": {
+                "primaryToken": {
                     "name": row[3],
-                    "primaryToken": row[1],
-                    "secondaryToken": row[2],
-                    "tokenPair": f"{row[1]}/{row[2]}",
+                    "symbol": row[1]
+                },
+                "secondaryToken": {
+                    "symbol": row[2],
+                },
+                "pair": {
+                    "name": f"{row[1]}/{row[2]}",
+                    "address": pairAddress
                 },
                 "price": {
                     "currentPrice": smartEval(row[4]),
