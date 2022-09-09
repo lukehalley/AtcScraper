@@ -407,7 +407,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
         # Return our collected tokens
         return collectedTokens
 
-async def gatherMetadataForPair(baseLink, tokenRow, dbConnection):
+async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbConnection):
 
     # Create fake user agent
     fakerInstance = Faker()
@@ -433,20 +433,16 @@ async def gatherMetadataForPair(baseLink, tokenRow, dbConnection):
         # Open a new tab
         page = await newPage(browser=browser)
 
-        # Create object for storing metadata
-        metadataObject = {}
-
         # Get row data
         pairAddress = tokenRow["pair"]["address"]
+        uploadIndex = tokenRow["uploadIndex"]
         primaryTokenDbId = tokenRow["primaryToken"]["db"]["dbId"]
-        secondaryTokenDbId = tokenRow["secondaryToken"]["db"]["dbId"]
-        x = 1
+        primaryTokenDbSymbol = tokenRow["primaryToken"]["symbol"]
+
+        logger.info(f"[{uploadIndex}/{amountOfTokensToUpdate}] {primaryTokenDbSymbol} [{pairAddress}]")
 
         # Calculate our pair address
         pairUrl = f"{baseLink}/{pairAddress}"
-
-        # Add the pair address to metadata
-        metadataObject["pairAddress"] = pairAddress
 
         # Go the pair graph page
         await page.goto(pairUrl)
@@ -465,10 +461,3 @@ async def gatherMetadataForPair(baseLink, tokenRow, dbConnection):
             fieldToUpdate="address",
             fieldNewValue=primaryTokenAddress
         )
-
-        # Get the network explorer while were at it
-        metadataObject["networkExplorer"] = '/'.join(tokenExplorerLink.split("/")[0:4])
-
-        print(metadataObject)
-
-        return metadataObject
