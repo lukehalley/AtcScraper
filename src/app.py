@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     loop = asyncio.get_event_loop()
 
     # Run the Dexscreener scraper
-    loop.run_until_complete(
+    results = loop.run_until_complete(
         scrapeDexScreener()
     )
 
