@@ -156,13 +156,21 @@ async def scrapeDexScreener():
                 networkName = list(network.keys())[0]
                 networkDexs = network[networkName]
 
+                # Add network to the final dict
+                if networkName not in finalData:
+                    finalData[networkName] = {}
+
                 # Log the current network and the progress
                 logger.info(f"{networkName.title()} [{networkCountStr}]")
 
                 # Asynchronously gather each dex's tokens
                 tasks = [gatherTokensForDex(networkName, dexDetail) for dexDetail in networkDexs]
-                result = await gatherWithConcurrency(maxConcurrency, *tasks)
-                finalData[networkName] = dict(ChainMap(*result))
+                results = await gatherWithConcurrency(maxConcurrency, *tasks)
+
+                # Collect the network results and and place them in their respective places
+                for result in results:
+                    dexName = result[0]["dex"]["dex"]
+                    finalData[networkName][dexName] = result
 
                 # Close the tab as we don't need it anymore
                 await browser.close()
