@@ -56,8 +56,11 @@ async def gatherNetworkList(dbConnection, page):
         networkExistsInDB = checkIfRowExistsByValue(
             dbConnection=dbConnection,
             table="networks",
-            column="name",
-            value=networkName
+            conditions = [
+                {
+                    "name": networkName
+                }
+            ]
         )
 
         if not networkExistsInDB:
@@ -69,8 +72,11 @@ async def gatherNetworkList(dbConnection, page):
         networkRow = getRowByValue(
             dbConnection=dbConnection,
             table="networks",
-            column="name",
-            value=networkName
+            conditions=[
+                {
+                    "name": networkName
+                }
+            ]
         )
 
         if "db" not in networkDictionary[networkName]:
@@ -84,6 +90,8 @@ async def gatherNetworkList(dbConnection, page):
 
 # Gather all dexs for each network
 async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
+
+    # TODO: Catch non-loading pages correctly
 
     # Create a new page
     page = await newPage(browser=browser)
@@ -120,16 +128,6 @@ async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: 
     # Return the network details object
     return networkDetails
 
-    # try:
-    #
-
-    # except:
-    #
-    #     logger.info(f"{networkName.title()}: Skipped")
-    #
-    #     # Return nothing
-    #     return None
-
 # Gather the list of dexs from the top of each network page of dexscreener
 async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
@@ -164,8 +162,11 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
         dexExistsInDB = checkIfRowExistsByValue(
             dbConnection=dbConnection,
             table="dexs",
-            column="name",
-            value=dexName
+            conditions=[
+                {
+                    "name": dexName
+                }
+            ]
         )
 
         if not dexExistsInDB:
@@ -178,8 +179,11 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
         dexRow = getRowByValue(
             dbConnection=dbConnection,
             table="dexs",
-            column="name",
-            value=dexName
+            conditions=[
+                {
+                    "name": dexName
+                }
+            ]
         )
 
         dexObject = {
@@ -197,7 +201,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     return dexListDictionary
 
 # For a dex - get the top 100 tokens by liquidity
-async def gatherTokensForDex(networkName, dexDetails):
+async def gatherTokensForDex(dbConnection, networkName, dexDetails):
     # Get the current dexs name and url
     dexName = dexDetails["name"]
     dexURL = dexDetails["url"]
@@ -331,6 +335,19 @@ async def gatherTokensForDex(networkName, dexDetails):
                     },
                 }
             }
+
+            primaryTokenExists = checkIfRowExistsByValue(
+                dbConnection=dbConnection,
+                table="tokens",
+                conditions=[
+                    {
+                        "name": tokenDetails["primaryToken"]["symbol"]
+                    },
+                    {
+                        "network_id": dexDetails["db"]["networkId"]
+                    }
+                ]
+            )
 
             # Add the uniswap version back in if we have it
             if hasUniswapBadge:
