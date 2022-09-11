@@ -6,6 +6,7 @@ from pathlib import Path
 from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
+from src.db.db_Setup import initDBConnection
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex
@@ -81,11 +82,15 @@ async def scrapeDexScreener():
         logger.info(f"Dexscreener validated.")
         printSeparator(True)
 
+        # Init MySQL DB
+        dbConnection = initDBConnection()
+
         # Gather all the networks from the sidebar
         printSeparator()
         logger.info(f"Gathering Dex Screener Networks")
         printSeparator()
         networkDictionary = await gatherNetworkList(
+            dbConnection=dbConnection,
             page=page
         )
 
@@ -103,12 +108,6 @@ async def scrapeDexScreener():
         if len(networksToSkip) > 0:
             logger.info(f"Skipping networks: {networksToSkip}")
 
-        # TODO: Remove, just testing
-        networkDictionary = {
-            'ethereum': {'url': 'https://dexscreener.com/ethereum'},
-            'avalanche': {'url': 'https://dexscreener.com/avalanche'}
-        }
-
         # Close the tab as we don't need it anymore
         await page.close()
 
@@ -121,7 +120,7 @@ async def scrapeDexScreener():
         printSeparator()
 
         # Asynchronously gather each network's dexs
-        tasks = [gatherNetworkDexs(networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
+        tasks = [gatherNetworkDexs(dbConnection, networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
         allNetworkDexs = await gatherWithConcurrency(maxConcurrency, *tasks)
         finalNetworkDexs = [network for network in allNetworkDexs if network is not None]
 
