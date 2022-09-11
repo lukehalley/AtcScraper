@@ -1,3 +1,4 @@
 python-dotenv
 Faker~=14.2.0
 selenium~=3.141.0
+=mysql-connector-python=8.0.30
