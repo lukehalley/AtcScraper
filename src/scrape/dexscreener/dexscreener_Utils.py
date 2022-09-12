@@ -1,10 +1,11 @@
+import re
 from ast import literal_eval
 
 # Remove any illegal characters from the raw HTML we scrape
 # when getting the rows from the token lists for a dex
 def removeIllegalCharactersFromElements(elementList):
     cleanList = []
-    charsToRemove = ["#","$","%","/"]
+    charsToRemove = ["#", "$", "%", "/", ",", "-", "<", ">"]
     for el in elementList:
         for c in charsToRemove:
             el = el.replace(c, "")
@@ -27,7 +28,10 @@ def replaceNumberShorthands(text):
     # If it does, turn it back into a number
     if hasSymbol:
         num, magnitude = text[:-1], text[-1]
-        return int(float(num) * numberShorthands[magnitude])
+
+        num = re.sub('[^0-9.]', '', replaceNumberShorthands(num))
+
+        return str(float(num) * numberShorthands[magnitude])
     else:
         return text
 
