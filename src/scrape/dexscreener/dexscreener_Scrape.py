@@ -5,8 +5,8 @@ import nest_asyncio
 from faker import Faker
 from playwright.async_api import BrowserContext, async_playwright
 
-from src.db.db_Read import checkIfRowExistsByValue, getRowByValue
-from src.db.db_Write import addNetworkToDB, addDexToDB
+from src.db.db_Read import getRowByValue
+from src.db.db_Write import addNetworkToDB, addDexToDB, addTokenToDB, addTokenPairToDB
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
@@ -53,21 +53,10 @@ async def gatherNetworkList(dbConnection, page):
             "url": f"{baseUrl}/{networkName}"
         }
 
-        networkExistsInDB = checkIfRowExistsByValue(
+        addNetworkToDB(
             dbConnection=dbConnection,
-            table="networks",
-            conditions = [
-                {
-                    "name": networkName
-                }
-            ]
+            networkName=networkName
         )
-
-        if not networkExistsInDB:
-            addNetworkToDB(
-                dbConnection=dbConnection,
-                networkName=networkName
-            )
 
         networkRow = getRowByValue(
             dbConnection=dbConnection,
@@ -159,22 +148,11 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     for dex in filteredList:
         dexName = (dex.lower()).replace(" ", "")
 
-        dexExistsInDB = checkIfRowExistsByValue(
+        await addDexToDB(
             dbConnection=dbConnection,
-            table="dexs",
-            conditions=[
-                {
-                    "name": dexName
-                }
-            ]
+            networkDbId=networkDetails["db"]["networkId"],
+            dexName=dexName
         )
-
-        if not dexExistsInDB:
-            await addDexToDB(
-                dbConnection=dbConnection,
-                networkDbId=networkDetails["db"]["networkId"],
-                dexName=dexName
-            )
 
         dexRow = getRowByValue(
             dbConnection=dbConnection,
@@ -336,17 +314,37 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
                 }
             }
 
-            primaryTokenExists = checkIfRowExistsByValue(
+            # Add primary token to database
+            primaryTokenId = await addTokenToDB(
                 dbConnection=dbConnection,
-                table="tokens",
-                conditions=[
-                    {
-                        "name": tokenDetails["primaryToken"]["symbol"]
-                    },
-                    {
-                        "network_id": dexDetails["db"]["networkId"]
-                    }
-                ]
+                networkDbId=dexDetails["db"]["networkId"],
+                dexDbId=dexDetails["db"]["dexId"],
+                tokenName=tokenDetails["primaryToken"]["name"],
+                tokenSymbol=tokenDetails["primaryToken"]["symbol"]
+            )
+
+            # Add secondary token to database
+            secondaryTokenId = await addTokenToDB(
+                dbConnection=dbConnection,
+                networkDbId=dexDetails["db"]["networkId"],
+                dexDbId=dexDetails["db"]["dexId"],
+                tokenName=None,
+                tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+            )
+
+            await addTokenPairToDB(
+                dbConnection=dbConnection,
+                networkDbId=dexDetails["db"]["networkId"],
+                dexDbId=dexDetails["db"]["dexId"],
+                primaryTokenDbId=primaryTokenId,
+                secondaryTokenDbId=secondaryTokenId,
+                pairName=tokenDetails["pair"]["name"],
+                pairAddress=tokenDetails["pair"]["address"],
+                dexRanking=tokenRank,
+                dexPrice=tokenDetails["price"]["currentPrice"],
+                pairLiquidity=tokenDetails["market"]["liquidity"],
+                pairVolume=tokenDetails["market"]["volume"],
+                pairFdv=tokenDetails["market"]["fdv"]
             )
 
             # Add the uniswap version back in if we have it
