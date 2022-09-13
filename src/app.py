@@ -4,6 +4,8 @@ import time
 
 from dotenv import load_dotenv
 
+from src.utils.time.time_Calculations import getMinSecString
+
 load_dotenv()
 
 # Import helpers
@@ -24,7 +26,7 @@ logger = setupLogging()
 def lambda_handler(event, context):
 
     # Gte our starting time
-    starting = time.perf_counter()
+    startingTime = time.perf_counter()
 
     printSeparator()
     logger.info(f"ATC Scraper")
@@ -39,12 +41,12 @@ def lambda_handler(event, context):
     )
 
     # Get our ending time
-    ending = time.perf_counter()
+    timerString = getMinSecString(time.perf_counter() - startingTime)
 
     # Log that out scraping is done
     printSeparator()
     logger.info(f"Dex Screener Scrape Complete ✅")
-    logger.info(f"Took {ending - starting}s")
+    logger.info(f"Took: {timerString}")
     printSeparator()
 
     # Send our response
