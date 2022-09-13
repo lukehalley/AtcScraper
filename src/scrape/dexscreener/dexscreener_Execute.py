@@ -95,6 +95,7 @@ async def scrapeDexScreener():
         printSeparator()
         logger.info(f"Gathering Dex Screener Networks")
         printSeparator()
+
         networkDictionary = await gatherNetworkList(
             dbConnection=dbConnection,
             page=page
@@ -180,6 +181,12 @@ async def scrapeDexScreener():
                 results = await gatherWithConcurrency(*tasks)
                 results = [x for x in results if x != []]
 
+                printSeparator(True)
+
+                printSeparator()
+                logger.info(f"Adding Tokens Addresses To DB")
+                printSeparator()
+
                 dexscreenerRoot = getDexscreenerRoot()
 
                 # Combine the list of dictionary lists into one big list
@@ -212,25 +219,26 @@ async def scrapeDexScreener():
                 rowsToGetAddressFor = []
                 for result in uniqueResults:
                     if result["primaryToken"]["symbol"] in allTokensWithNoAddress:
+                        result["uploadIndex"] = len(rowsToGetAddressFor) + 1
                         rowsToGetAddressFor.append(result)
 
-                # TODO: Remove TEST
-                rowsToGetAddressFor = rowsToGetAddressFor[0:9]
+                amountOfTokensToUpdate = len(rowsToGetAddressFor)
 
-                tasks = [gatherMetadataForPair(
-                    baseLink=f"{dexscreenerRoot}/{networkName}",
-                    tokenRow=tokenRow,
-                    dbConnection=dbConnection
-                ) for tokenRow in rowsToGetAddressFor]
+                if amountOfTokensToUpdate > 0:
 
-                tokenMetadata = await gatherWithConcurrency(*tasks)
+                    tasks = [gatherMetadataForPair(
+                        baseLink=f"{dexscreenerRoot}/{networkName}",
+                        tokenRow=tokenRow,
+                        amountOfTokensToUpdate=amountOfTokensToUpdate,
+                        dbConnection=dbConnection
+                    ) for tokenRow in rowsToGetAddressFor]
 
-                x = 1
+                    await gatherWithConcurrency(*tasks)
 
                 # Collect the network results and and place them in their respective places
                 for result in results:
 
-                    # Collect the dex resulsts
+                    # Collect the dex results
                     dexName = result[0]["dex"]["dex"]
                     finalData[networkName][dexName] = result
 
