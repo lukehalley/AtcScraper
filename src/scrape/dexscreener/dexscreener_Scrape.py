@@ -5,6 +5,7 @@ from pathlib import Path
 import nest_asyncio
 from faker import Faker
 from playwright.async_api import BrowserContext, async_playwright
+from retrying_async import retry
 
 from src.db.db_Read import getRowByValue
 from src.db.db_Write import addNetworkToDB, addDexToDB, addTokenToDB, addTokenPairToDB
@@ -101,6 +102,9 @@ async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: 
         page=page
     )
 
+    if not networksDexs:
+        return {}
+
     # Count dexs
     amountOfDexs = len(networksDexs)
 
@@ -118,15 +122,20 @@ async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: 
     # Return the network details object
     return networkDetails
 
+
+@retry(delay=5)
 # Gather the list of dexs from the top of each network page of dexscreener
 async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
-    # Get the sidebar list element
-    dexTabs = os.getenv('DS_DEX_TABS')
-    dexTabElement = await findAndCheckElement(
-        page=page,
-        selector=dexTabs
-    )
+    try:
+        # Get the sidebar list element
+        dexTabs = os.getenv('DS_DEX_TABS')
+        dexTabElement = await findAndCheckElement(
+            page=page,
+            selector=dexTabs
+        )
+    except:
+        return {}
 
     # Get all the 'li' items
     dexTabItems = await getListItems(

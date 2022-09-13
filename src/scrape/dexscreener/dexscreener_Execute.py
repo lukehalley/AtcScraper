@@ -134,7 +134,8 @@ async def scrapeDexScreener():
         # Asynchronously gather each network's dexs
         tasks = [gatherNetworkDexs(dbConnection, networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
         allNetworkDexs = await gatherWithConcurrency(maxConcurrency, *tasks)
-        finalNetworkDexs = [network for network in allNetworkDexs if network is not None]
+        nonEmptyNetworks = [network for network in allNetworkDexs if network is not None]
+        finalNetworkDexs = [item for item in nonEmptyNetworks if item]
 
         # Count how many dexs we collected
         collectedNetworks = len(finalNetworkDexs)
@@ -177,7 +178,7 @@ async def scrapeDexScreener():
                 # Asynchronously gather each dex's tokens
                 tasks = [gatherTokensForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
                 results = await gatherWithConcurrency(maxConcurrency, *tasks)
-
+                results = [x for x in results if x != []]
                 # Collect the network results and and place them in their respective places
                 for result in results:
                     dexName = result[0]["dex"]["dex"]

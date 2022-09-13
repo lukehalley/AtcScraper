@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS pairs (
   name TEXT NOT NULL,
   address TEXT NOT NULL,
   ranking int NOT NULL,
-  price decimal NOT NULL,
+  price BIGINT NOT NULL,
   liquidity BIGINT NOT NULL,
   volume BIGINT NOT NULL,
   fdv BIGINT NOT NULL,

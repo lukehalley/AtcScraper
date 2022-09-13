@@ -27,11 +27,16 @@ def replaceNumberShorthands(text):
 
     # If it does, turn it back into a number
     if hasSymbol:
-        num, magnitude = text[:-1], text[-1]
 
+        num, magnitude = text[:-1], text[-1]
+        num = num.replace(" ", "")
         num = re.sub('[^0-9.]', '', replaceNumberShorthands(num))
 
-        return str(float(num) * numberShorthands[magnitude])
+        try:
+            finalNum = str(float(num) * numberShorthands[magnitude])
+        except:
+            finalNum = "0.0"
+        return finalNum
     else:
         return text
 
