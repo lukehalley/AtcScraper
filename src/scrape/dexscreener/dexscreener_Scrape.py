@@ -7,6 +7,7 @@ from faker import Faker
 from playwright.async_api import BrowserContext, async_playwright
 from retrying_async import retry
 
+from src.db.actions.actions_Tokens import updateTokenByDbId
 from src.db.db_Read import getRowByValue
 from src.db.db_Write import addNetworkToDB, addDexToDB, addTokenToDB, addTokenPairToDB
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
@@ -78,7 +79,6 @@ async def gatherNetworkList(dbConnection, page):
     # Return the network dictionary
     return networkDictionary
 
-
 # Gather all dexs for each network
 async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
 
@@ -122,8 +122,6 @@ async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: 
     # Return the network details object
     return networkDetails
 
-
-@retry(delay=5)
 # Gather the list of dexs from the top of each network page of dexscreener
 async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
@@ -190,6 +188,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
 # For a dex - get the top 100 tokens by liquidity
 async def gatherTokensForDex(dbConnection, networkName, dexDetails):
+
     # Get the current dexs name and url
     dexName = dexDetails["name"]
     dexURL = dexDetails["url"]
@@ -237,7 +236,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
         )
 
         # Get the pair address for each token in the list
-        rowMetadata = await getAllRowsMetadata(
+        pairAddresses = await getAllRowsMetadata(
             page=page,
             networkName=networkName
         )
@@ -285,7 +284,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
             tokenRank = smartEval(row[0])
 
             # Get the pair address for this row
-            pairAddress = rowMetadata[tokenRank - 1]
+            pairAddress = pairAddresses[tokenRank - 1]
 
             # Create a token object from all the properties we scraped
             tokenDetails = {
@@ -338,14 +337,17 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
             # If it doesn't - add it
             if not primaryTokenDetails:
                 # Add primary token to database
-                primaryTokenId = await addTokenToDB(
+                primaryTokenDbId = await addTokenToDB(
                     dbConnection=dbConnection,
                     networkDbId=dexDetails["db"]["networkId"],
                     tokenName=tokenDetails["primaryToken"]["name"],
                     tokenSymbol=tokenDetails["primaryToken"]["symbol"]
                 )
             else:
-                primaryTokenId = primaryTokenDetails["token_id"]
+                primaryTokenDbId = primaryTokenDetails["token_id"]
+
+            tokenDetails["primaryToken"]["db"] = {}
+            tokenDetails["primaryToken"]["db"]["dbId"] = primaryTokenDbId
 
             # Check if primary token already exists
             secondaryTokenDetails = getRowByValue(
@@ -360,21 +362,24 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
 
             if not secondaryTokenDetails:
                 # Add secondary token to database
-                secondaryTokenId = await addTokenToDB(
+                secondaryTokenDbId = await addTokenToDB(
                     dbConnection=dbConnection,
                     networkDbId=dexDetails["db"]["networkId"],
                     tokenName=None,
                     tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
                 )
             else:
-                secondaryTokenId = secondaryTokenDetails["token_id"]
+                secondaryTokenDbId = secondaryTokenDetails["token_id"]
+
+            tokenDetails["secondaryToken"]["db"] = {}
+            tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
 
             await addTokenPairToDB(
                 dbConnection=dbConnection,
                 networkDbId=dexDetails["db"]["networkId"],
                 dexDbId=dexDetails["db"]["dexId"],
-                primaryTokenDbId=primaryTokenId,
-                secondaryTokenDbId=secondaryTokenId,
+                primaryTokenDbId=primaryTokenDbId,
+                secondaryTokenDbId=secondaryTokenDbId,
                 pairName=tokenDetails["pair"]["name"],
                 pairAddress=tokenDetails["pair"]["address"],
                 dexRanking=tokenRank,
@@ -401,3 +406,69 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
 
         # Return our collected tokens
         return collectedTokens
+
+async def gatherMetadataForPair(baseLink, tokenRow, dbConnection):
+
+    # Create fake user agent
+    fakerInstance = Faker()
+    fakeUserAgent = fakerInstance.user_agent()
+
+    # Check if we want to start our browser in headless
+    runHeadless = checkHeadless()
+
+    # Create async instance of playwright
+    async with async_playwright() as playwright:
+
+        # Setup browser
+        browser: BrowserContext = await playwright.chromium.launch_persistent_context(
+            headless=runHeadless,
+            user_data_dir=f"{Path.home()}/.config/chromium",
+            viewport={
+                "width": 1920,
+                "height": 1080
+            },
+            user_agent=fakeUserAgent
+        )
+
+        # Open a new tab
+        page = await newPage(browser=browser)
+
+        # Create object for storing metadata
+        metadataObject = {}
+
+        # Get row data
+        pairAddress = tokenRow["pair"]["address"]
+        primaryTokenDbId = tokenRow["primaryToken"]["db"]["dbId"]
+        secondaryTokenDbId = tokenRow["secondaryToken"]["db"]["dbId"]
+        x = 1
+
+        # Calculate our pair address
+        pairUrl = f"{baseLink}/{pairAddress}"
+
+        # Add the pair address to metadata
+        metadataObject["pairAddress"] = pairAddress
+
+        # Go the pair graph page
+        await page.goto(pairUrl)
+
+        # Get all elements with the external link label
+        allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
+
+        # Get the second element on the page which is the address of the primary token
+        tokenExplorerLink = await allBlockExplorerLinks.nth(1).get_attribute("href")
+        primaryTokenAddress = tokenExplorerLink.split("/")[-1]
+
+        # Update Token Address In DB
+        updateTokenByDbId(
+            dbConnection=dbConnection,
+            tokenDbId=primaryTokenDbId,
+            fieldToUpdate="address",
+            fieldNewValue=primaryTokenAddress
+        )
+
+        # Get the network explorer while were at it
+        metadataObject["networkExplorer"] = '/'.join(tokenExplorerLink.split("/")[0:4])
+
+        print(metadataObject)
+
+        return metadataObject

@@ -2,8 +2,12 @@ import asyncio
 import os
 
 # Run async task but limit how many tasks we can run at a time
-async def gatherWithConcurrency(n, *tasks):
-    semaphore = asyncio.Semaphore(n)
+async def gatherWithConcurrency(*tasks):
+
+    # Get how many task we run in concurrently
+    maxConcurrency = getmaxConcurrency()
+
+    semaphore = asyncio.Semaphore(maxConcurrency)
 
     async def sem_task(task):
         async with semaphore:
