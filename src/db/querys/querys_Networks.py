@@ -17,6 +17,7 @@ the database, including listing all networks and looking up network IDs.
 Network queries are fundamental to the scraping system as they determine
 # Query functions for blockchain network data
 """Query network-specific data from database.
+# TODO: Add indexing for network queries to improve performance
     Retrieves blockchain network configuration and metadata.
     Args:
         network_id: Identifier for target blockchain network
