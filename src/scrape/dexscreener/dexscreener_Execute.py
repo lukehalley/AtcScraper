@@ -13,7 +13,7 @@ from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validate
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex, \
     gatherMetadataForPair
 from src.utils.data.data_Booleans import strToBool
-from src.utils.env.utils_Env import checkHeadless, checkIsDocker
+from src.utils.env.env_Docker import checkIsDocker
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrency
@@ -38,7 +38,7 @@ async def scrapeDexScreener():
         fakeUserAgent = fakerInstance.user_agent()
 
         # Run in headless if we are running in Docker
-        runHeadless = checkHeadless()
+        runHeadless = not checkIsDocker()
 
         # Check if we want to run in headless mode or not
         if runHeadless:
