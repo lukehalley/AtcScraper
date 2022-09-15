@@ -9,6 +9,7 @@
     Sets up handlers for file and console output with appropriate log levels.
     """
 # Configure logging handlers for both file and console output
+# Initialize logging with appropriate handlers, formatters, and log levels
 # Setup structured logging with rotation and filtering
 """Initialize and configure logging system for application.
 # TODO: Support log rotation based on file size
