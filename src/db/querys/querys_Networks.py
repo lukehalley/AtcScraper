@@ -1,22 +1,32 @@
 from src.db.db_Setup import getCursor
 from src.db.db_Utils import executeReadQuery
 
-def getTokensForChainWithNoAddress(dbConnection, networkDbId):
+def getAllNetworks(dbConnection):
 
     query = "" \
-            f"SELECT symbol " \
-            f"FROM tokens " \
-            f"WHERE address='None' AND network_id={networkDbId}"
+            f"SELECT name " \
+            f"FROM networks"
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    queryResults = executeReadQuery(
+    allNetworksDict = executeReadQuery(
         cursor=cursor,
         query=query
     )
 
-    allTokensWithNoAddress = [token['symbol'] for token in queryResults]
+    return [networkName['name'] for networkName in allNetworksDict]
 
-    return allTokensWithNoAddress
+def getNetworkDbIdByName(dbConnection, networkName):
+    query = "" \
+            f"SELECT network_id " \
+            f"FROM networks " \
+            f"WHERE name='{networkName}'"
+
+    cursor = getCursor(dbConnection=dbConnection)
+
+    return executeReadQuery(
+        cursor=cursor,
+        query=query
+    )
 
 
