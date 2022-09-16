@@ -1,4 +1,8 @@
 """Main execution logic for Dexscreener data collection."""
+"""DEXScreener scraper execution module.
+
+Orchestrates the main scraping workflow including initialization, data collection, and cleanup.
+"""
 """
 Execution engine for DEXScreener scraping operations.
 Handles orchestration of scraping tasks and error management.
