@@ -10,7 +10,7 @@ load_dotenv()
 
 # Import helpers
 from src.scrape.dexscreener.dexscreener_Execute import scrapeDexScreener
-from src.utils.env.utils_Env import checkIsDocker
+from src.utils.env.env_Docker import checkIsDocker
 
 # Load the .env file
 from src.utils.logging.logging_Print import printSeparator

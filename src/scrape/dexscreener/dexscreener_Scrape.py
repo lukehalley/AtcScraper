@@ -14,7 +14,7 @@ from src.playwright.playwright_Utils import findAndCheckElement, getListItems, g
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getAllRowsMetadata
-from src.utils.env.utils_Env import checkHeadless
+from src.utils.env.env_Docker import checkIsDocker
 from src.utils.logging.logging_Setup import getProjectLogger
 
 nest_asyncio.apply()
@@ -198,7 +198,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
     fakeUserAgent = fakerInstance.user_agent()
 
     # Check if we want to start our browser in headless
-    runHeadless = checkHeadless()
+    runHeadless = not checkIsDocker()
 
     # Create async instance of playwright
     async with async_playwright() as playwright:
@@ -414,7 +414,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
     fakeUserAgent = fakerInstance.user_agent()
 
     # Check if we want to start our browser in headless
-    runHeadless = checkHeadless()
+    runHeadless = not checkIsDocker()
 
     # Create async instance of playwright
     async with async_playwright() as playwright:
