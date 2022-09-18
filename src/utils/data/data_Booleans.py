@@ -4,6 +4,7 @@
 """Boolean data type utilities and safe conversions."""
 """Boolean conversion and validation utilities.
 # Convert various string representations to boolean values safely
+# Boolean conversion and validation utilities for consistent type handling
     Handles standardization of boolean values from various sources.
     """
 # Convert various inputs to boolean with safe defaults
