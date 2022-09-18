@@ -10,3 +10,5 @@ def checkIsDocker():
 def checkIsAWS():
     return True if os.environ.get("AWS_DEFAULT_REGION") else False
 
+def checkHeadless():
+    return checkIsDocker() or strToBool(os.getenv("FORCE_HEADLESS"))

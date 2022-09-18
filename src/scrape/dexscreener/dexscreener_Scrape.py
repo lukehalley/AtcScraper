@@ -15,7 +15,7 @@ from src.playwright.playwright_Utils import findAndCheckElement, getListItems, g
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getAllRowsMetadata
-from src.utils.env.env_Environment import checkIsDocker
+from src.utils.env.env_Environment import checkIsDocker, checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 
 nest_asyncio.apply()
@@ -53,7 +53,8 @@ async def gatherNetworkList(dbConnection, page):
         dbConnection=dbConnection
     )
 
-    networksToStore = list(set(currentStoredNetworks) - set(cleanNetworkList))
+    s = set(currentStoredNetworks)
+    networksToStore = [x for x in cleanNetworkList if x not in s]
 
     # Get the urls to each network
     for networkName in cleanNetworkList:
@@ -81,7 +82,10 @@ async def gatherNetworkList(dbConnection, page):
         if "db" not in networkDictionary[networkName]:
             networkDictionary[networkName]["db"] = {}
 
-        networkDictionary[networkName]["db"]["networkId"] = networkRow["network_id"]
+        try:
+            networkDictionary[networkName]["db"]["networkId"] = networkRow["network_id"]
+        except:
+            x = 1
 
     # Return the network dictionary
     return networkDictionary
@@ -164,7 +168,8 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
         networkDbId=networkDetails["db"]["networkId"]
     )
 
-    dexsToStore = list(set(currentlyStoredDexs) - set(cleanDexList))
+    uniqueCurrentlyStoredDexs = set(currentlyStoredDexs)
+    dexsToStore = [x for x in cleanDexList if x not in uniqueCurrentlyStoredDexs]
 
     # Get the url for each dex in each network
     for dexName in cleanDexList:
@@ -201,7 +206,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     return dexListDictionary
 
 # For a dex - get the top 100 tokens by liquidity
-async def gatherTokensForDex(dbConnection, networkName, dexDetails):
+async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
     # Get the current dexs name and url
     dexName = dexDetails["name"]
@@ -212,7 +217,7 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
     fakeUserAgent = fakerInstance.user_agent()
 
     # Check if we want to start our browser in headless
-    runHeadless = checkIsDocker()
+    runHeadless = checkHeadless()
 
     # Create async instance of playwright
     async with async_playwright() as playwright:
@@ -325,15 +330,6 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
                 "pair": {
                     "name": f"{row[1]}/{row[2]}",
                     "address": pairAddress
-                },
-                "price": {
-                    "currentPrice": smartEval(re.sub('[^0-9.]', '', replaceNumberShorthands(row[4]))),
-                    "priceChange": {
-                        "5M": smartEval(row[7]),
-                        "1H": smartEval(row[8]),
-                        "6H": smartEval(row[9]),
-                        "24M": smartEval(row[10])
-                    },
                 }
             }
 
@@ -397,7 +393,6 @@ async def gatherTokensForDex(dbConnection, networkName, dexDetails):
                 pairName=tokenDetails["pair"]["name"],
                 pairAddress=tokenDetails["pair"]["address"],
                 dexRanking=tokenRank,
-                dexPrice=tokenDetails["price"]["currentPrice"],
                 pairLiquidity=tokenDetails["market"]["liquidity"],
                 pairVolume=tokenDetails["market"]["volume"],
                 pairFdv=tokenDetails["market"]["fdv"]
@@ -428,7 +423,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
     fakeUserAgent = fakerInstance.user_agent()
 
     # Check if we want to start our browser in headless
-    runHeadless = checkIsDocker()
+    runHeadless = checkHeadless()
 
     # Create async instance of playwright
     async with async_playwright() as playwright:
@@ -449,6 +444,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
 
         # Get row data
         pairAddress = tokenRow["pair"]["address"]
+
         uploadIndex = tokenRow["uploadIndex"]
         primaryTokenDbId = tokenRow["primaryToken"]["db"]["dbId"]
         primaryTokenDbSymbol = tokenRow["primaryToken"]["symbol"]
