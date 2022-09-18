@@ -1,21 +1,4 @@
-version: "1.0"
 services:
   atc-scraper:
     build: .
-    environment:
-      DB_ENDPOINT: "localhost"
-      DB_NAME: "atc"
-      NETWORKS_TO_SKIP: "milkomeda,osmosis,thundercore,kava"
-      MAX_CONCURRENCY: 10
-      PLAYWRIGHT_TIMEOUT_SECS: 30
-      WIPE_DB: False
-      LAZY_MODE: False
-      RUNNING_IN_DOCKER: True
-      FORCE_HEADLESS: True
-      ATC_DB_Credentials: '{"username": "root", "password": "localatcdb"}'
-    ports:
-       - 8080:8080
-    network_mode: "host"
-    
-    
-    
+    env_file: docker-compose.env
