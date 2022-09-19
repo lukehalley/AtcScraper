@@ -4,6 +4,7 @@ import mysql.connector
 from mysql.connector import errorcode
 
 from src.db.db_Utils import executeWriteQuery
+from src.utils.env.env_Environment import checkIsDocker, checkIsAWS
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
@@ -14,6 +15,8 @@ def initDBConnection():
     DB_PASSWORD = os.getenv("DB_PASSWORD")
     DB_ENDPOINT = os.getenv("DB_ENDPOINT")
     DB_NAME = os.getenv("DB_NAME")
+
+    logger.info(f"DB_ENDPOINT: {DB_ENDPOINT}")
 
     try:
         dbConnection = mysql.connector.connect(
