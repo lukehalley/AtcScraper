@@ -7,7 +7,8 @@ from playwright.async_api import async_playwright, BrowserContext
 
 from src.db.db_Admin import wipeDb
 from src.db.db_Setup import initDBConnection
-from src.db.querys.querys_Networks import getTokensForChainWithNoAddress
+from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
+
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex, \

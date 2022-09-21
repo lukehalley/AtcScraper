@@ -9,6 +9,7 @@ from playwright.async_api import BrowserContext, async_playwright
 from src.db.actions.actions_Tokens import updateTokenByDbId
 from src.db.db_Read import getRowByValue
 from src.db.db_Write import addNetworkToDB, addDexToDB, addTokenToDB, addTokenPairToDB
+from src.db.querys.querys_Networks import getAllNetworks
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
@@ -39,6 +40,7 @@ async def gatherNetworkList(dbConnection, page):
 
     # Filter list so we only have networks, no hot 100 tabs
     filteredList = sidebarListItems[ethereumIndex:]
+    cleanNetworkList = [(network.lower()).replace(" ", "") for network in filteredList]
 
     # Dict to hold network info
     networkDictionary = {}
@@ -46,19 +48,24 @@ async def gatherNetworkList(dbConnection, page):
     # Base url of dexscreener
     baseUrl = getDexscreenerRoot()
 
-    # Get the urls to each network
-    for network in filteredList:
+    currentStoredNetworks = getAllNetworks(
+        dbConnection=dbConnection
+    )
 
-        networkName = (network.lower()).replace(" ", "")
+    networksToStore = list(set(currentStoredNetworks) - set(cleanNetworkList))
+
+    # Get the urls to each network
+    for networkName in cleanNetworkList:
 
         networkDictionary[networkName] = {
             "url": f"{baseUrl}/{networkName}"
         }
 
-        addNetworkToDB(
-            dbConnection=dbConnection,
-            networkName=networkName
-        )
+        if networkName in networksToStore:
+            addNetworkToDB(
+                dbConnection=dbConnection,
+                networkName=networkName
+            )
 
         networkRow = getRowByValue(
             dbConnection=dbConnection,
