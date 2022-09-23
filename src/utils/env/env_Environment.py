@@ -15,6 +15,7 @@ Handles loading and parsing environment variables and configuration files.
 """Load and manage environment variables and configuration settings."""
 # Load environment variables from .env file
 """
+# TODO: Implement validation for required environment variables at startup
 """Manages environment variable loading and configuration setup."""
 # Load environment configuration from system variables
 """Loads and validates environment-specific configuration settings."""
