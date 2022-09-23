@@ -9,6 +9,7 @@ from playwright.async_api import BrowserContext, async_playwright
 from src.db.actions.actions_Tokens import updateTokenByDbId
 from src.db.db_Read import getRowByValue
 from src.db.db_Write import addNetworkToDB, addDexToDB, addTokenToDB, addTokenPairToDB
+from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_Networks import getAllNetworks
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
@@ -88,8 +89,6 @@ async def gatherNetworkList(dbConnection, page):
 # Gather all dexs for each network
 async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
 
-    # TODO: Catch non-loading pages correctly
-
     # Create a new page
     page = await newPage(browser=browser)
 
@@ -152,21 +151,30 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     # Filter list so we only have networks
     filteredList = dexTabItems[allDexsIndex + 1:]
 
+    cleanDexList = [(network.lower()).replace(" ", "") for network in filteredList]
+
     # List of available dexs
     dexListDictionary = []
 
     # Base url
     baseUrl = page.url
 
-    # Get the url for each dex in each network
-    for dex in filteredList:
-        dexName = (dex.lower()).replace(" ", "")
+    currentlyStoredDexs = getAllDexsForNetwork(
+        dbConnection=dbConnection,
+        networkDbId=networkDetails["db"]["networkId"]
+    )
 
-        await addDexToDB(
-            dbConnection=dbConnection,
-            networkDbId=networkDetails["db"]["networkId"],
-            dexName=dexName
-        )
+    dexsToStore = list(set(currentlyStoredDexs) - set(cleanDexList))
+
+    # Get the url for each dex in each network
+    for dexName in cleanDexList:
+
+        if dexName in dexsToStore:
+            await addDexToDB(
+                dbConnection=dbConnection,
+                networkDbId=networkDetails["db"]["networkId"],
+                dexName=dexName
+            )
 
         dexRow = getRowByValue(
             dbConnection=dbConnection,
