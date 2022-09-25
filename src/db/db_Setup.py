@@ -4,6 +4,7 @@ import mysql.connector
 from mysql.connector import errorcode
 
 from src.db.db_Utils import executeWriteQuery
+from src.utils.env.env_AWSSecrets import getAWSSecret
 from src.utils.env.env_Environment import checkIsDocker, checkIsAWS
 from src.utils.logging.logging_Setup import getProjectLogger
 
@@ -11,12 +12,15 @@ logger = getProjectLogger()
 
 def initDBConnection():
 
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    DB_USER = getAWSSecret("username")
+    DB_PASSWORD = getAWSSecret("password")
     DB_ENDPOINT = os.getenv("DB_ENDPOINT")
     DB_NAME = os.getenv("DB_NAME")
 
-    logger.info(f"DB_ENDPOINT: {DB_ENDPOINT}")
+    logger.info(DB_USER)
+    logger.info(DB_PASSWORD)
+    logger.info(DB_ENDPOINT)
+    logger.info(DB_NAME)
 
     try:
         dbConnection = mysql.connector.connect(

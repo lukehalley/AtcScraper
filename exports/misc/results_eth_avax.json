@@ -26,15 +26,6 @@
         "pair": {
           "name": "DAI/USDC",
           "address": "0x5777d92f208679db4b9778590fa3cab3ac9e2168"
-        },
-        "price": {
-          "currentPrice": 1.0,
-          "priceChange": {
-            "5M": 0.01,
-            "1H": 0,
-            "6H": 0.01,
-            "24M": 0
-          }
         }
       },
       {

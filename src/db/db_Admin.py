@@ -38,7 +38,7 @@ def useDatabase(dbConnection, databaseName="atc"):
         query=query
     )
 
-def wipeDb(dbConnection):
+def InitialiseDb(dbConnection):
     executeScriptsFromFile(
         dbConnection=dbConnection,
         filename="./db/sql/sql_Init.sql"

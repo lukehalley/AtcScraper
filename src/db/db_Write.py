@@ -25,7 +25,7 @@ async def addDexToDB(dbConnection, networkDbId, dexName):
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    query = f"INSERT INTO dexs (network_id, name) " \
+    query = f"INSERT IGNORE INTO dexs (network_id, name) " \
             f"VALUES ('{networkDbId}', '{dexName}')"
 
     executeWriteQuery(
@@ -55,11 +55,6 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
             f"(SELECT * FROM tokens WHERE {compareStatement}) " \
             f"LIMIT 1"
 
-    # try:
-    #
-    # except:
-    #     x = 1
-
     executeWriteQuery(
         dbConnection=dbConnection,
         cursor=cursor,
@@ -68,7 +63,7 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
 
     return cursor.lastrowid
 
-async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, dexRanking, dexPrice, pairLiquidity, pairVolume, pairFdv):
+async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, dexRanking, pairLiquidity, pairVolume, pairFdv):
 
     # DB Ids
     primaryTokenDbId = int(primaryTokenDbId)
@@ -82,11 +77,6 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
 
     # DexScreener Metadata
     dexRanking = int(dexRanking)
-
-    try:
-        dexPrice = int(dexPrice)
-    except:
-        dexPrice = 0
 
     try:
         pairLiquidity = int(pairLiquidity)
@@ -105,7 +95,7 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    keys = f"(primary_token_id, secondary_token_id, network_id, dex_id, name, address, ranking, price, liquidity, volume, fdv)"
+    keys = f"(primary_token_id, secondary_token_id, network_id, dex_id, name, address, ranking, liquidity, volume, fdv)"
 
     selectStatement = f"(SELECT " \
                       f"{primaryTokenDbId} AS primary_token_id, " \
@@ -115,7 +105,6 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
                       f"'{pairName}' AS name, " \
                       f"'{pairAddress}' AS address, " \
                       f"{dexRanking} AS ranking, " \
-                      f"{dexPrice} AS price, " \
                       f"{pairLiquidity} AS liquidity, " \
                       f"{pairVolume} AS volume, " \
                       f"{pairFdv} AS fdv)"
@@ -128,14 +117,11 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
             f"(SELECT * FROM pairs WHERE {compareStatement}) " \
             f"LIMIT 1"
 
-    try:
-        executeWriteQuery(
-            dbConnection=dbConnection,
-            cursor=cursor,
-            query=query
-        )
-    except:
-        x = 1
+    executeWriteQuery(
+        dbConnection=dbConnection,
+        cursor=cursor,
+        query=query
+    )
 
     return cursor.lastrowid
 

@@ -5,16 +5,19 @@ from pathlib import Path
 from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
-from src.db.db_Admin import wipeDb
+from src.db.actions.actions_Pairs import clearPairsTable
+from src.db.actions.actions_Tokens import updateUnavailableTokens
+from src.db.db_Admin import InitialiseDb
 from src.db.db_Setup import initDBConnection
+from src.db.querys.querys_Misc import checkDbInitialised
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
 
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
-from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherTokensForDex, \
+from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherPairsForDex, \
     gatherMetadataForPair
 from src.utils.data.data_Booleans import strToBool
-from src.utils.env.env_Environment import checkIsDocker
+from src.utils.env.env_Environment import checkIsDocker, checkHeadless
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrency
@@ -39,7 +42,7 @@ async def scrapeDexScreener():
         fakeUserAgent = fakerInstance.user_agent()
 
         # Run in headless if we are running in Docker
-        runHeadless = checkIsDocker()
+        runHeadless = checkHeadless()
 
         # Check if we want to run in headless mode or not
         if runHeadless:
@@ -87,10 +90,13 @@ async def scrapeDexScreener():
         # Init MySQL DB
         dbConnection = initDBConnection()
 
-        # Wipe DB everytime we run for testing
-        WIPE_DB = strToBool(os.getenv("WIPE_DB")) and not checkIsDocker()
-        if WIPE_DB:
-            wipeDb(dbConnection=dbConnection)
+        dbIsInitialised = checkDbInitialised(
+            dbConnection=dbConnection
+        )
+
+        # Initialise database if it isn't initialised or WIPE_DB is enabled
+        if strToBool(os.getenv("WIPE_DB")) or not dbIsInitialised:
+            InitialiseDb(dbConnection=dbConnection)
 
         # Gather all the networks from the sidebar
         printSeparator()
@@ -177,8 +183,12 @@ async def scrapeDexScreener():
                 # Log the current network and the progress
                 logger.info(f"{networkName.title()} [{networkCountStr}]")
 
+                clearPairsTable(
+                    dbConnection=dbConnection
+                )
+
                 # Asynchronously gather each dex's tokens
-                tasks = [gatherTokensForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
+                tasks = [gatherPairsForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
                 results = await gatherWithConcurrency(*tasks)
                 results = [x for x in results if x != []]
 
@@ -205,17 +215,11 @@ async def scrapeDexScreener():
                         uniqueTokenSymbols.add(dict["primaryToken"]["symbol"])
                         uniqueResults.append(dict)
 
-                # Convert set into list
-                uniqueTokenSymbols = list(uniqueTokenSymbols)
-
                 # Query tokens which don't have token addresses
                 allTokensWithNoAddress = getTokensForChainWithNoAddress(
                     dbConnection=dbConnection,
                     networkDbId=networkDbId
                 )
-
-                # Getting list of tokens which are missing from some reason
-                missingTokens = list(set(allTokensWithNoAddress) - set(uniqueTokenSymbols))
                 
                 rowsToGetAddressFor = []
                 for result in uniqueResults:
@@ -232,6 +236,7 @@ async def scrapeDexScreener():
                         tokenRow=tokenRow,
                         amountOfTokensToUpdate=amountOfTokensToUpdate,
                         dbConnection=dbConnection
+
                     ) for tokenRow in rowsToGetAddressFor]
 
                     await gatherWithConcurrency(*tasks)
@@ -243,18 +248,19 @@ async def scrapeDexScreener():
                     dexName = result[0]["dex"]["dex"]
                     finalData[networkName][dexName] = result
 
-                x = 1
-
                 # Close the tab as we don't need it anymore
                 await browser.close()
-
-                x = 1
 
                 # Check if we are on the last network
                 if networkIndex == collectedNetworks:
                     printSeparator(True)
                 else:
                     printSeparator()
+
+            # Set The Blank
+            updateUnavailableTokens(
+                dbConnection=dbConnection
+            )
 
             # Return our final data
             return finalData
