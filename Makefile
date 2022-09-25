@@ -6,10 +6,10 @@ ecr-login:
 	aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 538602529242.dkr.ecr.eu-west-1.amazonaws.com/atc-scraper
 
 zeroTask:
-	aws ecs update-service --cluster atc-scraperCluster --service atc-scraper --desired-count 0
+	aws ecs update-service --cluster atc-scraper_cluster --service atc-scraper --desired-count 0
 
 oneTask:
-	aws ecs update-service --cluster atc-scraperCluster --service atc-scraper --desired-count 1
+	aws ecs update-service --cluster atc-scraper_cluster --service atc-scraper --desired-count 1
 
 createStack:
 	aws cloudformation create-stack --template-body file://cloud/stack.json --stack-name atc-scraper --capabilities CAPABILITY_NAMED_IAM
