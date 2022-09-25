@@ -392,7 +392,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                 secondaryTokenDbId=secondaryTokenDbId,
                 pairName=tokenDetails["pair"]["name"],
                 pairAddress=tokenDetails["pair"]["address"],
-                dexRanking=tokenRank,
+                pairRanking=tokenRank,
                 pairLiquidity=tokenDetails["market"]["liquidity"],
                 pairVolume=tokenDetails["market"]["volume"],
                 pairFdv=tokenDetails["market"]["fdv"]

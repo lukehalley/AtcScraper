@@ -5,7 +5,7 @@ from pathlib import Path
 from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
-from src.db.actions.actions_Pairs import clearPairsTable
+from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Tokens import updateUnavailableTokens
 from src.db.db_Admin import InitialiseDb
 from src.db.db_Setup import initDBConnection
@@ -183,7 +183,7 @@ async def scrapeDexScreener():
                 # Log the current network and the progress
                 logger.info(f"{networkName.title()} [{networkCountStr}]")
 
-                clearPairsTable(
+                clearPairsRankingTable(
                     dbConnection=dbConnection
                 )
 
