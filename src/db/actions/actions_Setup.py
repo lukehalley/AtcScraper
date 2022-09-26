@@ -1,6 +1,10 @@
 """Database initialization and setup procedures."""
 """Database setup and initialization actions."""
 """Database initialization and schema setup utilities."""
+"""Database setup and initialization actions.
+
+Handles schema creation, migrations, and initial data population.
+"""
 """Database setup and schema initialization utilities."""
 """Initialize database schema and create required tables and indexes"""
 # Database initialization: schema creation, indexes, and initial data population
