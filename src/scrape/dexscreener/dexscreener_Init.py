@@ -2,6 +2,7 @@ import os
 
 from src.playwright.playwright_Utils import findAndCheckElement
 
+
 # Get the root url of Dexscreener
 def getDexscreenerRoot():
     return os.getenv('DS_ROOT_URL')
