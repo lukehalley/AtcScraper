@@ -18,6 +18,11 @@ updateStack:
 	aws cloudformation update-stack --template-body file://cloud/stack.json --stack-name atc-scraper --capabilities CAPABILITY_NAMED_IAM
 
 # DOCKER #########################
+
+compose:
+	docker-compose up -d --force-recreate --no-deps
+	docker compose logs -f
+
 build:
 	make -i nuke
 	docker build . -t atc-scraper:$(version)
