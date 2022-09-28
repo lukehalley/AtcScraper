@@ -1,5 +1,4 @@
 import asyncio
-import json
 import time
 
 from dotenv import load_dotenv
@@ -11,7 +10,6 @@ load_dotenv()
 
 # Import helpers
 from src.scrape.dexscreener.dexscreener_Execute import scrapeDexScreener
-from src.utils.env.env_Environment import checkIsDocker
 
 # Load the .env file
 from src.utils.logging.logging_Print import printSeparator

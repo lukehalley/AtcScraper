@@ -90,13 +90,10 @@ async def scrapeDexScreener():
         # Init MySQL DB
         dbConnection = initDBConnection()
 
-        dbIsInitialised = checkDbInitialised(
+        # Wipe the ranking the table
+        clearPairsRankingTable(
             dbConnection=dbConnection
         )
-
-        # Initialise database if it isn't initialised or WIPE_DB is enabled
-        if strToBool(os.getenv("WIPE_DB")) or not dbIsInitialised:
-            InitialiseDb(dbConnection=dbConnection)
 
         # Gather all the networks from the sidebar
         printSeparator()
@@ -182,10 +179,6 @@ async def scrapeDexScreener():
 
                 # Log the current network and the progress
                 logger.info(f"{networkName.title()} [{networkCountStr}]")
-
-                clearPairsRankingTable(
-                    dbConnection=dbConnection
-                )
 
                 # Asynchronously gather each dex's tokens
                 tasks = [gatherPairsForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
