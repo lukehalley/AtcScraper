@@ -26,8 +26,8 @@ async def addDexToDB(dbConnection, networkDbId, dexName):
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    query = f"INSERT IGNORE INTO dexs (network_id, name) " \
-            f"VALUES ('{networkDbId}', '{dexName}')"
+    query = f"INSERT IGNORE INTO dexs (network_id, name, factory, router) " \
+            f"VALUES ('{networkDbId}', '{dexName}', 'N/A', 'N/A')"
 
     executeWriteQuery(
         dbConnection=dbConnection,
