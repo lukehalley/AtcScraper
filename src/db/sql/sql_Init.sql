@@ -57,7 +57,6 @@ CREATE TABLE IF NOT EXISTS pairs (
   # Fields
   name VARCHAR(64) NOT NULL,
   address VARCHAR(640) NOT NULL,
-  ranking int NOT NULL,
   liquidity BIGINT NOT NULL,
   volume BIGINT NOT NULL,
   fdv BIGINT NOT NULL,
@@ -75,6 +74,18 @@ CREATE TABLE IF NOT EXISTS pairs (
   FOREIGN KEY (secondary_token_id)
       REFERENCES tokens(token_id)
       ON DELETE CASCADE,
-  # UNIQUE KEY unique_dex_pair (dex_id, name),
   UNIQUE KEY unique_network_pair (network_id, address)
+);
+
+# Pair Ranks Table
+CREATE TABLE IF NOT EXISTS pair_market_data (
+  # Keys
+  pair_market_data_id int NOT NULL AUTO_INCREMENT,
+  pair_id int NOT NULL,
+  ranking int NOT NULL,
+  # Key Assignments
+  PRIMARY KEY (pair_market_data_id),
+  FOREIGN KEY (pair_id)
+      REFERENCES tokens(token_id)
+      ON DELETE CASCADE
 );

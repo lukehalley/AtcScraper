@@ -17,11 +17,6 @@ def initDBConnection():
     DB_ENDPOINT = os.getenv("DB_ENDPOINT")
     DB_NAME = os.getenv("DB_NAME")
 
-    logger.info(DB_USER)
-    logger.info(DB_PASSWORD)
-    logger.info(DB_ENDPOINT)
-    logger.info(DB_NAME)
-
     try:
         dbConnection = mysql.connector.connect(
             user=DB_USER,
