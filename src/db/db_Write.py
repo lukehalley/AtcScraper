@@ -11,8 +11,11 @@ def addNetworkToDB(dbConnection, networkName):
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    query = f"INSERT INTO networks (name) " \
-            f"VALUES ('{networkName}')"
+    keys = f"name, chain_number, chain_rpc, explorer_api_prefix, explorer_api_key, explorer_tx_url, explorer_type, symbol, max_gas, min_gas, is_valid"
+    values = f"'{networkName}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL"
+
+    query = f"INSERT INTO networks ({keys}) " \
+            f"VALUES ({values})"
 
     executeWriteQuery(
         dbConnection=dbConnection,
@@ -27,7 +30,7 @@ async def addDexToDB(dbConnection, networkDbId, dexName):
     cursor = getCursor(dbConnection=dbConnection)
 
     query = f"INSERT IGNORE INTO dexs (network_id, name, factory, router) " \
-            f"VALUES ('{networkDbId}', '{dexName}', 'N/A', 'N/A')"
+            f"VALUES ('{networkDbId}', '{dexName}', NULL, NULL)"
 
     executeWriteQuery(
         dbConnection=dbConnection,

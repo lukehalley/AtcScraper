@@ -20,7 +20,7 @@ def updateUnavailableTokens(dbConnection):
 
     query = "" \
             f"UPDATE tokens " \
-            f"SET address = 'N/A' " \
+            f"SET address = NULL " \
             f"WHERE address = 'None'"
 
     cursor = getCursor(dbConnection=dbConnection)
