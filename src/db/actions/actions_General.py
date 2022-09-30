@@ -12,7 +12,7 @@ def executeWriteQuery(dbConnection, cursor, query):
     dbConnection.commit()
 
 def executeScriptsFromFile(dbConnection, filename):
-    from src.db.db_Setup import getCursor
+    from src.db.actions.actions_Setup import getCursor
 
     # Open and read the file as a single buffer
     fd = open(filename, 'r')

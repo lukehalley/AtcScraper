@@ -3,9 +3,7 @@ import os
 import mysql.connector
 from mysql.connector import errorcode
 
-from src.db.db_Utils import executeWriteQuery
 from src.utils.env.env_AWSSecrets import getAWSSecret
-from src.utils.env.env_Environment import checkIsDocker, checkIsAWS
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()

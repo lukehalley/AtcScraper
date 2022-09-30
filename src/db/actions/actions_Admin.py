@@ -1,5 +1,5 @@
-from src.db.db_Setup import getCursor
-from src.db.db_Utils import executeWriteQuery, executeScriptsFromFile
+from src.db.actions.actions_General import executeWriteQuery
+from src.db.actions.actions_Setup import getCursor
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
@@ -36,10 +36,4 @@ def useDatabase(dbConnection, databaseName="atc"):
         dbConnection=dbConnection,
         cursor=cursor,
         query=query
-    )
-
-def InitialiseDb(dbConnection):
-    executeScriptsFromFile(
-        dbConnection=dbConnection,
-        filename="./db/sql/sql_Init.sql"
     )
