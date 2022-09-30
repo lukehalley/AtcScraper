@@ -6,6 +6,7 @@ Playwright browser automation utilities.
 # Playwright utility functions for browser automation and headless testing
 Provides helper functions for browser interaction and page manipulation.
 """
+# Playwright utilities for browser automation: page navigation, element interaction, and screenshots
 """Playwright automation utilities for web scraping and browser interaction."""
 # Browser automation utilities for page navigation and interaction
 # Browser automation utilities using Playwright
