@@ -20,6 +20,8 @@ updateStack:
 # DOCKER #########################
 
 compose:
+	docker compose stop
+	docker-compose build
 	docker-compose up -d --force-recreate --no-deps
 	docker compose logs -f
 
@@ -29,7 +31,7 @@ build:
 	docker run -itd atc-scraper:$(version)
 
 logs:
-	docker logs --follow $(docker ps --latest --quiet)
+	docker compose logs -f
 
 exec:
 	docker exec -it $(docker ps --latest --quiet) bash

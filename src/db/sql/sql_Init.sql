@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS networks (
   network_id int NOT NULL AUTO_INCREMENT,
   # Fields
   name VARCHAR(64) NOT NULL UNIQUE,
-#   explorer_url TEXT,
+  # Timestamp
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   # Key Assignments
   PRIMARY KEY (network_id),
   UNIQUE (name)
@@ -21,6 +22,8 @@ CREATE TABLE IF NOT EXISTS dexs (
   network_id int NOT NULL,
   # Fields
   name VARCHAR(64) NOT NULL,
+  # Timestamp
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   # Key Assignments
   PRIMARY KEY (dex_id),
   FOREIGN KEY (network_id)
@@ -38,6 +41,8 @@ CREATE TABLE IF NOT EXISTS tokens (
   name TEXT,
   symbol VARCHAR(64),
   address VARCHAR(64),
+  # Timestamp
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   # Key Assignments
   PRIMARY KEY (token_id),
   FOREIGN KEY (network_id)
@@ -57,9 +62,8 @@ CREATE TABLE IF NOT EXISTS pairs (
   # Fields
   name VARCHAR(64) NOT NULL,
   address VARCHAR(640) NOT NULL,
-  liquidity BIGINT NOT NULL,
-  volume BIGINT NOT NULL,
-  fdv BIGINT NOT NULL,
+  # Timestamp
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   # Key Assignments
   PRIMARY KEY (pair_id),
   FOREIGN KEY (network_id)
@@ -80,12 +84,26 @@ CREATE TABLE IF NOT EXISTS pairs (
 # Pair Ranks Table
 CREATE TABLE IF NOT EXISTS pair_market_data (
   # Keys
-  pair_market_data_id int NOT NULL AUTO_INCREMENT,
+  pair_marketdata_id int NOT NULL AUTO_INCREMENT,
   pair_id int NOT NULL,
+  network_id int NOT NULL,
+  dex_id int NOT NULL,
+  # Fields
   ranking int NOT NULL,
+  liquidity BIGINT NOT NULL,
+  volume BIGINT NOT NULL,
+  fdv BIGINT NOT NULL,
+  # Timestamp
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   # Key Assignments
-  PRIMARY KEY (pair_market_data_id),
+  PRIMARY KEY (pair_marketdata_id),
   FOREIGN KEY (pair_id)
-      REFERENCES tokens(token_id)
+      REFERENCES pairs(pair_id)
+      ON DELETE CASCADE,
+  FOREIGN KEY (network_id)
+      REFERENCES networks(network_id)
+      ON DELETE CASCADE,
+  FOREIGN KEY (dex_id)
+      REFERENCES dexs(dex_id)
       ON DELETE CASCADE
 );
