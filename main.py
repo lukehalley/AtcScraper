@@ -1,3 +1,4 @@
+# Main entry point for AtcScraper application
 """Main entry point for AtcScraper application.
 
 Handles initialization and orchestration of scraping tasks.
