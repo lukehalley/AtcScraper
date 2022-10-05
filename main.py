@@ -1,4 +1,5 @@
 import asyncio
+import sys
 import time
 
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ printSeparator()
 logger.info(f"ATC Scraper")
 printSeparator(newLine=True)
 
-@retry()
+# @retry()
 def scrape():
 
     # Create an async event loop
@@ -45,3 +46,4 @@ def scrape():
 
 if __name__ == '__main__':
     scrape()
+    sys.exit(0)

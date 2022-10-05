@@ -13,7 +13,7 @@
       <env name="RUNNING_IN_DOCKER" value="False" />
       <env name="FORCE_HEADLESS" value="True" />
       <env name="MAX_CONCURRENCY" value="10" />
-      <env name="PLAYWRIGHT_TIMEOUT_SECS" value="30" />
+      <env name="PLAYWRIGHT_TIMEOUT_SECS" value="20" />
       <env name="NETWORKS_TO_SKIP" value="milkomeda,osmosis,thundercore,kava" />
     </envs>
     <option name="SDK_HOME" value="/usr/local/bin/python3.9" />

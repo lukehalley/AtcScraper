@@ -9,6 +9,7 @@ from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokens
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
+from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherPairsForDex, \
@@ -68,7 +69,11 @@ async def scrapeDexScreener():
         # Navigate to the Dexscreener Home
         dexScreenerHome = getDexscreenerRoot()
         logger.info(f"Navigating to {dexScreenerHome}...")
-        await page.goto(dexScreenerHome)
+
+        await safePageLoad(
+            page=page,
+            url=dexScreenerHome
+        )
 
         # Confirm were there
         logger.info(f"Navigated to Dexscreener.")

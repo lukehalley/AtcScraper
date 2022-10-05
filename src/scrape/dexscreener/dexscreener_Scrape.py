@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 
 import nest_asyncio
@@ -14,6 +15,7 @@ from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_General import getRowByValue
 from src.db.querys.querys_Networks import getAllNetworks
+from src.playwright.playwright_Hacks import safeClick, safePageLoad
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
@@ -99,13 +101,16 @@ async def gatherNetworkList(dbConnection, page):
 
 # Gather all dexs for each network
 # @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
+async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser):
 
     # Create a new page
     page = await newPage(browser=browser)
 
     # Go to the networks url
-    await page.goto(networkDetails["url"])
+    await safePageLoad(
+        page=page,
+        url=networkDetails["url"]
+    )
 
     # Init dexscreener
     await validateDexscreenerInit(
@@ -155,6 +160,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
     # Get all the 'li' items
     dexTabItems = await getListItems(
+        page=page,
         listElement=dexTabElement
     )
 
@@ -247,10 +253,15 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         page = await newPage(browser=browser)
 
         # Navigate to the dexs url
-        await page.goto(dexURL)
+        await safePageLoad(
+            page=page,
+            url=dexURL
+        )
 
-        # Sort the tokens by liquidity
-        await page.locator('text=Liquidity').first.click()
+        await safeClick(
+            page=page,
+            selector='text=Liquidity'
+        )
 
         # Get total amount of pairs
         pairCountElement = page.locator("span", has_text="Showing pairs")
@@ -283,9 +294,16 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
             if pageNumber > 1:
                 # Navigate to the next pair page
                 nextPageURL = f"{dexURL}/page-{pageNumber}"
-                await page.goto(nextPageURL)
 
-                await page.locator('text=Liquidity').first.click()
+                await safePageLoad(
+                    page=page,
+                    url=nextPageURL
+                )
+
+                await safeClick(
+                    page=page,
+                    selector='text=Liquidity'
+                )
 
             # Get the sidebar list element
             dexTable = os.getenv('DS_DEX_TABLE')
@@ -296,6 +314,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
             # Get all the 'li' items
             dexTabItems = await getAItems(
+                page=page,
                 listElement=dexTableElement
             )
 
@@ -503,7 +522,10 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
         pairUrl = f"{baseLink}/{pairAddress}"
 
         # Go the pair graph page
-        await page.goto(pairUrl)
+        await safePageLoad(
+            page=page,
+            url=pairUrl
+        )
 
         # Get all elements with the external link label
         allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
