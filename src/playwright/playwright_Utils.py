@@ -4,6 +4,8 @@ from playwright.async_api import expect, BrowserContext
 
 globalTimeout = int(os.getenv("PLAYWRIGHT_TIMEOUT_SECS")) * 1000
 
+x = 1
+
 # Find + Wait for element
 async def findAndCheckElement(page, selector):
     element = page.locator(selector).first
