@@ -26,10 +26,10 @@ from src.utils.retry.retry_Settings import getRetryParameters
 nest_asyncio.apply()
 
 logger = getProjectLogger()
-retryAttempts, retryDelay = getRetryParameters()
+# retryAttempts, retryDelay = getRetryParameters()
 
 # Gather all the available networks from the Dexscreener sidebar
-@retry(attempts=retryAttempts, delay=retryDelay)
+# @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherNetworkList(dbConnection, page):
 
     # Get the sidebar list element
@@ -98,7 +98,7 @@ async def gatherNetworkList(dbConnection, page):
     return networkDictionary
 
 # Gather all dexs for each network
-@retry(attempts=retryAttempts, delay=retryDelay)
+# @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
 
     # Create a new page
@@ -140,7 +140,7 @@ async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: 
     return networkDetails
 
 # Gather the list of dexs from the top of each network page of dexscreener
-@retry(attempts=retryAttempts, delay=retryDelay)
+# @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
     try:
@@ -215,7 +215,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     return dexListDictionary
 
 # For a dex - get the top 100 tokens by liquidity
-@retry(attempts=retryAttempts, delay=retryDelay)
+# @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
     # Get the current dexs name and url
@@ -463,7 +463,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         # Return our collected tokens
         return collectedTokens
 
-@retry(attempts=retryAttempts, delay=retryDelay)
+# @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbConnection):
 
     # Create fake user agent
