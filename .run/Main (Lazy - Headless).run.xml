@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Main (Lazy - Headless)" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="Main (Lazy - Headless - LocalDB)" type="PythonConfigurationType" factoryName="Python">
     <module name="atc-scraper" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />

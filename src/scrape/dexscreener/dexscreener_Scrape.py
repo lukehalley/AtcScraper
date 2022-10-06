@@ -291,7 +291,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
         loopRange = pairsPagesToIterate + 1
 
-        for pageNumber in range(loopRange):
+        for pageNumber in range(1, loopRange):
 
             if pageNumber > 1:
 
