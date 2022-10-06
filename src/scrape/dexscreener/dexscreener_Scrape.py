@@ -293,8 +293,6 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
         for pageNumber in range(loopRange):
 
-            print(f"[{networkName}] [{dexName}] Page Number {pageNumber} / {pairsPagesToIterate}")
-
             if pageNumber > 1:
 
                 # Navigate to the next pair page
