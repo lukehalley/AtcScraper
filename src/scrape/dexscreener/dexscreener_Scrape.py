@@ -289,9 +289,10 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         # List which will store our token objects
         collectedTokens = []
 
-        for pageNumber in range(pairsPagesToIterate + 1):
+        for pageNumber in range(1, pairsPagesToIterate + 1):
 
             if pageNumber > 1:
+
                 # Navigate to the next pair page
                 nextPageURL = f"{dexURL}/page-{pageNumber}"
 
@@ -361,6 +362,9 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                             row.append("NULL")
 
                 tokenRank = smartEval(row[0])
+
+                if pageNumber == 2:
+                    z = 1
 
                 # Get the token rank
                 if pageNumber <= 1:
@@ -449,6 +453,9 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
                 tokenDetails["secondaryToken"]["db"] = {}
                 tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
+
+                if tokenRank == 1 and dexDetails["db"]["networkId"] == 1 and dexDetails["db"]["dexId"] == 1:
+                    x = 1
 
                 await addTokenPairToDB(
                     dbConnection=dbConnection,
