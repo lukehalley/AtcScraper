@@ -30,6 +30,7 @@ async def scrapeDexScreener():
     printSeparator()
     logger.info(f"Dex Screener Setup")
     logger.info(f"Concurrency: {getmaxConcurrency()}")
+    logger.info(f"Collecting Max Pairs: {os.getenv('AMOUNT_OF_PAIRS_TO_COLLECT')}")
     printSeparator()
 
     # Enter an async state
