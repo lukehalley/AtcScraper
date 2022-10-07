@@ -339,6 +339,9 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
             # Remove any blank lines
             finalRows = [list(filter(None, item)) for item in cleanRows]
 
+            # List for keeping track of added ranks
+            addedRanks = []
+
             # Iterate through the list of raw tokens we collected
             for row in finalRows:
 
@@ -453,29 +456,34 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                 tokenDetails["secondaryToken"]["db"] = {}
                 tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
 
-                if pageNumber > 1:
-                    x = 1
+                if tokenRank not in addedRanks:
 
-                await addTokenPairToDB(
-                    dbConnection=dbConnection,
-                    networkDbId=dexDetails["db"]["networkId"],
-                    dexDbId=dexDetails["db"]["dexId"],
-                    primaryTokenDbId=primaryTokenDbId,
-                    secondaryTokenDbId=secondaryTokenDbId,
-                    pairName=tokenDetails["pair"]["name"],
-                    pairAddress=tokenDetails["pair"]["address"],
-                    pairRanking=tokenRank,
-                    pairLiquidity=tokenDetails["market"]["liquidity"],
-                    pairVolume=tokenDetails["market"]["volume"],
-                    pairFdv=tokenDetails["market"]["fdv"]
-                )
+                    addedRanks.append(tokenRank)
 
-                # Add the uniswap version back in if we have it
-                if hasUniswapBadge:
-                    tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+                    await addTokenPairToDB(
+                        dbConnection=dbConnection,
+                        networkDbId=dexDetails["db"]["networkId"],
+                        dexDbId=dexDetails["db"]["dexId"],
+                        primaryTokenDbId=primaryTokenDbId,
+                        secondaryTokenDbId=secondaryTokenDbId,
+                        pairName=tokenDetails["pair"]["name"],
+                        pairAddress=tokenDetails["pair"]["address"],
+                        pairRanking=tokenRank,
+                        pairLiquidity=tokenDetails["market"]["liquidity"],
+                        pairVolume=tokenDetails["market"]["volume"],
+                        pairFdv=tokenDetails["market"]["fdv"]
+                    )
 
-                # Finally, append the token to the final list
-                collectedTokens.append(tokenDetails)
+                    # Add the uniswap version back in if we have it
+                    if hasUniswapBadge:
+                        tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+
+                    # Finally, append the token to the final list
+                    collectedTokens.append(tokenDetails)
+
+                else:
+
+                    logger.info(f"Already added pair ranked {tokenRank} - skipping")
 
         # Close the page and browser as we are done
         await page.close()
