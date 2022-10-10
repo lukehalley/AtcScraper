@@ -5,6 +5,7 @@ General purpose database query functions.
 """General database query functions for common operations."""
 """General database query operations.
     Provides base query templates and execution utilities for data retrieval.
+# General database query utilities
 # General-purpose database query functions for common operations
     """
 Core queries for data retrieval operations.
