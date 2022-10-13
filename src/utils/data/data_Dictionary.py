@@ -21,4 +21,6 @@ def getDictLength(sub):
 
 # Replace a value in all values in a dict
 def replaceAllValuesInDict(text, dictionary):
-    return functools.reduce(lambda a, kv: a.replace(*kv), dictionary.items(), text)
+    for key in dictionary.keys():
+        text = text.replace(key, f"{dictionary[key]}")
+    return text

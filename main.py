@@ -3,7 +3,6 @@ import sys
 import time
 
 from dotenv import load_dotenv
-from retry import retry
 
 from src.utils.time.time_Calculations import getMinSecString
 
