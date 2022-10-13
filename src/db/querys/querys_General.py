@@ -1,5 +1,6 @@
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
+from src.utils.data.data_Clean import cleanString
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
@@ -28,7 +29,7 @@ def getRowByValue(dbConnection, table, conditions):
     amountOfConditions = len(conditions)
 
     columnName = list(conditions[0].keys())[0]
-    rowValue = conditions[0][columnName]
+    rowValue = cleanString(conditions[0][columnName])
 
     query = f"SELECT * FROM " \
             f"{table} WHERE " \
@@ -40,7 +41,7 @@ def getRowByValue(dbConnection, table, conditions):
 
         for condition in conditions:
             columnName = list(condition.keys())[0]
-            rowValue = condition[columnName]
+            rowValue = cleanString(condition[columnName])
 
             query = \
                 query + \
@@ -63,7 +64,7 @@ def checkIfRowExistsByValue(dbConnection, table, column, value):
 
     query = f"SELECT COUNT(*) count FROM " \
             f"{table} WHERE " \
-            f"{column}='{value}'"
+            f"{cleanString(column)}='{cleanString(value)}'"
 
     results = executeReadQuery(
         cursor=cursor,
