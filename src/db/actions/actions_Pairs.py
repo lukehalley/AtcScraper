@@ -1,6 +1,7 @@
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
 from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
+from src.utils.data.data_Clean import cleanString
 
 
 async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, pairRanking, pairLiquidity, pairVolume, pairFdv):
@@ -12,8 +13,8 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
     dexDbId = int(dexDbId)
 
     # Strings
-    pairName = str(pairName)
-    pairAddress = str(pairAddress)
+    pairName = cleanString(str(pairName))
+    pairAddress = cleanString(str(pairAddress))
 
     # DexScreener Metadata
     pairRanking = int(pairRanking)

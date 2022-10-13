@@ -7,7 +7,7 @@ from playwright.async_api import async_playwright, BrowserContext
 
 from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Setup import initDBConnection
-from src.db.actions.actions_Tokens import updateUnavailableTokens
+from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
 from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
@@ -123,8 +123,9 @@ async def scrapeDexScreener():
             logger.info(f"Skipping networks: {networksToSkip}")
 
         if lazyMode:
+            firstNetwork = next(iter(networkDictionary))
             networkDictionary = {
-                "ethereum": [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == 'ethereum'][0]
+                f"{firstNetwork}": [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == f'{firstNetwork}'][0]
             }
 
         # Close the tab as we don't need it anymore
@@ -254,7 +255,7 @@ async def scrapeDexScreener():
                     printSeparator()
 
             # Set The Blank
-            updateUnavailableTokens(
+            updateUnavailableTokensToNull(
                 dbConnection=dbConnection
             )
 

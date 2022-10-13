@@ -1,11 +1,8 @@
 import re
 
-from src.db.actions.actions_Pairs import addPairRankToDB
-from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
-from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
-
-
+from src.db.actions.actions_Setup import getCursor
+from src.utils.data.data_Clean import cleanString
 
 
 async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenAddress=None):
@@ -13,9 +10,9 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
     cursor = getCursor(dbConnection=dbConnection)
 
     networkDbId = int(networkDbId)
-    tokenName = re.sub('[^A-Za-z0-9 ]+', '', str(tokenName))
-    tokenSymbol = tokenSymbol
-    tokenAddress = tokenAddress
+    tokenName = cleanString(re.sub('[^A-Za-z0-9 ]+', '', str(tokenName)))
+    tokenSymbol = cleanString(tokenSymbol)
+    tokenAddress = cleanString(tokenAddress)
 
     keys = f"(network_id, name, symbol, address)"
     selectStatement = f"(SELECT {networkDbId} AS network_id, '{tokenName}' AS name, '{tokenSymbol}' AS symbol, '{tokenAddress}' AS address)"
@@ -39,7 +36,7 @@ def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
 
     query = "" \
             f"UPDATE tokens " \
-            f"SET {fieldToUpdate}='{fieldNewValue}' " \
+            f"SET {cleanString(fieldToUpdate)}='{cleanString(fieldNewValue)}' " \
             f"WHERE token_id={tokenDbId}"
 
     cursor = getCursor(dbConnection=dbConnection)
@@ -50,7 +47,7 @@ def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
         query=query
     )
 
-def updateUnavailableTokens(dbConnection):
+def updateUnavailableTokensToNull(dbConnection):
 
     query = "" \
             f"UPDATE tokens " \
