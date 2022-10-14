@@ -3,6 +3,7 @@
 """
 """Utility functions for browser automation and page interactions."""
 Playwright browser automation utilities.
+# Playwright browser automation utilities
 # Playwright utility functions for browser automation and headless testing
 Provides helper functions for browser interaction and page manipulation.
 """
