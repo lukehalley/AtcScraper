@@ -47,6 +47,21 @@ def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
         query=query
     )
 
+def updatePairAnalysisByDbId(dbConnection, pairDbId, analysisStatus):
+
+    query = "" \
+            f"UPDATE pairs " \
+            f"SET analysed={analysisStatus} " \
+            f"WHERE pair_id={pairDbId}"
+
+    cursor = getCursor(dbConnection=dbConnection)
+
+    return executeWriteQuery(
+        dbConnection=dbConnection,
+        cursor=cursor,
+        query=query
+    )
+
 def updateUnavailableTokensToNull(dbConnection):
 
     query = "" \

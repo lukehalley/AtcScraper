@@ -2,15 +2,15 @@ import sys
 
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
-from src.db.actions.actions_Tokens import updateTokenByDbId
+from src.db.actions.actions_Tokens import updateTokenByDbId, updatePairAnalysisByDbId
 from src.dexScreener.dexScreener_Querys import getPairs
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.sql.sql_Files import executeScriptsFromFile
 
 logger = getProjectLogger()
 
-def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
 
+def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
     compareStatement = f"pairs.address = '{pairAddress}' AND pairs.network_id = {networkDbId}"
 
     query = f"SELECT * FROM pairs WHERE {compareStatement}"
@@ -31,13 +31,13 @@ def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
     else:
         return None
 
-def getPairsWithNullPrimaryOrSecondaryAddresses(dbConnection):
 
+def fillNullTokenAddresses(dbConnection):
     cursor = getCursor(dbConnection=dbConnection)
 
     dbPairs = executeScriptsFromFile(
         cursor=cursor,
-        filename="getPairsWithNullPrimaryOrSecondaryAddresses.sql"
+        filename="fillNullTokenAddresses.sql"
     )
 
     numberOfPairsToUpdate = len(dbPairs)
@@ -45,6 +45,7 @@ def getPairsWithNullPrimaryOrSecondaryAddresses(dbConnection):
     for dbPair in dbPairs:
 
         pairIndex = dbPairs.index(dbPair) + 1
+        pairDbId = dbPair["pair_db_id"]
         pairName = dbPair["pair_name"]
         pairNetwork = dbPair["network_name"].title()
 
@@ -63,7 +64,6 @@ def getPairsWithNullPrimaryOrSecondaryAddresses(dbConnection):
                 secondaryTokenIsNull = dbPair["secondary_token_address"] is None
 
                 if primaryTokenIsNull:
-
                     updateTokenByDbId(
                         dbConnection=dbConnection,
                         tokenDbId=dbPair["primary_token_db_id"],
@@ -81,7 +81,6 @@ def getPairsWithNullPrimaryOrSecondaryAddresses(dbConnection):
                     logger.info("  Primary Token ✅")
 
                 if secondaryTokenIsNull:
-
                     updateTokenByDbId(
                         dbConnection=dbConnection,
                         tokenDbId=dbPair["secondary_token_db_id"],
@@ -106,4 +105,8 @@ def getPairsWithNullPrimaryOrSecondaryAddresses(dbConnection):
 
             logger.info("  API Request Failed ⛔️")
 
-    x = 1
+        updatePairAnalysisByDbId(
+            dbConnection=dbConnection,
+            pairDbId=pairDbId,
+            analysisStatus=True
+        )
