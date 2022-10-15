@@ -8,7 +8,7 @@ from playwright.async_api import async_playwright, BrowserContext
 from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
-from src.db.querys.querys_Pairs import getPairsWithNullPrimaryOrSecondaryAddresses
+from src.db.querys.querys_Pairs import fillNullTokenAddresses
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
 from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
@@ -264,7 +264,7 @@ async def scrapeDexScreener():
             logger.info(f"Getting Missing Token Addresses From Dexscreener API")
             printSeparator()
 
-            getPairsWithNullPrimaryOrSecondaryAddresses(dbConnection=dbConnection)
+            fillNullTokenAddresses(dbConnection=dbConnection)
 
             printSeparator(newLine=True)
 

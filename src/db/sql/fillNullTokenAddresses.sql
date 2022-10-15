@@ -1,5 +1,6 @@
 SELECT
   pairs.pair_id AS pair_db_id,
+  pairs.analysed AS pairs_analysed,
   pairs.name AS pair_name,
   pairs.address AS pair_address,
   primary_tokens.token_id AS primary_token_db_id,
@@ -19,8 +20,9 @@ FROM
     JOIN networks ON pairs.network_id = networks.network_id
   )
 WHERE
-  primary_tokens.address IS NULL
-  OR secondary_tokens.address IS NULL
+  NOT pairs.analysed AND
+  (primary_tokens.address IS NULL
+  OR secondary_tokens.address IS NULL)
 ORDER BY
   pairs.primary_token_id,
   pairs.secondary_token_id,
