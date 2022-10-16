@@ -37,7 +37,7 @@ def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
     isStr = isinstance(fieldNewValue, str)
 
     if isStr:
-        insertValue = f'{cleanString(fieldNewValue)}'
+        insertValue = f"'{cleanString(fieldNewValue)}'"
     else:
         insertValue = fieldNewValue
 
