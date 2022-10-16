@@ -9,7 +9,7 @@ from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
 from src.db.querys.querys_Pairs import fillNullTokenAddresses
-from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
+from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress, fillTokenDecimals
 from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
@@ -267,6 +267,16 @@ async def scrapeDexScreener():
             fillNullTokenAddresses(dbConnection=dbConnection)
 
             printSeparator(newLine=True)
+
+            printSeparator()
+            logger.info(f"Getting Missing Token Decimals")
+            printSeparator()
+
+            fillTokenDecimals(
+                dbConnection=dbConnection
+            )
+
+            printSeparator(True)
 
             # Return our final data
             return finalData
