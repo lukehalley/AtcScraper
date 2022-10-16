@@ -34,9 +34,17 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
 
 def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
 
+    isStr = isinstance(fieldNewValue, str)
+
+    if isStr:
+        insertValue = f'{cleanString(fieldNewValue)}'
+    else:
+        insertValue = fieldNewValue
+
+
     query = "" \
             f"UPDATE tokens " \
-            f"SET {cleanString(fieldToUpdate)}='{cleanString(fieldNewValue)}' " \
+            f"SET {cleanString(fieldToUpdate)}={insertValue} " \
             f"WHERE token_id={tokenDbId}"
 
     cursor = getCursor(dbConnection=dbConnection)

@@ -1,5 +1,14 @@
+import json
+
+from web3 import Web3
+
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
+from src.db.actions.actions_Tokens import updateTokenByDbId
+from src.utils.logging.logging_Setup import getProjectLogger
+from src.utils.sql.sql_Files import executeScriptsFromFile
+
+logger = getProjectLogger()
 
 def getTokensForChainWithNoAddress(dbConnection, networkDbId):
 
@@ -19,3 +28,48 @@ def getTokensForChainWithNoAddress(dbConnection, networkDbId):
 
     return allTokensWithNoAddress
 
+def fillTokenDecimals(dbConnection):
+
+    cursor = getCursor(dbConnection=dbConnection)
+
+    tokensWithNoDecimal = executeScriptsFromFile(
+        cursor=cursor,
+        filename="tokens/getTokensWithNullDecimals.sql"
+    )
+
+    amountOfTokens = len(tokensWithNoDecimal)
+
+    # Reading from file
+    ERC20_abi = json.loads(open('src/abis/ERC20.json', "r").read())
+
+    for token in tokensWithNoDecimal:
+
+        networkName = (token["name"]).title()
+        networkRPC = token["chain_rpc"]
+
+        tokenIndex = tokensWithNoDecimal.index(token) + 1
+        tokenCount = f"[{tokenIndex}/{amountOfTokens}]"
+        tokenDbId = token["token_id"]
+        tokenSymbol = token["symbol"]
+        tokenAddress = token["address"]
+
+        web3 = Web3(Web3.HTTPProvider(networkRPC))
+
+        tokenDecimals = None
+
+        try:
+            token_info = web3.eth.contract(web3.toChecksumAddress(tokenAddress), abi=ERC20_abi)
+            tokenDecimals = int(token_info.functions.decimals().call())
+        except:
+            logger.info(f"{tokenCount} {tokenSymbol} On {networkName} ⛔️")
+
+        if tokenDecimals:
+
+            updateTokenByDbId(
+                dbConnection=dbConnection,
+                tokenDbId=tokenDbId,
+                fieldToUpdate="decimals",
+                fieldNewValue=tokenDecimals
+            )
+
+            logger.info(f"{tokenCount} {tokenSymbol} On {networkName} [{tokenDecimals}] ✅")

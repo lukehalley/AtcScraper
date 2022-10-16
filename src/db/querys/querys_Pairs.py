@@ -33,11 +33,12 @@ def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
 
 
 def fillNullTokenAddresses(dbConnection):
+
     cursor = getCursor(dbConnection=dbConnection)
 
     dbPairs = executeScriptsFromFile(
         cursor=cursor,
-        filename="fillNullTokenAddresses.sql"
+        filename="pairs/getPairsWithNullTokenAddresses.sql"
     )
 
     numberOfPairsToUpdate = len(dbPairs)
