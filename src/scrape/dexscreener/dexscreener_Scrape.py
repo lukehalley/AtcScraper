@@ -1,3 +1,4 @@
+"""Core scraping logic for DexScreener data extraction."""
 """Scrape data from dexscreener exchange."""
 """Core scraping logic for Dexscreener DEX data extraction and normalization"""
 """Web scraping logic for Dexscreener market data."""
