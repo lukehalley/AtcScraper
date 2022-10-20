@@ -1,6 +1,7 @@
 """Print-based logging utilities for development and debugging.
 
 Provides formatted output functions for different log levels.
+# Print-based logging utilities
 """
 """Handle console output and print-based logging."""
 """
