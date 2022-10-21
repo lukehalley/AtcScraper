@@ -280,7 +280,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
             # Check if the row has info on its uniswap version
             hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
-            uniswapVersion = "N/A"
+            uniswapVersion = "NULL"
 
             # If it does, remove it - we can add it back later if it exists
             if hasUniswapBadge:
@@ -297,7 +297,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                 else:
                     slotsToFill = abs(13 - len(row))
                     for _ in range(slotsToFill):
-                        row.append("N/A")
+                        row.append("NULL")
 
             # Get the token rank
             tokenRank = smartEval(row[0])
