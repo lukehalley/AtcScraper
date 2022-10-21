@@ -374,116 +374,122 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                 else:
                     tokenIndex = (tokenRank - ((pageNumber - 1) * 100))
 
-                # Get the pair address for this row
-                pairAddress = pairAddresses[tokenIndex - 1]
+                try:
 
-                # Create a token object from all the properties we scraped
-                tokenDetails = {
-                    "rank": tokenRank,
-                    "market": {
-                        "volume": smartEval(replaceNumberShorthands(row[6])),
-                        "liquidity": smartEval(replaceNumberShorthands(row[11])),
-                        "fdv": smartEval(replaceNumberShorthands(row[12]))
-                    },
-                    "network": {
-                        "network": networkName,
-                        "txCount": smartEval(row[5]),
-                    },
-                    "dex": {
-                        "dex": dexName,
-                    },
-                    "primaryToken": {
-                        "name": row[3],
-                        "symbol": row[1]
-                    },
-                    "secondaryToken": {
-                        "symbol": row[2],
-                    },
-                    "pair": {
-                        "name": f"{row[1]}/{row[2]}",
-                        "address": pairAddress
+                    # Get the pair address for this row
+                    pairAddress = pairAddresses[tokenIndex - 1]
+
+                    # Create a token object from all the properties we scraped
+                    tokenDetails = {
+                        "rank": tokenRank,
+                        "market": {
+                            "volume": smartEval(replaceNumberShorthands(row[6])),
+                            "liquidity": smartEval(replaceNumberShorthands(row[11])),
+                            "fdv": smartEval(replaceNumberShorthands(row[12]))
+                        },
+                        "network": {
+                            "network": networkName,
+                            "txCount": smartEval(row[5]),
+                        },
+                        "dex": {
+                            "dex": dexName,
+                        },
+                        "primaryToken": {
+                            "name": row[3],
+                            "symbol": row[1]
+                        },
+                        "secondaryToken": {
+                            "symbol": row[2],
+                        },
+                        "pair": {
+                            "name": f"{row[1]}/{row[2]}",
+                            "address": pairAddress
+                        }
                     }
-                }
 
-                # Check if primary token already exists
-                primaryTokenDetails = getRowByValue(
-                    dbConnection=dbConnection,
-                    table="tokens",
-                    conditions=[
-                        {
-                            "symbol": tokenDetails["primaryToken"]["symbol"]
-                        }
-                    ]
-                )
-
-                # If it doesn't - add it
-                if not primaryTokenDetails:
-                    # Add primary token to database
-                    primaryTokenDbId = await addTokenToDB(
+                    # Check if primary token already exists
+                    primaryTokenDetails = getRowByValue(
                         dbConnection=dbConnection,
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenName=tokenDetails["primaryToken"]["name"],
-                        tokenSymbol=tokenDetails["primaryToken"]["symbol"]
-                    )
-                else:
-                    primaryTokenDbId = primaryTokenDetails["token_id"]
-
-                tokenDetails["primaryToken"]["db"] = {}
-                tokenDetails["primaryToken"]["db"]["dbId"] = primaryTokenDbId
-
-                # Check if primary token already exists
-                secondaryTokenDetails = getRowByValue(
-                    dbConnection=dbConnection,
-                    table="tokens",
-                    conditions=[
-                        {
-                            "symbol": tokenDetails["secondaryToken"]["symbol"]
-                        }
-                    ]
-                )
-
-                if not secondaryTokenDetails:
-                    # Add secondary token to database
-                    secondaryTokenDbId = await addTokenToDB(
-                        dbConnection=dbConnection,
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenName=None,
-                        tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
-                    )
-                else:
-                    secondaryTokenDbId = secondaryTokenDetails["token_id"]
-
-                tokenDetails["secondaryToken"]["db"] = {}
-                tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
-
-                if tokenRank not in addedRanks:
-
-                    addedRanks.append(tokenRank)
-
-                    await addTokenPairToDB(
-                        dbConnection=dbConnection,
-                        networkDbId=dexDetails["db"]["networkId"],
-                        dexDbId=dexDetails["db"]["dexId"],
-                        primaryTokenDbId=primaryTokenDbId,
-                        secondaryTokenDbId=secondaryTokenDbId,
-                        pairName=tokenDetails["pair"]["name"],
-                        pairAddress=tokenDetails["pair"]["address"],
-                        pairRanking=tokenRank,
-                        pairLiquidity=tokenDetails["market"]["liquidity"],
-                        pairVolume=tokenDetails["market"]["volume"],
-                        pairFdv=tokenDetails["market"]["fdv"]
+                        table="tokens",
+                        conditions=[
+                            {
+                                "symbol": tokenDetails["primaryToken"]["symbol"]
+                            }
+                        ]
                     )
 
-                    # Add the uniswap version back in if we have it
-                    if hasUniswapBadge:
-                        tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+                    # If it doesn't - add it
+                    if not primaryTokenDetails:
+                        # Add primary token to database
+                        primaryTokenDbId = await addTokenToDB(
+                            dbConnection=dbConnection,
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenName=tokenDetails["primaryToken"]["name"],
+                            tokenSymbol=tokenDetails["primaryToken"]["symbol"]
+                        )
+                    else:
+                        primaryTokenDbId = primaryTokenDetails["token_id"]
 
-                    # Finally, append the token to the final list
-                    collectedTokens.append(tokenDetails)
+                    tokenDetails["primaryToken"]["db"] = {}
+                    tokenDetails["primaryToken"]["db"]["dbId"] = primaryTokenDbId
 
-                else:
+                    # Check if primary token already exists
+                    secondaryTokenDetails = getRowByValue(
+                        dbConnection=dbConnection,
+                        table="tokens",
+                        conditions=[
+                            {
+                                "symbol": tokenDetails["secondaryToken"]["symbol"]
+                            }
+                        ]
+                    )
 
-                    logger.info(f"Already added pair ranked {tokenRank} - skipping")
+                    if not secondaryTokenDetails:
+                        # Add secondary token to database
+                        secondaryTokenDbId = await addTokenToDB(
+                            dbConnection=dbConnection,
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenName=None,
+                            tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+                        )
+                    else:
+                        secondaryTokenDbId = secondaryTokenDetails["token_id"]
+
+                    tokenDetails["secondaryToken"]["db"] = {}
+                    tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
+
+                    if tokenRank not in addedRanks:
+
+                        addedRanks.append(tokenRank)
+
+                        await addTokenPairToDB(
+                            dbConnection=dbConnection,
+                            networkDbId=dexDetails["db"]["networkId"],
+                            dexDbId=dexDetails["db"]["dexId"],
+                            primaryTokenDbId=primaryTokenDbId,
+                            secondaryTokenDbId=secondaryTokenDbId,
+                            pairName=tokenDetails["pair"]["name"],
+                            pairAddress=tokenDetails["pair"]["address"],
+                            pairRanking=tokenRank,
+                            pairLiquidity=tokenDetails["market"]["liquidity"],
+                            pairVolume=tokenDetails["market"]["volume"],
+                            pairFdv=tokenDetails["market"]["fdv"]
+                        )
+
+                        # Add the uniswap version back in if we have it
+                        if hasUniswapBadge:
+                            tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+
+                        # Finally, append the token to the final list
+                        collectedTokens.append(tokenDetails)
+
+                    else:
+
+                        logger.info(f"Already added pair ranked {tokenRank} - skipping")
+
+                except:
+
+                    continue
 
         # Close the page and browser as we are done
         await page.close()

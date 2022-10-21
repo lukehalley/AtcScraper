@@ -94,6 +94,10 @@ async def scrapeDexScreener():
         # Init MySQL DB
         dbConnection = initDBConnection()
 
+        fillTokenDecimals(
+            dbConnection=dbConnection
+        )
+
         # Wipe the ranking the table
         clearPairsRankingTable(
             dbConnection=dbConnection
