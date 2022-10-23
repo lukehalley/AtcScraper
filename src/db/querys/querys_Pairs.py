@@ -1,7 +1,7 @@
 import sys
 
-from src.db.db_Setup import getCursor
-from src.db.db_Utils import executeReadQuery
+from src.db.actions.actions_Setup import getCursor
+from src.db.actions.actions_General import executeReadQuery
 
 def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
 
