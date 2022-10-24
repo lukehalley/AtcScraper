@@ -4,6 +4,7 @@ import time
 
 from dotenv import load_dotenv
 
+from src.utils.aws.aws_S3 import downloadAbisFromS3
 from src.utils.time.time_Calculations import getMinSecString
 
 load_dotenv()
@@ -26,6 +27,13 @@ logger.info(f"ATC Scraper")
 printSeparator(newLine=True)
 
 def scrape():
+
+    # Download All Out Abis From S3
+    printSeparator()
+    logger.info(f"Syncing Abis From S3")
+    printSeparator()
+    downloadAbisFromS3()
+    printSeparator(newLine=True)
 
     # Create an async event loop
     loop = asyncio.get_event_loop()

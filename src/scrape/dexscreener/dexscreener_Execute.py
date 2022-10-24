@@ -216,8 +216,6 @@ async def scrapeDexScreener():
                         uniqueTokenSymbols.add(dict["primaryToken"]["symbol"])
                         uniqueResults.append(dict)
 
-                amountOfTokens = len(combinedResults)
-
                 rowsToGetMetadataFor = []
                 for result in uniqueResults:
                     result["uploadIndex"] = len(rowsToGetMetadataFor) + 1

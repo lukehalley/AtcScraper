@@ -456,6 +456,12 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                     else:
                         secondaryTokenDbId = secondaryTokenDetails["token_id"]
 
+                    tokenDetails["network"]["db"] = {}
+                    tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
+
+                    tokenDetails["dex"]["db"] = {}
+                    tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
+
                     tokenDetails["secondaryToken"]["db"] = {}
                     tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
 
@@ -564,7 +570,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
         justTransactions = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], uniqueLinks))]
         validTransactions = [x for x in justTransactions if len(x) == 66]
 
-        logger.info(f"Got {len(validTransactions)} Route Transactions")
+        logger.info(f"- Got {len(validTransactions)} Route Transactions")
 
         # Get all elements with the external link label
         allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
