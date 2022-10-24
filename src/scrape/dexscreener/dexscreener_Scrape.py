@@ -264,6 +264,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         )
 
         # Get total amount of pairs
+
         pairCountElement = page.locator("span", has_text="Showing pairs")
         pairCountText = await pairCountElement.all_inner_texts()
 
@@ -546,6 +547,24 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
             page=page,
             url=pairUrl
         )
+
+        # Get Pair Routes
+        timesToScroll = 15
+        collectedLinks = []
+        for n in range(timesToScroll):
+            txTab = page.locator("text=TXN")
+            await txTab.first.hover()
+            linksOnPage = await page.eval_on_selector_all("a[href^='https']",
+                                                          "elements => elements.map(element => element.href)")
+            txsOnPage = [link for link in linksOnPage if "0x" in link]
+            collectedLinks.extend(txsOnPage)
+            await page.mouse.wheel(0, 5000)
+
+        uniqueLinks = list(set(collectedLinks))
+        justTransactions = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], uniqueLinks))]
+        validTransactions = [x for x in justTransactions if len(x) == 66]
+
+        logger.info(f"Got {len(validTransactions)} Route Transactions")
 
         # Get all elements with the external link label
         allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
