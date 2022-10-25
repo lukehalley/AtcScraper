@@ -19,6 +19,7 @@ from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFrom
     replaceNumberShorthands, getAllRowsMetadata
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
+from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
 
 nest_asyncio.apply()
 
@@ -244,168 +245,202 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         # Sort the tokens by liquidity
         await page.locator('text=Liquidity').first.click()
 
-        # Get the sidebar list element
-        dexTable = os.getenv('DS_DEX_TABLE')
-        dexTableElement = await findAndCheckElement(
-            page=page,
-            selector=dexTable
-        )
+        # Get total amount of pairs
+        pairCountElement = page.locator("span", has_text="Showing pairs")
+        pairCountText = await pairCountElement.all_inner_texts()
 
-        # Get all the 'li' items
-        dexTabItems = await getAItems(
-            listElement=dexTableElement
-        )
+        if pairCountText:
 
-        # Get the pair address for each token in the list
-        pairAddresses = await getAllRowsMetadata(
-            page=page,
-            networkName=networkName
-        )
+            pairCount = int(pairCountText[0].split(" ")[-1].replace(",", ""))
+            roundCount = replaceTrailingDigitsWithZeros(number=pairCount)
 
-        # Filter the inner text we got back by only items which start with #
-        rows = [i for i in dexTabItems if i.startswith('#')]
+            if roundCount <= 100:
+                pairsPagesToIterate = 1
+            elif roundCount >= 500:
+                pairsPagesToIterate = 5
+            else:
+                pairsPagesToIterate = roundCount / 100
 
-        # Split them by the \n character
-        rowsSplit = [l.split("\n") for l in rows]
+        else:
 
-        # Remove "#" "$" "%" or "/"
-        cleanRows = [removeIllegalCharactersFromElements(item) for item in rowsSplit]
-
-        # Remove any blank lines
-        finalRows = [list(filter(None, item)) for item in cleanRows]
+            pairsPagesToIterate = 1
 
         # List which will store our token objects
         collectedTokens = []
 
-        # Iterate through the list of raw tokens we collected
-        for row in finalRows:
+        for pageNumber in range(pairsPagesToIterate + 1):
 
-            # Check if the row has info on its uniswap version
-            hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
-            uniswapVersion = "NULL"
+            if pageNumber > 1:
+                # Navigate to the next pair page
+                nextPageURL = f"{dexURL}/page-{pageNumber}"
+                await page.goto(nextPageURL)
 
-            # If it does, remove it - we can add it back later if it exists
-            if hasUniswapBadge:
-                uniswapVersion = row.pop(1)
+                await page.locator('text=Liquidity').first.click()
 
-            # Fix some rows coming back with missing data
-            # Sometimes data is missing so we just fill the list with blanks
-            # or cut it short
-            expectedListSize = 13
-            rowLength = len(row)
-            if rowLength != 13:
-                if rowLength > expectedListSize:
-                    row = row[0:13]
+            # Get the sidebar list element
+            dexTable = os.getenv('DS_DEX_TABLE')
+            dexTableElement = await findAndCheckElement(
+                page=page,
+                selector=dexTable
+            )
+
+            # Get all the 'li' items
+            dexTabItems = await getAItems(
+                listElement=dexTableElement
+            )
+
+            # Get the pair address for each token in the list
+            pairAddresses = await getAllRowsMetadata(
+                page=page,
+                networkName=networkName
+            )
+
+            # Filter the inner text we got back by only items which start with #
+            rows = [i for i in dexTabItems if i.startswith('#')]
+
+            # Split them by the \n character
+            rowsSplit = [l.split("\n") for l in rows]
+
+            # Remove "#" "$" "%" or "/"
+            cleanRows = [removeIllegalCharactersFromElements(item) for item in rowsSplit]
+
+            # Remove any blank lines
+            finalRows = [list(filter(None, item)) for item in cleanRows]
+
+            # Iterate through the list of raw tokens we collected
+            for row in finalRows:
+
+                # Check if the row has info on its uniswap version
+                hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
+                uniswapVersion = "NULL"
+
+                # If it does, remove it - we can add it back later if it exists
+                if hasUniswapBadge:
+                    uniswapVersion = row.pop(1)
+
+                # Fix some rows coming back with missing data
+                # Sometimes data is missing so we just fill the list with blanks
+                # or cut it short
+                expectedListSize = 13
+                rowLength = len(row)
+                if rowLength != 13:
+                    if rowLength > expectedListSize:
+                        row = row[0:13]
+                    else:
+                        slotsToFill = abs(13 - len(row))
+                        for _ in range(slotsToFill):
+                            row.append("NULL")
+
+                tokenRank = smartEval(row[0])
+
+                # Get the token rank
+                if pageNumber <= 1:
+                    tokenIndex = smartEval(row[0])
                 else:
-                    slotsToFill = abs(13 - len(row))
-                    for _ in range(slotsToFill):
-                        row.append("NULL")
+                    tokenIndex = (tokenRank - ((pageNumber - 1) * 100))
 
-            # Get the token rank
-            tokenRank = smartEval(row[0])
+                # Get the pair address for this row
+                pairAddress = pairAddresses[tokenIndex - 1]
 
-            # Get the pair address for this row
-            pairAddress = pairAddresses[tokenRank - 1]
-
-            # Create a token object from all the properties we scraped
-            tokenDetails = {
-                "rank": tokenRank,
-                "market": {
-                    "volume": smartEval(replaceNumberShorthands(row[6])),
-                    "liquidity": smartEval(replaceNumberShorthands(row[11])),
-                    "fdv": smartEval(replaceNumberShorthands(row[12]))
-                },
-                "network": {
-                    "network": networkName,
-                    "txCount": smartEval(row[5]),
-                },
-                "dex": {
-                    "dex": dexName,
-                },
-                "primaryToken": {
-                    "name": row[3],
-                    "symbol": row[1]
-                },
-                "secondaryToken": {
-                    "symbol": row[2],
-                },
-                "pair": {
-                    "name": f"{row[1]}/{row[2]}",
-                    "address": pairAddress
+                # Create a token object from all the properties we scraped
+                tokenDetails = {
+                    "rank": tokenRank,
+                    "market": {
+                        "volume": smartEval(replaceNumberShorthands(row[6])),
+                        "liquidity": smartEval(replaceNumberShorthands(row[11])),
+                        "fdv": smartEval(replaceNumberShorthands(row[12]))
+                    },
+                    "network": {
+                        "network": networkName,
+                        "txCount": smartEval(row[5]),
+                    },
+                    "dex": {
+                        "dex": dexName,
+                    },
+                    "primaryToken": {
+                        "name": row[3],
+                        "symbol": row[1]
+                    },
+                    "secondaryToken": {
+                        "symbol": row[2],
+                    },
+                    "pair": {
+                        "name": f"{row[1]}/{row[2]}",
+                        "address": pairAddress
+                    }
                 }
-            }
 
-            # Check if primary token already exists
-            primaryTokenDetails = getRowByValue(
-                dbConnection=dbConnection,
-                table="tokens",
-                conditions=[
-                    {
-                        "symbol": tokenDetails["primaryToken"]["symbol"]
-                    }
-                ]
-            )
+                # Check if primary token already exists
+                primaryTokenDetails = getRowByValue(
+                    dbConnection=dbConnection,
+                    table="tokens",
+                    conditions=[
+                        {
+                            "symbol": tokenDetails["primaryToken"]["symbol"]
+                        }
+                    ]
+                )
 
-            # If it doesn't - add it
-            if not primaryTokenDetails:
-                # Add primary token to database
-                primaryTokenDbId = await addTokenToDB(
+                # If it doesn't - add it
+                if not primaryTokenDetails:
+                    # Add primary token to database
+                    primaryTokenDbId = await addTokenToDB(
+                        dbConnection=dbConnection,
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenName=tokenDetails["primaryToken"]["name"],
+                        tokenSymbol=tokenDetails["primaryToken"]["symbol"]
+                    )
+                else:
+                    primaryTokenDbId = primaryTokenDetails["token_id"]
+
+                tokenDetails["primaryToken"]["db"] = {}
+                tokenDetails["primaryToken"]["db"]["dbId"] = primaryTokenDbId
+
+                # Check if primary token already exists
+                secondaryTokenDetails = getRowByValue(
+                    dbConnection=dbConnection,
+                    table="tokens",
+                    conditions=[
+                        {
+                            "symbol": tokenDetails["secondaryToken"]["symbol"]
+                        }
+                    ]
+                )
+
+                if not secondaryTokenDetails:
+                    # Add secondary token to database
+                    secondaryTokenDbId = await addTokenToDB(
+                        dbConnection=dbConnection,
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenName=None,
+                        tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+                    )
+                else:
+                    secondaryTokenDbId = secondaryTokenDetails["token_id"]
+
+                tokenDetails["secondaryToken"]["db"] = {}
+                tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
+
+                await addTokenPairToDB(
                     dbConnection=dbConnection,
                     networkDbId=dexDetails["db"]["networkId"],
-                    tokenName=tokenDetails["primaryToken"]["name"],
-                    tokenSymbol=tokenDetails["primaryToken"]["symbol"]
+                    dexDbId=dexDetails["db"]["dexId"],
+                    primaryTokenDbId=primaryTokenDbId,
+                    secondaryTokenDbId=secondaryTokenDbId,
+                    pairName=tokenDetails["pair"]["name"],
+                    pairAddress=tokenDetails["pair"]["address"],
+                    pairRanking=tokenRank,
+                    pairLiquidity=tokenDetails["market"]["liquidity"],
+                    pairVolume=tokenDetails["market"]["volume"],
+                    pairFdv=tokenDetails["market"]["fdv"]
                 )
-            else:
-                primaryTokenDbId = primaryTokenDetails["token_id"]
 
-            tokenDetails["primaryToken"]["db"] = {}
-            tokenDetails["primaryToken"]["db"]["dbId"] = primaryTokenDbId
+                # Add the uniswap version back in if we have it
+                if hasUniswapBadge:
+                    tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
 
-            # Check if primary token already exists
-            secondaryTokenDetails = getRowByValue(
-                dbConnection=dbConnection,
-                table="tokens",
-                conditions=[
-                    {
-                        "symbol": tokenDetails["secondaryToken"]["symbol"]
-                    }
-                ]
-            )
-
-            if not secondaryTokenDetails:
-                # Add secondary token to database
-                secondaryTokenDbId = await addTokenToDB(
-                    dbConnection=dbConnection,
-                    networkDbId=dexDetails["db"]["networkId"],
-                    tokenName=None,
-                    tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
-                )
-            else:
-                secondaryTokenDbId = secondaryTokenDetails["token_id"]
-
-            tokenDetails["secondaryToken"]["db"] = {}
-            tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
-
-            await addTokenPairToDB(
-                dbConnection=dbConnection,
-                networkDbId=dexDetails["db"]["networkId"],
-                dexDbId=dexDetails["db"]["dexId"],
-                primaryTokenDbId=primaryTokenDbId,
-                secondaryTokenDbId=secondaryTokenDbId,
-                pairName=tokenDetails["pair"]["name"],
-                pairAddress=tokenDetails["pair"]["address"],
-                pairRanking=tokenRank,
-                pairLiquidity=tokenDetails["market"]["liquidity"],
-                pairVolume=tokenDetails["market"]["volume"],
-                pairFdv=tokenDetails["market"]["fdv"]
-            )
-
-            # Add the uniswap version back in if we have it
-            if hasUniswapBadge:
-                tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
-
-            # Finally, append the token to the final list
-            collectedTokens.append(tokenDetails)
+                # Finally, append the token to the final list
+                collectedTokens.append(tokenDetails)
 
         # Close the page and browser as we are done
         await page.close()

@@ -1,0 +1,43 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Main (Lazy - Headless)" type="PythonConfigurationType" factoryName="Python">
+    <module name="atc-scraper" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="ATC_DB_Credentials" value="{&quot;username&quot;: &quot;root&quot;, &quot;password&quot;: &quot;localatcdb&quot;}" />
+      <env name="DB_NAME" value="atc" />
+      <env name="DB_ENDPOINT" value="localhost" />
+      <env name="WIPE_DB" value="False" />
+      <env name="LAZY_MODE" value="True" />
+      <env name="RUNNING_IN_DOCKER" value="False" />
+      <env name="FORCE_HEADLESS" value="True" />
+      <env name="MAX_CONCURRENCY" value="10" />
+      <env name="PLAYWRIGHT_TIMEOUT_SECS" value="30" />
+      <env name="NETWORKS_TO_SKIP" value="milkomeda,osmosis,thundercore,kava" />
+    </envs>
+    <option name="SDK_HOME" value="/usr/local/bin/python3.9" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="IS_MODULE_SDK" value="false" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <EXTENSION ID="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+      </ENTRIES>
+    </EXTENSION>
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+    <option name="PARAMETERS" value="" />
+    <option name="SHOW_COMMAND_LINE" value="false" />
+    <option name="EMULATE_TERMINAL" value="false" />
+    <option name="MODULE_MODE" value="false" />
+    <option name="REDIRECT_INPUT" value="false" />
+    <option name="INPUT_FILE" value="" />
+    <method v="2" />
+  </configuration>
+</component>
