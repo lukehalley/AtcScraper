@@ -249,17 +249,20 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         pairCountElement = page.locator("span", has_text="Showing pairs")
         pairCountText = await pairCountElement.all_inner_texts()
 
+        # Amount of pairs to get
+        pairsToCollect = int(os.getenv("AMOUNT_OF_PAIRS_TO_COLLECT"))
+
         if pairCountText:
 
             pairCount = int(pairCountText[0].split(" ")[-1].replace(",", ""))
             roundCount = replaceTrailingDigitsWithZeros(number=pairCount)
 
-            if roundCount <= 100:
+            if pairCount <= 100:
                 pairsPagesToIterate = 1
-            elif roundCount >= 500:
-                pairsPagesToIterate = 5
+            elif pairCount >= pairsToCollect:
+                pairsPagesToIterate = int(pairsToCollect / 100)
             else:
-                pairsPagesToIterate = roundCount / 100
+                pairsPagesToIterate = int((roundCount / 100) + 1)
 
         else:
 
