@@ -24,6 +24,8 @@ def addRouteToDB(dbConnection, networkDbId, dexDbId, tokenInAddress, tokenOutAdd
         tokenAddress=tokenOutAddress
     )
 
+    transactionHash = transactionHash.hex()
+
     if tokenInDetails and tokenOutDetails:
 
         tokenInId = tokenInDetails["token_id"]
@@ -31,17 +33,17 @@ def addRouteToDB(dbConnection, networkDbId, dexDbId, tokenInAddress, tokenOutAdd
 
         if tokenInId and tokenOutId:
 
-            selectStatement = f"SELECT " \
-                              f"{networkDbId} AS network_id, " \
-                              f"{dexDbId} AS dex_id, " \
-                              f"'{tokenInId}' AS token_in_id, " \
-                              f"'{tokenInAddress}' AS token_in_address, " \
-                              f"'{tokenOutId}' AS token_out_id, " \
-                              f"'{tokenOutAddress}' AS token_out_address, " \
-                              f"'{route}' AS route, " \
-                              f"'{method}' AS method, " \
-                              f"'{transactionHash}' AS transaction_hash, " \
-                              f"{blockNumber} AS block_number, "
+            selectStatement = f"SELECT """ \
+                              fr"""{networkDbId} AS network_id, """ \
+                              fr"""{dexDbId} AS dex_id, """ \
+                              fr"""{tokenInId} AS token_in_id, """ \
+                              fr"""'{tokenInAddress}' AS token_in_address, """ \
+                              fr"""{tokenOutId} AS token_out_id, """ \
+                              fr"""'{tokenOutAddress}' AS token_out_address, """ \
+                              fr"""'{route}' AS route, """ \
+                              fr"""'{method}' AS method, """ \
+                              fr"""'{transactionHash}' AS transaction_hash, """ \
+                              fr"""{blockNumber} AS block_number, """
 
             compareStatement = f"network_id = {networkDbId} AND " \
                                f"dex_id = {dexDbId} AND " \
