@@ -7,6 +7,7 @@ from faker import Faker
 from playwright.async_api import BrowserContext, async_playwright
 from retrying_async import retry
 
+from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
@@ -20,6 +21,7 @@ from src.playwright.playwright_Utils import findAndCheckElement, getListItems, g
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getAllRowsMetadata
+from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
@@ -290,6 +292,10 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         # List which will store our token objects
         collectedTokens = []
 
+        lazyMode = strToBool(os.getenv("LAZY_MODE"))
+        if lazyMode:
+            pairsPagesToIterate = 1
+
         loopRange = pairsPagesToIterate + 1
 
         for pageNumber in range(1, loopRange):
@@ -510,7 +516,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         return collectedTokens
 
 # @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbConnection):
+async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, amountOfTokensToUpdate, dbConnection):
 
     # Create fake user agent
     fakerInstance = Faker()
@@ -554,24 +560,6 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
             url=pairUrl
         )
 
-        # Get Pair Routes
-        timesToScroll = 15
-        collectedLinks = []
-        for n in range(timesToScroll):
-            txTab = page.locator("text=TXN")
-            await txTab.first.hover()
-            linksOnPage = await page.eval_on_selector_all("a[href^='https']",
-                                                          "elements => elements.map(element => element.href)")
-            txsOnPage = [link for link in linksOnPage if "0x" in link]
-            collectedLinks.extend(txsOnPage)
-            await page.mouse.wheel(0, 5000)
-
-        uniqueLinks = list(set(collectedLinks))
-        justTransactions = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], uniqueLinks))]
-        validTransactions = [x for x in justTransactions if len(x) == 66]
-
-        logger.info(f"- Got {len(validTransactions)} Route Transactions")
-
         # Get all elements with the external link label
         allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
 
@@ -586,3 +574,34 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
             fieldToUpdate="address",
             fieldNewValue=primaryTokenAddress
         )
+
+        # Get Pair Routes
+        collectedLinks = []
+        while len(collectedLinks) < 100:
+            txTab = page.locator("text=TXN")
+            await txTab.first.hover()
+            linksOnPage = await page.eval_on_selector_all("a[href^='https']",
+                                                          "elements => elements.map(element => element.href)")
+            txsOnPage = [link for link in linksOnPage if "0x" in link]
+            collectedLinks.extend(txsOnPage)
+            await page.mouse.wheel(0, 700)
+            collectedLinks = list(set(collectedLinks))
+            collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
+
+        validTransactions = [x for x in collectedLinks if len(x) == 66]
+
+        logger.info(f"- Decoding {len(validTransactions)} Route Transactions...")
+
+        len(validTransactions)
+
+        # Create the dict of decode tasks
+        decodedTransactions = [decodeTx(contractAddress=routerAddress, rpcUrl=rpcUrl, transactionHash=transaction, abi=routerAbi) for
+                               transaction in validTransactions]
+
+        successfullyDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
+                                           decodedTransaction]
+
+        logger.info(f"- Decoded {len(successfullyDecodedTransactions)} Route Transactions!")
+
+
+        x = 1

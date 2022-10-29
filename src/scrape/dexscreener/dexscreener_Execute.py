@@ -8,6 +8,8 @@ from playwright.async_api import async_playwright, BrowserContext
 from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
+from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
+from src.db.querys.querys_Networks import getNetworkRPCByDbId
 from src.db.querys.querys_Pairs import fillNullTokenAddresses
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress, fillTokenDecimals
 from src.playwright.playwright_Hacks import safePageLoad
@@ -221,11 +223,24 @@ async def scrapeDexScreener():
                     result["uploadIndex"] = len(rowsToGetMetadataFor) + 1
                     rowsToGetMetadataFor.append(result)
 
+                routerAddress, routerAbi = getDexRouterDetailsByDbId(
+                    dbConnection=dbConnection,
+                    dexDbid=rowsToGetMetadataFor[0]["dex"]["db"]["dbId"]
+                )
+
+                rpcUrl = getNetworkRPCByDbId(
+                    dbConnection=dbConnection,
+                    networkDbId=rowsToGetMetadataFor[0]["network"]["db"]["dbId"]
+                )
+
                 amountOfTokensToUpdate = len(rowsToGetMetadataFor)
 
                 tasks = [gatherMetadataForPair(
                     baseLink=f"{dexscreenerRoot}/{networkName}",
                     tokenRow=tokenRow,
+                    rpcUrl=rpcUrl,
+                    routerAddress=routerAddress,
+                    routerAbi=routerAbi,
                     amountOfTokensToUpdate=amountOfTokensToUpdate,
                     dbConnection=dbConnection
 
