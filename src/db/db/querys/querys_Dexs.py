@@ -1,3 +1,5 @@
+import json
+
 from src.db.actions.actions_General import executeReadQuery
 from src.db.actions.actions_Setup import getCursor
 from src.utils.data.data_ABI import loadLocalABI
@@ -22,4 +24,6 @@ def getDexRouterDetailsByDbId(dbConnection, dexDbid):
     router = dexInfo[0]["router"][0:42]
     routerAbi = loadLocalABI(path=dexInfo[0]["router_s3_path"])
 
-    return router, routerAbi
+    finalRouterAbi = json.dumps(routerAbi)
+
+    return router, finalRouterAbi
