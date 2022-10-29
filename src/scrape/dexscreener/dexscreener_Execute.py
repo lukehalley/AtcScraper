@@ -8,6 +8,8 @@ from playwright.async_api import async_playwright, BrowserContext
 from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
+from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
+from src.db.querys.querys_Networks import getNetworkRPCByDbId
 from src.db.querys.querys_Pairs import fillNullTokenAddresses
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress, fillTokenDecimals
 from src.playwright.playwright_Hacks import safePageLoad
@@ -178,6 +180,9 @@ async def scrapeDexScreener():
                 networkDbId = network[networkName][0]["db"]["networkId"]
                 networkDexs = network[networkName]
 
+                if lazyMode:
+                    networkDexs = networkDexs[0:1]
+
                 # Add network to the final dict
                 if networkName not in finalData:
                     finalData[networkName] = {}
@@ -213,31 +218,35 @@ async def scrapeDexScreener():
                         uniqueTokenSymbols.add(dict["primaryToken"]["symbol"])
                         uniqueResults.append(dict)
 
-                # Query tokens which don't have token addresses
-                allTokensWithNoAddress = getTokensForChainWithNoAddress(
-                    dbConnection=dbConnection,
-                    networkDbId=networkDbId
-                )
-                
-                rowsToGetAddressFor = []
+                rowsToGetMetadataFor = []
                 for result in uniqueResults:
-                    if result["primaryToken"]["symbol"] in allTokensWithNoAddress:
-                        result["uploadIndex"] = len(rowsToGetAddressFor) + 1
-                        rowsToGetAddressFor.append(result)
+                    result["uploadIndex"] = len(rowsToGetMetadataFor) + 1
+                    rowsToGetMetadataFor.append(result)
 
-                amountOfTokensToUpdate = len(rowsToGetAddressFor)
+                routerAddress, routerAbi = getDexRouterDetailsByDbId(
+                    dbConnection=dbConnection,
+                    dexDbid=rowsToGetMetadataFor[0]["dex"]["db"]["dbId"]
+                )
 
-                if amountOfTokensToUpdate > 0:
+                rpcUrl = getNetworkRPCByDbId(
+                    dbConnection=dbConnection,
+                    networkDbId=rowsToGetMetadataFor[0]["network"]["db"]["dbId"]
+                )
 
-                    tasks = [gatherMetadataForPair(
-                        baseLink=f"{dexscreenerRoot}/{networkName}",
-                        tokenRow=tokenRow,
-                        amountOfTokensToUpdate=amountOfTokensToUpdate,
-                        dbConnection=dbConnection
+                amountOfTokensToUpdate = len(rowsToGetMetadataFor)
 
-                    ) for tokenRow in rowsToGetAddressFor]
+                tasks = [gatherMetadataForPair(
+                    baseLink=f"{dexscreenerRoot}/{networkName}",
+                    tokenRow=tokenRow,
+                    rpcUrl=rpcUrl,
+                    routerAddress=routerAddress,
+                    routerAbi=routerAbi,
+                    amountOfTokensToUpdate=amountOfTokensToUpdate,
+                    dbConnection=dbConnection
 
-                    await gatherWithConcurrency(*tasks)
+                ) for tokenRow in rowsToGetMetadataFor]
+
+                await gatherWithConcurrency(*tasks)
 
                 # Collect the network results and and place them in their respective places
                 for result in results:

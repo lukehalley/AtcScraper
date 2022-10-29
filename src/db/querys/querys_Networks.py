@@ -29,4 +29,19 @@ def getNetworkDbIdByName(dbConnection, networkName):
         query=query
     )
 
+def getNetworkRPCByDbId(dbConnection, networkDbId):
+
+    query = f"SELECT networks.chain_rpc " \
+            f"FROM networks " \
+            f"WHERE networks.network_id = '{networkDbId}'"
+
+    cursor = getCursor(dbConnection=dbConnection)
+
+    result = executeReadQuery(
+        cursor=cursor,
+        query=query
+    )
+
+    return result[0]["chain_rpc"]
+
 

@@ -7,8 +7,10 @@ from faker import Faker
 from playwright.async_api import BrowserContext, async_playwright
 from retrying_async import retry
 
+from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
+from src.db.actions.actions_Routes import addRouteToDB
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
 
 from src.db.actions.actions_Networks import addNetworkToDB
@@ -20,6 +22,7 @@ from src.playwright.playwright_Utils import findAndCheckElement, getListItems, g
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getAllRowsMetadata
+from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
@@ -264,6 +267,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         )
 
         # Get total amount of pairs
+
         pairCountElement = page.locator("span", has_text="Showing pairs")
         pairCountText = await pairCountElement.all_inner_texts()
 
@@ -288,6 +292,10 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
         # List which will store our token objects
         collectedTokens = []
+
+        lazyMode = strToBool(os.getenv("LAZY_MODE"))
+        if lazyMode:
+            pairsPagesToIterate = 1
 
         loopRange = pairsPagesToIterate + 1
 
@@ -455,6 +463,12 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                     else:
                         secondaryTokenDbId = secondaryTokenDetails["token_id"]
 
+                    tokenDetails["network"]["db"] = {}
+                    tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
+
+                    tokenDetails["dex"]["db"] = {}
+                    tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
+
                     tokenDetails["secondaryToken"]["db"] = {}
                     tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
 
@@ -503,7 +517,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         return collectedTokens
 
 # @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbConnection):
+async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, amountOfTokensToUpdate, dbConnection):
 
     # Create fake user agent
     fakerInstance = Faker()
@@ -561,3 +575,91 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
             fieldToUpdate="address",
             fieldNewValue=primaryTokenAddress
         )
+
+        # Get Pair Routes
+        collectedLinks = []
+        while len(collectedLinks) < 100:
+            txTab = page.locator("text=TXN")
+            await txTab.first.hover()
+            linksOnPage = await page.eval_on_selector_all("a[href^='https']",
+                                                          "elements => elements.map(element => element.href)")
+            txsOnPage = [link for link in linksOnPage if "0x" in link]
+            collectedLinks.extend(txsOnPage)
+            await page.mouse.wheel(0, 700)
+            collectedLinks = list(set(collectedLinks))
+            collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
+
+        validTransactions = [x for x in collectedLinks if len(x) == 66]
+
+        logger.info(f"- Decoding {len(validTransactions)} Route Transactions...")
+
+        len(validTransactions)
+
+        # Create the dict of decode tasks
+        decodedTransactions = [decodeTx(contractAddress=routerAddress, rpcUrl=rpcUrl, transactionHash=transaction, abi=routerAbi) for
+                               transaction in validTransactions]
+
+        successfullyDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
+                                           decodedTransaction]
+
+        logger.info(f"- Decoded {len(successfullyDecodedTransactions)} Route Transactions!")
+
+        # Filter out the invalid results
+        finalDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
+                                    isinstance(decodedTransaction, dict) and "path" in decodedTransaction["params"]]
+
+        collectedRoutes = {}
+
+        logger.info(f"- Uploading {len(successfullyDecodedTransactions)} Route Transactions...")
+
+        for finalDecodedTransaction in finalDecodedTransactions:
+
+            routeUsed = finalDecodedTransaction["params"]["path"]
+
+            tokenInAddress = routeUsed[0]
+            tokenOutAddress = routeUsed[-1]
+
+            routeName = f"{tokenInAddress}-{tokenOutAddress}"
+
+            isLoopRoute = tokenInAddress == tokenOutAddress
+
+            if not isLoopRoute:
+
+                if routeName not in collectedRoutes:
+                    collectedRoutes[routeName] = []
+
+                routeObject = {
+                    "method": finalDecodedTransaction["name"],
+                    "route": "-".join(routeUsed),
+                    "blockNumber": finalDecodedTransaction["blockNumber"]
+                }
+
+                if "amountIn" in finalDecodedTransaction["params"]:
+                    routeObject["amountIn"] = finalDecodedTransaction["params"]["amountIn"]
+                else:
+                    routeObject["amountIn"] = None
+
+                if "amountOutMin" in finalDecodedTransaction["params"]:
+                    routeObject["amountOutMin"] = finalDecodedTransaction["params"]["amountOutMin"]
+                else:
+                    routeObject["amountOutMin"] = None
+
+                if routeObject not in collectedRoutes[routeName]:
+                    collectedRoutes[routeName].append(routeObject)
+
+                addRouteToDB(
+                    dbConnection=dbConnection,
+                    networkDbId=tokenRow["network"]["db"]["dbId"],
+                    dexDbId=tokenRow["dex"]["db"]["dbId"],
+                    tokenInAddress=tokenInAddress,
+                    tokenOutAddress=tokenOutAddress,
+                    route=routeObject["route"],
+                    method=routeObject["method"],
+                    transactionHash=finalDecodedTransaction["txHash"],
+                    txTimestamp=finalDecodedTransaction["timestamp"],
+                    blockNumber=finalDecodedTransaction["blockNumber"],
+                    amountIn=routeObject["amountIn"],
+                    amountOut=routeObject["amountOutMin"]
+                )
+
+        logger.info(f"- Uploaded {len(successfullyDecodedTransactions)} Route Transactions!")
