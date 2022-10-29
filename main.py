@@ -25,7 +25,7 @@ printSeparator()
 logger.info(f"ATC Scraper")
 printSeparator(newLine=True)
 
-# @retry()
+@retry()
 def scrape():
 
     # Create an async event loop
