@@ -5,7 +5,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
-async def addDexToDB(dbConnection, networkDbId, dexName):
+def addDexToDB(dbConnection, networkDbId, dexName):
 
     cursor = getCursor(dbConnection=dbConnection)
 

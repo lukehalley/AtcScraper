@@ -5,7 +5,7 @@ from src.db.actions.actions_Setup import getCursor
 from src.utils.data.data_Clean import cleanString
 
 
-async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenAddress=None):
+def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenAddress=None):
 
     cursor = getCursor(dbConnection=dbConnection)
 

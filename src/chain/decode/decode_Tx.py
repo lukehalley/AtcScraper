@@ -10,28 +10,34 @@ def decodeTx(contractAddress, rpcUrl, transactionHash, abi):
     web3.middleware_onion.inject(geth_poa_middleware, layer=0)
     transaction = web3.eth.get_transaction(transactionHash)
 
-    inputData = transaction["input"]
-    blockNumber = int(transaction["blockNumber"])
+    if transaction["to"] == contractAddress:
 
-    if abi is not None:
-        (contract, abi) = getContract(contractAddress, abi)
-        try:
-            func_obj, func_params = contract.decode_function_input(inputData)
-            target_schema = [a['inputs'] for a in abi if 'name' in a and a['name'] == func_obj.fn_name][0]
-            decoded_func_params = convertToHex(func_params, target_schema)
+        inputData = transaction["input"]
+        blockNumber = int(transaction["blockNumber"])
 
-            timestamp = web3.eth.getBlock(blockNumber).timestamp
+        if abi is not None:
+            (contract, abi) = getContract(contractAddress, abi)
+            try:
+                func_obj, func_params = contract.decode_function_input(inputData)
+                target_schema = [a['inputs'] for a in abi if 'name' in a and a['name'] == func_obj.fn_name][0]
+                decoded_func_params = convertToHex(func_params, target_schema)
 
-            result = {
-                "name": func_obj.fn_name,
-                "params": decoded_func_params,
-                "schema": target_schema,
-                "blockNumber": blockNumber,
-                "txHash": transaction["hash"],
-                "timestamp": timestamp
-            }
-            return result
-        except:
-            pass
+                timestamp = web3.eth.getBlock(blockNumber).timestamp
+
+                result = {
+                    "name": func_obj.fn_name,
+                    "params": decoded_func_params,
+                    "schema": target_schema,
+                    "blockNumber": blockNumber,
+                    "txHash": transaction["hash"],
+                    "timestamp": timestamp
+                }
+                return result
+            except:
+                pass
+        else:
+            return 'no matching abi', None, None
+
     else:
-        return 'no matching abi', None, None
+
+        return None

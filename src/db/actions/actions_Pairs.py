@@ -4,7 +4,7 @@ from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
 from src.utils.data.data_Clean import cleanString
 
 
-async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, pairRanking, pairLiquidity, pairVolume, pairFdv):
+def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, pairRanking, pairLiquidity, pairVolume, pairFdv):
 
     # DB Ids
     primaryTokenDbId = int(primaryTokenDbId)
@@ -74,7 +74,7 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
 
         pairDbId = existingPairDetails["pair_id"]
 
-    await addPairRankToDB(
+    addPairRankToDB(
         dbConnection=dbConnection,
         cursor=cursor,
         pairDbId=pairDbId,
@@ -87,7 +87,7 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
     )
 
 
-async def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, pairVolume, pairFdv):
+def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, pairVolume, pairFdv):
 
     keys = f"pair_id, network_id, dex_id, ranking, liquidity, volume, fdv"
 

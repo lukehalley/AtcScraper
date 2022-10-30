@@ -1,11 +1,10 @@
 import os
-import time
 from pathlib import Path
 
 import nest_asyncio
 from faker import Faker
 from playwright.async_api import BrowserContext, async_playwright
-from retrying_async import retry
+from playwright.sync_api import sync_playwright
 
 from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
@@ -17,8 +16,8 @@ from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_General import getRowByValue
 from src.db.querys.querys_Networks import getAllNetworks
-from src.playwright.playwright_Hacks import safeClick, safePageLoad
-from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
+from src.playwright.playwright_Hacks import safePageLoad, safeClick
+from src.playwright.playwright_Utils import findAndCheckElement, newPage, getListItems, getAItems
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getAllRowsMetadata
@@ -26,27 +25,23 @@ from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
-from src.utils.retry.retry_Settings import getRetryParameters
 
 nest_asyncio.apply()
 
 logger = getProjectLogger()
-# retryAttempts, retryDelay = getRetryParameters()
 
 # Gather all the available networks from the Dexscreener sidebar
-# @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherNetworkList(dbConnection, page):
-
+def gatherNetworkList(dbConnection, page):
     # Get the sidebar list element
     dsNetworkList = os.getenv('DS_LIST')
-    networkList = await findAndCheckElement(
+    networkList = findAndCheckElement(
         page=page,
         selector=dsNetworkList
     )
 
     # Get all the 'li' items
     allLists = networkList.locator(selector='li')
-    sidebarListItems = await allLists.all_text_contents()
+    sidebarListItems = allLists.all_text_contents()
 
     # Get index of ethereum - always the first
     ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item == 'Ethereum'), -1)
@@ -103,58 +98,75 @@ async def gatherNetworkList(dbConnection, page):
     return networkDictionary
 
 # Gather all dexs for each network
-# @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser):
+def gatherNetworkDexs(args):
 
-    # Create a new page
-    page = await newPage(browser=browser)
+    dbConnection = args["dbConnection"]
+    networkName = args["networkName"]
+    networkDetails = args["networkDetails"]
 
-    # Go to the networks url
-    await safePageLoad(
-        page=page,
-        url=networkDetails["url"]
-    )
+    with sync_playwright() as playwright:
 
-    # Init dexscreener
-    await validateDexscreenerInit(
-        page=page
-    )
+        # Setup browser
+        browser: BrowserContext = playwright.chromium.launch_persistent_context(
+            headless=checkHeadless(),
+            user_data_dir=f"{Path.home()}/.config/chromium",
+            viewport={
+                "width": 1920,
+                "height": 1080
+            },
+            user_agent=Faker().user_agent(),
+        )
 
-    # Gather the list of dexs for the tabs at the top of the screen
-    networksDexs = await gatherDexListFromTabs(
-        dbConnection=dbConnection,
-        networkDetails=networkDetails,
-        page=page
-    )
+        # Create a new page
+        page = newPage(browser=browser)
 
-    if not networksDexs:
-        return {}
+        # Load URL
+        safePageLoad(
+            page=page,
+            url=networkDetails["url"]
+        )
 
-    # Count dexs
-    amountOfDexs = len(networksDexs)
+        # Init dexscreener
+        validateDexscreenerInit(
+            page=page
+        )
 
-    # Close our page as don't need it anymore
-    await page.close()
+        # Gather the list of dexs for the tabs at the top of the screen
+        networksDexs = gatherDexListFromTabs(
+            dbConnection=dbConnection,
+            networkDetails=networkDetails,
+            page=page
+        )
 
-    # Create an object with the network and its dexs
-    networkDetails = {
-        networkName: networksDexs
-    }
+        browser.close()
 
-    # Log out hwo many dexs we got for this network
-    logger.info(f"{networkName.title()}: {amountOfDexs}")
+        if not networksDexs:
+            return {}
 
-    # Return the network details object
-    return networkDetails
+        # Count dexs
+        amountOfDexs = len(networksDexs)
 
-# Gather the list of dexs from the top of each network page of dexscreener
-# @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherDexListFromTabs(dbConnection, networkDetails, page):
+        # Close our page as don't need it anymore
+        page.close()
+
+        # Create an object with the network and its dexs
+        networkDetails = {
+            networkName: networksDexs
+        }
+
+        # Log out hwo many dexs we got for this network
+        logger.info(f"{networkName.title()}: {amountOfDexs}")
+
+        # Return the network details object
+        return networkDetails
+
+
+def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
     try:
         # Get the sidebar list element
         dexTabs = os.getenv('DS_DEX_TABS')
-        dexTabElement = await findAndCheckElement(
+        dexTabElement = findAndCheckElement(
             page=page,
             selector=dexTabs
         )
@@ -162,7 +174,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
         return {}
 
     # Get all the 'li' items
-    dexTabItems = await getListItems(
+    dexTabItems = getListItems(
         page=page,
         listElement=dexTabElement
     )
@@ -193,7 +205,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     for dexName in cleanDexList:
 
         if dexName in dexsToStore:
-            await addDexToDB(
+            addDexToDB(
                 dbConnection=dbConnection,
                 networkDbId=networkDetails["db"]["networkId"],
                 dexName=dexName
@@ -225,7 +237,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
 # For a dex - get the top 100 tokens by liquidity
 # @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherPairsForDex(dbConnection, networkName, dexDetails):
+def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
     # Get the current dexs name and url
     dexName = dexDetails["name"]
@@ -239,10 +251,10 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
     runHeadless = checkHeadless()
 
     # Create async instance of playwright
-    async with async_playwright() as playwright:
+    with sync_playwright() as playwright:
 
         # Setup browser
-        browser: BrowserContext = await playwright.chromium.launch_persistent_context(
+        browser: BrowserContext = playwright.chromium.launch_persistent_context(
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
@@ -253,15 +265,15 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         )
 
         # Open a new tab
-        page = await newPage(browser=browser)
+        page = newPage(browser=browser)
 
         # Navigate to the dexs url
-        await safePageLoad(
+        safePageLoad(
             page=page,
             url=dexURL
         )
 
-        await safeClick(
+        safeClick(
             page=page,
             selector='text=Liquidity'
         )
@@ -269,7 +281,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         # Get total amount of pairs
 
         pairCountElement = page.locator("span", has_text="Showing pairs")
-        pairCountText = await pairCountElement.all_inner_texts()
+        pairCountText = pairCountElement.all_inner_texts()
 
         # Amount of pairs to get
         pairsToCollect = int(os.getenv("AMOUNT_OF_PAIRS_TO_COLLECT"))
@@ -302,35 +314,34 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         for pageNumber in range(1, loopRange):
 
             if pageNumber > 1:
-
                 # Navigate to the next pair page
                 nextPageURL = f"{dexURL}/page-{pageNumber}"
 
-                await safePageLoad(
+                safePageLoad(
                     page=page,
                     url=nextPageURL
                 )
 
-                await safeClick(
+                safeClick(
                     page=page,
                     selector='text=Liquidity'
                 )
 
             # Get the sidebar list element
             dexTable = os.getenv('DS_DEX_TABLE')
-            dexTableElement = await findAndCheckElement(
+            dexTableElement = findAndCheckElement(
                 page=page,
                 selector=dexTable
             )
 
             # Get all the 'li' items
-            dexTabItems = await getAItems(
+            dexTabItems = getAItems(
                 page=page,
                 listElement=dexTableElement
             )
 
             # Get the pair address for each token in the list
-            pairAddresses = await getAllRowsMetadata(
+            pairAddresses = getAllRowsMetadata(
                 page=page,
                 networkName=networkName
             )
@@ -429,7 +440,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                     # If it doesn't - add it
                     if not primaryTokenDetails:
                         # Add primary token to database
-                        primaryTokenDbId = await addTokenToDB(
+                        primaryTokenDbId = addTokenToDB(
                             dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             tokenName=tokenDetails["primaryToken"]["name"],
@@ -454,7 +465,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
                     if not secondaryTokenDetails:
                         # Add secondary token to database
-                        secondaryTokenDbId = await addTokenToDB(
+                        secondaryTokenDbId = addTokenToDB(
                             dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             tokenName=None,
@@ -476,7 +487,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
                         addedRanks.append(tokenRank)
 
-                        await addTokenPairToDB(
+                        addTokenPairToDB(
                             dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             dexDbId=dexDetails["db"]["dexId"],
@@ -506,8 +517,8 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                     continue
 
         # Close the page and browser as we are done
-        await page.close()
-        await browser.close()
+        page.close()
+        browser.close()
 
         # Count how many tokens we collected and log it
         amountOfTokens = len(collectedTokens)
@@ -517,7 +528,8 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         return collectedTokens
 
 # @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, amountOfTokensToUpdate, dbConnection):
+def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, amountOfTokensToUpdate,
+                      dbConnection):
 
     # Create fake user agent
     fakerInstance = Faker()
@@ -527,10 +539,10 @@ async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, route
     runHeadless = checkHeadless()
 
     # Create async instance of playwright
-    async with async_playwright() as playwright:
+    with sync_playwright() as playwright:
 
         # Setup browser
-        browser: BrowserContext = await playwright.chromium.launch_persistent_context(
+        browser: BrowserContext = playwright.chromium.launch_persistent_context(
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
@@ -541,7 +553,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, route
         )
 
         # Open a new tab
-        page = await newPage(browser=browser)
+        page = newPage(browser=browser)
 
         # Get row data
         pairAddress = tokenRow["pair"]["address"]
@@ -556,7 +568,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, route
         pairUrl = f"{baseLink}/{pairAddress}"
 
         # Go the pair graph page
-        await safePageLoad(
+        safePageLoad(
             page=page,
             url=pairUrl
         )
@@ -565,7 +577,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, route
         allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
 
         # Get the second element on the page which is the address of the primary token
-        tokenExplorerLink = await allBlockExplorerLinks.nth(1).get_attribute("href")
+        tokenExplorerLink = allBlockExplorerLinks.nth(1).get_attribute("href")
         primaryTokenAddress = tokenExplorerLink.split("/")[-1]
 
         # Update Token Address In DB
@@ -580,12 +592,12 @@ async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, route
         collectedLinks = []
         while len(collectedLinks) < 100:
             txTab = page.locator("text=TXN")
-            await txTab.first.hover()
-            linksOnPage = await page.eval_on_selector_all("a[href^='https']",
-                                                          "elements => elements.map(element => element.href)")
+            txTab.first.hover()
+            linksOnPage = page.eval_on_selector_all("a[href^='https']",
+                                                    "elements => elements.map(element => element.href)")
             txsOnPage = [link for link in linksOnPage if "0x" in link]
             collectedLinks.extend(txsOnPage)
-            await page.mouse.wheel(0, 700)
+            page.mouse.wheel(0, 700)
             collectedLinks = list(set(collectedLinks))
             collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
 
@@ -596,8 +608,9 @@ async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, route
         len(validTransactions)
 
         # Create the dict of decode tasks
-        decodedTransactions = [decodeTx(contractAddress=routerAddress, rpcUrl=rpcUrl, transactionHash=transaction, abi=routerAbi) for
-                               transaction in validTransactions]
+        decodedTransactions = [
+            decodeTx(contractAddress=routerAddress, rpcUrl=rpcUrl, transactionHash=transaction, abi=routerAbi) for
+            transaction in validTransactions]
 
         successfullyDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
                                            decodedTransaction]
