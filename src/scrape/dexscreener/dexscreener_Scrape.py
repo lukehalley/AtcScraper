@@ -10,6 +10,7 @@ from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
 from src.db.actions.actions_Routes import addRouteToDB
+from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
 
 from src.db.actions.actions_Networks import addNetworkToDB
@@ -100,7 +101,8 @@ def gatherNetworkList(dbConnection, page):
 # Gather all dexs for each network
 def gatherNetworkDexs(args):
 
-    dbConnection = args["dbConnection"]
+    # Init MySQL DB
+    dbConnection = initDBConnection()
     networkName = args["networkName"]
     networkDetails = args["networkDetails"]
 
@@ -157,8 +159,10 @@ def gatherNetworkDexs(args):
         # Log out hwo many dexs we got for this network
         logger.info(f"{networkName.title()}: {amountOfDexs}")
 
+        dbConnection.close()
+
         # Return the network details object
-        return networkDetails
+        return networksDexs
 
 
 def gatherDexListFromTabs(dbConnection, networkDetails, page):

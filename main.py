@@ -30,32 +30,29 @@ from src.utils.time.time_Calculations import getMinSecString
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
 
-# Set up logging
-logger = setupLogging()
-
-# Get our starting time
-startingTime = time.perf_counter()
-
-printSeparator()
-logger.info(f"ATC Scraper")
-printSeparator(newLine=True)
-
-# Init MySQL DB
-dbConnection = initDBConnection()
-
-# Wipe the ranking the table
-clearPairsRankingTable(
-    dbConnection=dbConnection
-)
-
-# Download All Out Abis From S3
-printSeparator()
-logger.info(f"Syncing Abis From S3")
-printSeparator()
-downloadAbisFromS3()
-printSeparator(newLine=True)
-
 def scrape():
+
+    # Set up logging
+    logger = setupLogging()
+
+    printSeparator()
+    logger.info(f"ATC Scraper")
+    printSeparator(newLine=True)
+
+    # Init MySQL DB
+    dbConnection = initDBConnection()
+
+    # Wipe the ranking the table
+    clearPairsRankingTable(
+        dbConnection=dbConnection
+    )
+
+    # Download All Out Abis From S3
+    printSeparator()
+    logger.info(f"Syncing Abis From S3")
+    printSeparator()
+    downloadAbisFromS3()
+    printSeparator(newLine=True)
 
     # Log setup message
     printSeparator()
@@ -158,21 +155,21 @@ def scrape():
 
     # Create A Pool For Dex Gather
 
-    gatheredDexs = []
-
-    pool = ThreadPoolExecutor(max_workers=3)
+    args = []
     for networkName, networkDetails in networkDictionary.items():
 
-        args = {
-            "dbConnection": dbConnection,
+        arg = {
             "networkName": networkName,
             "networkDetails": networkDetails
         }
 
-        pool.submit(gatherNetworkDexs, args)
-        # gatheredDexs.append(future.result())
+        args.append(arg)
 
-    pool.shutdown(wait=True)
+    # Create A Pool For Recipe Simulation
+    recipeSimulationPool = Pool(processes=None)
+
+    # Map Our Recipes To The Pool An Run
+    simulationResults = recipeSimulationPool.map(gatherNetworkDexs, args)
 
     x = 1
 
@@ -335,5 +332,7 @@ def scrape():
     # printSeparator()
 
 if __name__ == '__main__':
+    # Get our starting time
+    startingTime = time.perf_counter()
+
     scrape()
-    sys.exit(0)
