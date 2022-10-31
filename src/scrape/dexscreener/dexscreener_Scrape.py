@@ -29,8 +29,6 @@ from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
 
 nest_asyncio.apply()
 
-logger = getProjectLogger()
-
 # Gather all the available networks from the Dexscreener sidebar
 def gatherNetworkList(dbConnection, page):
     # Get the sidebar list element
@@ -140,29 +138,23 @@ def gatherNetworkDexs(args):
             page=page
         )
 
+        networksDexs = [dict(networksDex, **{'network':networkName}) for networksDex in networksDexs]
+
         browser.close()
 
         if not networksDexs:
-            return {}
-
-        # Count dexs
-        amountOfDexs = len(networksDexs)
+            return None
 
         # Close our page as don't need it anymore
         page.close()
 
         # Create an object with the network and its dexs
-        networkDetails = {
-            networkName: networksDexs
-        }
-
-        # Log out hwo many dexs we got for this network
-        logger.info(f"{networkName.title()}: {amountOfDexs}")
+        networkDetails = (networkName, networksDexs)
 
         dbConnection.close()
 
         # Return the network details object
-        return networksDexs
+        return networkDetails
 
 
 def gatherDexListFromTabs(dbConnection, networkDetails, page):
@@ -241,7 +233,14 @@ def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
 # For a dex - get the top 100 tokens by liquidity
 # @retry(attempts=retryAttempts, delay=retryDelay)
-def gatherPairsForDex(dbConnection, networkName, dexDetails):
+def gatherPairsForDex(dexDetails):
+
+    # Init MySQL DB
+    dbConnection = initDBConnection()
+    networkName = dexDetails["network"]
+
+    # Get Project Logger
+    logger = getProjectLogger()
 
     # Get the current dexs name and url
     dexName = dexDetails["name"]
@@ -534,6 +533,9 @@ def gatherPairsForDex(dbConnection, networkName, dexDetails):
 # @retry(attempts=retryAttempts, delay=retryDelay)
 def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, amountOfTokensToUpdate,
                       dbConnection):
+
+    # Get Project Logger
+    logger = getProjectLogger()
 
     # Create fake user agent
     fakerInstance = Faker()

@@ -18,7 +18,7 @@ from src.db.actions.actions_Setup import initDBConnection
 from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
-from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs
+from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherPairsForDex
 from src.utils.aws.aws_S3 import downloadAbisFromS3
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.misc.misc_Lazy import checkIsLazyMode
@@ -126,14 +126,14 @@ def scrape():
 
         # Delete any networks we have declared to be skipped
         networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
-        logger.info(f"{amountOfNetworks} available to scrape.")
+        logger.info(f"{amountOfNetworks} Networks Gathered")
         for network in networksToSkip:
             if network in networkDictionary:
                 del networkDictionary[network]
 
         # Print out skipped networks if we have some
         if len(networksToSkip) > 0:
-            logger.info(f"Skipping networks: {networksToSkip}")
+            logger.info(f"Skipping Networks: {networksToSkip}")
 
         if checkIsLazyMode():
             firstNetwork = next(iter(networkDictionary))
@@ -155,7 +155,7 @@ def scrape():
 
     # Create A Pool For Dex Gather
 
-    args = []
+    networksToCollect = []
     for networkName, networkDetails in networkDictionary.items():
 
         arg = {
@@ -163,173 +163,182 @@ def scrape():
             "networkDetails": networkDetails
         }
 
-        args.append(arg)
+        networksToCollect.append(arg)
 
     # Create A Pool For Recipe Simulation
-    recipeSimulationPool = Pool(processes=None)
-
     # Map Our Recipes To The Pool An Run
-    simulationResults = recipeSimulationPool.map(gatherNetworkDexs, args)
+    recipeSimulationPool = Pool(processes=None)
+    collectedNetworkDexs = recipeSimulationPool.map(gatherNetworkDexs, networksToCollect)
+    recipeSimulationPool.close()
 
-    x = 1
+    # Parse Collected Data
+    nonEmptyNetworks = [network for network in collectedNetworkDexs if network is not None]
+    finalNetworkDexs = [item for item in nonEmptyNetworks if item]
 
-    # Asynchronously gather each network's dexs
-    # tasks = [gatherNetworkDexs(dbConnection, networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
-    # allNetworkDexs = gatherWithConcurrency(*tasks)
-    # nonEmptyNetworks = [network for network in allNetworkDexs if network is not None]
-    # finalNetworkDexs = [item for item in nonEmptyNetworks if item]
+    combinedDexs = [item for sublist in [i for sub in finalNetworkDexs for i in sub if not isinstance(i, str)] for item in sublist]
 
-    # Count how many dexs we collected
-    # collectedNetworks = len(finalNetworkDexs)
-    #
-    # if collectedNetworks > 0:
-    #
-    #     # Close the tab as we don't need it anymore
-    #     browser.close()
-    #
-    #     # Separator
-    #     printSeparator(True)
-    #
-    #     # List which will hold all the data we scraped for all networks
-    #     finalData = {}
-    #
-    #     # Log that we are going to collect the (top 100 by liquidity) tokens for each dex
-    #     printSeparator()
-    #     logger.info(f"Gathering Dex Tokens")
-    #     printSeparator()
-    #
-    #     # Loop through each network
-    #     for network in finalNetworkDexs:
-    #
-    #         # Get the index of the network and form a string that we can use to
-    #         # count how far we are through the list of networks 1/40 etc...
-    #         networkIndex = finalNetworkDexs.index(network) + 1
-    #         networkCountStr = f"{networkIndex}/{collectedNetworks}"
-    #
-    #         # Get the networks name and dexs
-    #         networkName = list(network.keys())[0]
-    #         networkDbId = network[networkName][0]["db"]["networkId"]
-    #         networkDexs = network[networkName]
-    #
-    #         if lazyMode:
-    #             networkDexs = networkDexs[0:1]
-    #
-    #         # Add network to the final dict
-    #         if networkName not in finalData:
-    #             finalData[networkName] = {}
-    #
-    #         # Log the current network and the progress
-    #         logger.info(f"{networkName.title()} [{networkCountStr}]")
-    #
-    #         # Asynchronously gather each dex's tokens
-    #         tasks = [gatherPairsForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
-    #         results = gatherWithConcurrency(*tasks)
-    #         results = [x for x in results if x != []]
-    #
-    #         printSeparator(True)
-    #
-    #         printSeparator()
-    #         logger.info(f"Adding Tokens Addresses To DB")
-    #         printSeparator()
-    #
-    #         dexscreenerRoot = getDexscreenerRoot()
-    #
-    #         # Combine the list of dictionary lists into one big list
-    #         combinedResults = [item for sublist in results for item in sublist]
-    #
-    #         # Set which will hold all the tokens we collected, its a set so each token will appear once
-    #         uniqueTokenSymbols = set()
-    #
-    #         # List which will hold our unique results set
-    #         uniqueResults = []
-    #
-    #         # Loop through the list of results and find the unique ones
-    #         for dict in combinedResults:
-    #             if dict["primaryToken"]["symbol"] not in uniqueTokenSymbols:
-    #                 uniqueTokenSymbols.add(dict["primaryToken"]["symbol"])
-    #                 uniqueResults.append(dict)
-    #
-    #         rowsToGetMetadataFor = []
-    #         for result in uniqueResults:
-    #             result["uploadIndex"] = len(rowsToGetMetadataFor) + 1
-    #             rowsToGetMetadataFor.append(result)
-    #
-    #         routerAddress, routerAbi = getDexRouterDetailsByDbId(
-    #             dbConnection=dbConnection,
-    #             dexDbid=rowsToGetMetadataFor[0]["dex"]["db"]["dbId"]
-    #         )
-    #
-    #         rpcUrl = getNetworkRPCByDbId(
-    #             dbConnection=dbConnection,
-    #             networkDbId=rowsToGetMetadataFor[0]["network"]["db"]["dbId"]
-    #         )
-    #
-    #         amountOfTokensToUpdate = len(rowsToGetMetadataFor)
-    #
-    #         tasks = [gatherMetadataForPair(
-    #             baseLink=f"{dexscreenerRoot}/{networkName}",
-    #             tokenRow=tokenRow,
-    #             rpcUrl=rpcUrl,
-    #             routerAddress=routerAddress,
-    #             routerAbi=routerAbi,
-    #             amountOfTokensToUpdate=amountOfTokensToUpdate,
-    #             dbConnection=dbConnection
-    #
-    #         ) for tokenRow in rowsToGetMetadataFor]
-    #
-    #         gatherWithConcurrency(*tasks)
-    #
-    #         # Collect the network results and and place them in their respective places
-    #         for result in results:
-    #
-    #             # Collect the dex results
-    #             dexName = result[0]["dex"]["dex"]
-    #             finalData[networkName][dexName] = result
-    #
-    #         # Close the tab as we don't need it anymore
-    #         browser.close()
-    #
-    #         # Check if we are on the last network
-    #         if networkIndex == collectedNetworks:
-    #             printSeparator(True)
-    #         else:
-    #             printSeparator()
-    #
-    #     # Set The Blank
-    #     updateUnavailableTokensToNull(
-    #         dbConnection=dbConnection
-    #     )
-    #
-    #     printSeparator()
-    #     logger.info(f"Getting Missing Token Addresses From Dexscreener API")
-    #     printSeparator()
-    #
-    #     fillNullTokenAddresses(dbConnection=dbConnection)
-    #
-    #     printSeparator(newLine=True)
-    #
-    #     printSeparator()
-    #     logger.info(f"Getting Missing Token Decimals")
-    #     printSeparator()
-    #
-    #     fillTokenDecimals(
-    #         dbConnection=dbConnection
-    #     )
-    #
-    #     printSeparator(True)
-    #
-    #     # Return our final data
-    #     return finalData
-    #
-    #
-    # # Get our ending time
-    # timerString = getMinSecString(time.perf_counter() - startingTime)
-    #
-    # # Log that out scraping is done
-    # printSeparator()
-    # logger.info(f"Dex Screener Scrape Complete ✅")
-    # logger.info(f"Took: {timerString}")
-    # printSeparator()
+    # Count how many networks and dexs we collected
+    collectedNetworks = len(finalNetworkDexs)
+    collectedDexs = len(combinedDexs)
+
+    logger.info(f"Collected {collectedDexs} Dexs Across {collectedNetworks} Networks")
+
+    printSeparator()
+
+    for networkDexs in finalNetworkDexs:
+        logger.info(f"{(networkDexs[0]).upper()}: {len(networkDexs[0])} Dex(s)")
+
+    if collectedNetworks > 0 and collectedDexs > 0:
+
+        # Separator
+        printSeparator(True)
+
+        # List which will hold all the data we scraped for all networks
+        finalData = {}
+
+        # Log that we are going to collect the (top 100 by liquidity) tokens for each dex
+        printSeparator()
+        logger.info(f"Gathering Dex Tokens")
+        printSeparator()
+
+        recipeSimulationPool = Pool(processes=None)
+        collectedDexPairs = recipeSimulationPool.map(gatherPairsForDex, combinedDexs)
+        recipeSimulationPool.close()
+
+        x = 1
+
+        # Loop through each network
+        for network in finalNetworkDexs:
+
+            # Get the index of the network and form a string that we can use to
+            # count how far we are through the list of networks 1/40 etc...
+            networkIndex = finalNetworkDexs.index(network) + 1
+            networkCountStr = f"{networkIndex}/{collectedNetworks}"
+
+            # Get the networks name and dexs
+            networkName = list(network.keys())[0]
+            networkDbId = network[networkName][0]["db"]["networkId"]
+            networkDexs = network[networkName]
+
+            if checkIsLazyMode():
+                networkDexs = networkDexs[0:1]
+
+            # Add network to the final dict
+            if networkName not in finalData:
+                finalData[networkName] = {}
+
+            # Log the current network and the progress
+            logger.info(f"{networkName.title()} [{networkCountStr}]")
+
+            # Asynchronously gather each dex's tokens
+            tasks = [gatherPairsForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
+            results = gatherWithConcurrency(*tasks)
+            results = [x for x in results if x != []]
+
+            printSeparator(True)
+
+            printSeparator()
+            logger.info(f"Adding Tokens Addresses To DB")
+            printSeparator()
+
+            dexscreenerRoot = getDexscreenerRoot()
+
+            # Combine the list of dictionary lists into one big list
+            combinedResults = [item for sublist in results for item in sublist]
+
+            # Set which will hold all the tokens we collected, its a set so each token will appear once
+            uniqueTokenSymbols = set()
+
+            # List which will hold our unique results set
+            uniqueResults = []
+
+            # Loop through the list of results and find the unique ones
+            for dict in combinedResults:
+                if dict["primaryToken"]["symbol"] not in uniqueTokenSymbols:
+                    uniqueTokenSymbols.add(dict["primaryToken"]["symbol"])
+                    uniqueResults.append(dict)
+
+            rowsToGetMetadataFor = []
+            for result in uniqueResults:
+                result["uploadIndex"] = len(rowsToGetMetadataFor) + 1
+                rowsToGetMetadataFor.append(result)
+
+            routerAddress, routerAbi = getDexRouterDetailsByDbId(
+                dbConnection=dbConnection,
+                dexDbid=rowsToGetMetadataFor[0]["dex"]["db"]["dbId"]
+            )
+
+            rpcUrl = getNetworkRPCByDbId(
+                dbConnection=dbConnection,
+                networkDbId=rowsToGetMetadataFor[0]["network"]["db"]["dbId"]
+            )
+
+            amountOfTokensToUpdate = len(rowsToGetMetadataFor)
+
+            tasks = [gatherMetadataForPair(
+                baseLink=f"{dexscreenerRoot}/{networkName}",
+                tokenRow=tokenRow,
+                rpcUrl=rpcUrl,
+                routerAddress=routerAddress,
+                routerAbi=routerAbi,
+                amountOfTokensToUpdate=amountOfTokensToUpdate,
+                dbConnection=dbConnection
+
+            ) for tokenRow in rowsToGetMetadataFor]
+
+            gatherWithConcurrency(*tasks)
+
+            # Collect the network results and and place them in their respective places
+            for result in results:
+
+                # Collect the dex results
+                dexName = result[0]["dex"]["dex"]
+                finalData[networkName][dexName] = result
+
+            # Close the tab as we don't need it anymore
+            browser.close()
+
+            # Check if we are on the last network
+            if networkIndex == collectedNetworks:
+                printSeparator(True)
+            else:
+                printSeparator()
+
+        # Set The Blank
+        updateUnavailableTokensToNull(
+            dbConnection=dbConnection
+        )
+
+        printSeparator()
+        logger.info(f"Getting Missing Token Addresses From Dexscreener API")
+        printSeparator()
+
+        fillNullTokenAddresses(dbConnection=dbConnection)
+
+        printSeparator(newLine=True)
+
+        printSeparator()
+        logger.info(f"Getting Missing Token Decimals")
+        printSeparator()
+
+        fillTokenDecimals(
+            dbConnection=dbConnection
+        )
+
+        printSeparator(True)
+
+        # Return our final data
+        return finalData
+
+
+        # Get our ending time
+        timerString = getMinSecString(time.perf_counter() - startingTime)
+
+        # Log that out scraping is done
+        printSeparator()
+        logger.info(f"Dex Screener Scrape Complete ✅")
+        logger.info(f"Took: {timerString}")
+        printSeparator()
 
 if __name__ == '__main__':
     # Get our starting time
