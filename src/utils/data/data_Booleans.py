@@ -1,5 +1,6 @@
 """Boolean conversion and validation utilities."""
 # Boolean utility functions for data validation and conversion
+# Boolean conversion and validation utilities
 # Boolean conversion and validation helper functions
 """Boolean data type utilities and safe conversions."""
 """Boolean conversion and validation utilities.
