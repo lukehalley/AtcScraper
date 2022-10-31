@@ -31,7 +31,6 @@ def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
     else:
         return None
 
-
 def fillNullTokenAddresses(dbConnection):
 
     cursor = getCursor(dbConnection=dbConnection)
@@ -111,3 +110,18 @@ def fillNullTokenAddresses(dbConnection):
             pairDbId=pairDbId,
             analysisStatus=True
         )
+
+def getAnalysedPairs(dbConnection):
+
+    query = f"SELECT pairs.pair_id FROM pairs WHERE pairs.analysed"
+
+    cursor = getCursor(dbConnection=dbConnection)
+
+    analysedPairs = executeReadQuery(
+        cursor=cursor,
+        query=query
+    )
+
+    analysedPairIds = [analysedPair['pair_id'] for analysedPair in analysedPairs]
+
+    return analysedPairIds

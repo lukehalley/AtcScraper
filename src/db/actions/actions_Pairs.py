@@ -86,6 +86,8 @@ def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secon
         pairFdv=pairFdv,
     )
 
+    return pairDbId
+
 
 def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, pairVolume, pairFdv):
 

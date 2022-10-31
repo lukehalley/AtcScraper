@@ -14,9 +14,10 @@ from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
 
 from src.db.actions.actions_Networks import addNetworkToDB
+from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_General import getRowByValue
-from src.db.querys.querys_Networks import getAllNetworks
+from src.db.querys.querys_Networks import getAllNetworks, getNetworkRPCByDbId
 from src.playwright.playwright_Hacks import safePageLoad, safeClick
 from src.playwright.playwright_Utils import findAndCheckElement, newPage, getListItems, getAItems
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
@@ -31,6 +32,7 @@ nest_asyncio.apply()
 
 # Gather all the available networks from the Dexscreener sidebar
 def gatherNetworkList(dbConnection, page):
+
     # Get the sidebar list element
     dsNetworkList = os.getenv('DS_LIST')
     networkList = findAndCheckElement(
@@ -101,6 +103,7 @@ def gatherNetworkDexs(args):
 
     # Init MySQL DB
     dbConnection = initDBConnection()
+
     networkName = args["networkName"]
     networkDetails = args["networkDetails"]
 
@@ -156,7 +159,7 @@ def gatherNetworkDexs(args):
         # Return the network details object
         return networkDetails
 
-
+# Gather The Networks Dexs
 def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
     try:
@@ -232,7 +235,6 @@ def gatherDexListFromTabs(dbConnection, networkDetails, page):
     return dexListDictionary
 
 # For a dex - get the top 100 tokens by liquidity
-# @retry(attempts=retryAttempts, delay=retryDelay)
 def gatherPairsForDex(dexDetails):
 
     # Init MySQL DB
@@ -490,7 +492,7 @@ def gatherPairsForDex(dexDetails):
 
                         addedRanks.append(tokenRank)
 
-                        addTokenPairToDB(
+                        pairDbId = addTokenPairToDB(
                             dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             dexDbId=dexDetails["db"]["dexId"],
@@ -507,6 +509,9 @@ def gatherPairsForDex(dexDetails):
                         # Add the uniswap version back in if we have it
                         if hasUniswapBadge:
                             tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+
+                        tokenDetails["pair"]["db"] = {}
+                        tokenDetails["pair"]["db"]["dbId"] = pairDbId
 
                         # Finally, append the token to the final list
                         collectedTokens.append(tokenDetails)
@@ -531,8 +536,20 @@ def gatherPairsForDex(dexDetails):
         return collectedTokens
 
 # @retry(attempts=retryAttempts, delay=retryDelay)
-def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, amountOfTokensToUpdate,
-                      dbConnection):
+def gatherMetadataForPair(pairToAnalyse):
+
+    # Init MySQL DB
+    dbConnection = initDBConnection()
+
+    routerAddress, routerAbi = getDexRouterDetailsByDbId(
+        dbConnection=dbConnection,
+        dexDbid=pairToAnalyse["dex"]["db"]["dbId"]
+    )
+
+    rpcUrl = getNetworkRPCByDbId(
+        dbConnection=dbConnection,
+        networkDbId=pairToAnalyse["network"]["db"]["dbId"]
+    )
 
     # Get Project Logger
     logger = getProjectLogger()
@@ -549,7 +566,7 @@ def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, 
 
         # Setup browser
         browser: BrowserContext = playwright.chromium.launch_persistent_context(
-            headless=runHeadless,
+            headless=False,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
                 "width": 1920,
@@ -562,16 +579,12 @@ def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, 
         page = newPage(browser=browser)
 
         # Get row data
-        pairAddress = tokenRow["pair"]["address"]
+        pairAddress = pairToAnalyse["pair"]["address"]
+        primaryTokenDbId = pairToAnalyse["primaryToken"]["db"]["dbId"]
 
-        uploadIndex = tokenRow["uploadIndex"]
-        primaryTokenDbId = tokenRow["primaryToken"]["db"]["dbId"]
-        primaryTokenDbSymbol = tokenRow["primaryToken"]["symbol"]
-
-        logger.info(f"[{uploadIndex}/{amountOfTokensToUpdate}] {primaryTokenDbSymbol} [{pairAddress}]")
-
-        # Calculate our pair address
-        pairUrl = f"{baseLink}/{pairAddress}"
+        # Calculate our pair url
+        dexScreenerHome = getDexscreenerRoot()
+        pairUrl = f"{dexScreenerHome}/{pairAddress}"
 
         # Go the pair graph page
         safePageLoad(
