@@ -42,6 +42,12 @@ def getNetworkRPCByDbId(dbConnection, networkDbId):
         query=query
     )
 
-    return result[0]["chain_rpc"]
+    if result:
+
+        return result[0]["chain_rpc"]
+
+    else:
+
+        return None
 
 

@@ -3,17 +3,14 @@ from pathlib import Path
 
 import nest_asyncio
 from faker import Faker
-from playwright.async_api import BrowserContext, async_playwright
+from playwright.async_api import BrowserContext
 from playwright.sync_api import sync_playwright
 
-from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
+from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
-from src.db.actions.actions_Routes import addRouteToDB
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
-
-from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_General import getRowByValue
@@ -551,147 +548,102 @@ def gatherMetadataForPair(pairToAnalyse):
         networkDbId=pairToAnalyse["network"]["db"]["dbId"]
     )
 
-    # Get Project Logger
-    logger = getProjectLogger()
+    if routerAddress and routerAbi and rpcUrl:
 
-    # Create fake user agent
-    fakerInstance = Faker()
-    fakeUserAgent = fakerInstance.user_agent()
+        # Create fake user agent
+        fakerInstance = Faker()
+        fakeUserAgent = fakerInstance.user_agent()
 
-    # Check if we want to start our browser in headless
-    runHeadless = checkHeadless()
+        # Check if we want to start our browser in headless
+        runHeadless = checkHeadless()
 
-    # Create async instance of playwright
-    with sync_playwright() as playwright:
+        # Create async instance of playwright
+        with sync_playwright() as playwright:
 
-        # Setup browser
-        browser: BrowserContext = playwright.chromium.launch_persistent_context(
-            headless=False,
-            user_data_dir=f"{Path.home()}/.config/chromium",
-            viewport={
-                "width": 1920,
-                "height": 1080
-            },
-            user_agent=fakeUserAgent
-        )
+            # Setup browser
+            browser: BrowserContext = playwright.chromium.launch_persistent_context(
+                headless=runHeadless,
+                user_data_dir=f"{Path.home()}/.config/chromium",
+                viewport={
+                    "width": 1920,
+                    "height": 1080
+                },
+                user_agent=fakeUserAgent
+            )
 
-        # Open a new tab
-        page = newPage(browser=browser)
+            # Open a new tab
+            page = newPage(browser=browser)
 
-        # Get row data
-        pairAddress = pairToAnalyse["pair"]["address"]
-        primaryTokenDbId = pairToAnalyse["primaryToken"]["db"]["dbId"]
+            # Get row data
+            pairNetwork = pairToAnalyse["network"]["network"]
+            pairAddress = pairToAnalyse["pair"]["address"]
+            primaryTokenDbId = pairToAnalyse["primaryToken"]["db"]["dbId"]
 
-        # Calculate our pair url
-        dexScreenerHome = getDexscreenerRoot()
-        pairUrl = f"{dexScreenerHome}/{pairAddress}"
+            # Calculate our pair url
+            dexScreenerHome = getDexscreenerRoot()
+            pairUrl = f"{dexScreenerHome}/{pairNetwork}/{pairAddress}"
 
-        # Go the pair graph page
-        safePageLoad(
-            page=page,
-            url=pairUrl
-        )
+            # Go the pair graph page
+            safePageLoad(
+                page=page,
+                url=pairUrl
+            )
 
-        # Get all elements with the external link label
-        allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
+            # Get all elements with the external link label
+            allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
 
-        # Get the second element on the page which is the address of the primary token
-        tokenExplorerLink = allBlockExplorerLinks.nth(1).get_attribute("href")
-        primaryTokenAddress = tokenExplorerLink.split("/")[-1]
+            # Get the second element on the page which is the address of the primary token
+            tokenExplorerLink = allBlockExplorerLinks.nth(1).get_attribute("href")
+            primaryTokenAddress = tokenExplorerLink.split("/")[-1]
 
-        # Update Token Address In DB
-        updateTokenByDbId(
-            dbConnection=dbConnection,
-            tokenDbId=primaryTokenDbId,
-            fieldToUpdate="address",
-            fieldNewValue=primaryTokenAddress
-        )
+            # Update Token Address In DB
+            updateTokenByDbId(
+                dbConnection=dbConnection,
+                tokenDbId=primaryTokenDbId,
+                fieldToUpdate="address",
+                fieldNewValue=primaryTokenAddress
+            )
 
-        # Get Pair Routes
-        collectedLinks = []
-        while len(collectedLinks) < 100:
-            txTab = page.locator("text=TXN")
-            txTab.first.hover()
-            linksOnPage = page.eval_on_selector_all("a[href^='https']",
-                                                    "elements => elements.map(element => element.href)")
-            txsOnPage = [link for link in linksOnPage if "0x" in link]
-            collectedLinks.extend(txsOnPage)
-            page.mouse.wheel(0, 700)
-            collectedLinks = list(set(collectedLinks))
-            collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
+            # Get Pair Routes
+            timeoutCounter = 0
+            timeoutLimit = 25
+            collectedLinks = []
+            while len(collectedLinks) < 10:
+                txTab = page.locator("text=TXN")
+                txTab.first.hover()
+                linksOnPage = page.eval_on_selector_all("a[href^='https']",
+                                                        "elements => elements.map(element => element.href)")
+                txsOnPage = [link for link in linksOnPage if "0x" in link]
+                collectedLinks.extend(txsOnPage)
+                page.mouse.wheel(0, 700)
+                collectedLinks = list(set(collectedLinks))
+                collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
+                timeoutCounter = timeoutCounter + 1
 
-        validTransactions = [x for x in collectedLinks if len(x) == 66]
+                if timeoutCounter > timeoutLimit:
+                    break
 
-        logger.info(f"- Decoding {len(validTransactions)} Route Transactions...")
+            page.close()
 
-        len(validTransactions)
+            validTransactions = [x for x in collectedLinks if len(x) == 66]
 
-        # Create the dict of decode tasks
-        decodedTransactions = [
-            decodeTx(contractAddress=routerAddress, rpcUrl=rpcUrl, transactionHash=transaction, abi=routerAbi) for
-            transaction in validTransactions]
+            transactionsToDecode = []
+            for validTransaction in validTransactions:
 
-        successfullyDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
-                                           decodedTransaction]
-
-        logger.info(f"- Decoded {len(successfullyDecodedTransactions)} Route Transactions!")
-
-        # Filter out the invalid results
-        finalDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
-                                    isinstance(decodedTransaction, dict) and "path" in decodedTransaction["params"]]
-
-        collectedRoutes = {}
-
-        logger.info(f"- Uploading {len(successfullyDecodedTransactions)} Route Transactions...")
-
-        for finalDecodedTransaction in finalDecodedTransactions:
-
-            routeUsed = finalDecodedTransaction["params"]["path"]
-
-            tokenInAddress = routeUsed[0]
-            tokenOutAddress = routeUsed[-1]
-
-            routeName = f"{tokenInAddress}-{tokenOutAddress}"
-
-            isLoopRoute = tokenInAddress == tokenOutAddress
-
-            if not isLoopRoute:
-
-                if routeName not in collectedRoutes:
-                    collectedRoutes[routeName] = []
-
-                routeObject = {
-                    "method": finalDecodedTransaction["name"],
-                    "route": "-".join(routeUsed),
-                    "blockNumber": finalDecodedTransaction["blockNumber"]
+                transactionDict = {
+                    "networkDbId": pairToAnalyse["network"]["db"]["dbId"],
+                    "dexDbId": pairToAnalyse["dex"]["db"]["dbId"],
+                    "contractAddress": routerAddress,
+                    "rpcUrl": rpcUrl,
+                    "transactionHash": validTransaction,
+                    "abi": routerAbi
                 }
 
-                if "amountIn" in finalDecodedTransaction["params"]:
-                    routeObject["amountIn"] = finalDecodedTransaction["params"]["amountIn"]
-                else:
-                    routeObject["amountIn"] = None
+                transactionsToDecode.append(transactionDict)
 
-                if "amountOutMin" in finalDecodedTransaction["params"]:
-                    routeObject["amountOutMin"] = finalDecodedTransaction["params"]["amountOutMin"]
-                else:
-                    routeObject["amountOutMin"] = None
+            return transactionsToDecode
 
-                if routeObject not in collectedRoutes[routeName]:
-                    collectedRoutes[routeName].append(routeObject)
+    else:
 
-                addRouteToDB(
-                    dbConnection=dbConnection,
-                    networkDbId=tokenRow["network"]["db"]["dbId"],
-                    dexDbId=tokenRow["dex"]["db"]["dbId"],
-                    tokenInAddress=tokenInAddress,
-                    tokenOutAddress=tokenOutAddress,
-                    route=routeObject["route"],
-                    method=routeObject["method"],
-                    transactionHash=finalDecodedTransaction["txHash"],
-                    txTimestamp=finalDecodedTransaction["timestamp"],
-                    blockNumber=finalDecodedTransaction["blockNumber"],
-                    amountIn=routeObject["amountIn"],
-                    amountOut=routeObject["amountOutMin"]
-                )
+        return None
 
-        logger.info(f"- Uploaded {len(successfullyDecodedTransactions)} Route Transactions!")

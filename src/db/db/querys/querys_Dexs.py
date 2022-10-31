@@ -21,9 +21,15 @@ def getDexRouterDetailsByDbId(dbConnection, dexDbid):
         query=query
     )
 
-    router = dexInfo[0]["router"][0:42]
-    routerAbi = loadLocalABI(path=dexInfo[0]["router_s3_path"])
+    try:
 
-    finalRouterAbi = json.dumps(routerAbi)
+        router = dexInfo[0]["router"][0:42]
+        routerAbi = loadLocalABI(path=dexInfo[0]["router_s3_path"])
 
-    return router, finalRouterAbi
+        finalRouterAbi = json.dumps(routerAbi)
+
+        return router, finalRouterAbi
+
+    except:
+
+        return None, None

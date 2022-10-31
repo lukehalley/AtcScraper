@@ -1,9 +1,11 @@
+import itertools
 from multiprocessing import Pool
 
 from dotenv import load_dotenv
 
+from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
-from src.db.querys.querys_Tokens import fillTokenDecimals
+from src.db.querys.querys_Tokens import fillTokenDecimals, getTokensWithMissingDecimals
 
 load_dotenv()
 
@@ -24,7 +26,7 @@ from src.utils.aws.aws_S3 import downloadAbisFromS3
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.misc.misc_Lazy import checkIsLazyMode
 from src.utils.time.time_Calculations import getNicePerfTime
-from src.db.querys.querys_Pairs import getAnalysedPairs, fillNullTokenAddresses
+from src.db.querys.querys_Pairs import getAnalysedPairs, fillNullTokenAddresses, getPairsWithNullTokenAddresses
 
 # Import helpers
 
@@ -33,6 +35,8 @@ from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
 
 def scrape():
+
+    masterStartTime = time.perf_counter()
 
     # Set up logging
     logger = setupLogging()
@@ -207,9 +211,13 @@ def scrape():
         # List which will hold all the data we scraped for all networks
         finalData = {}
 
+        #################################################################################
+        # Gather Pairs
+        #################################################################################
+
         # Log that we are going to collect the (top 100 by liquidity) tokens for each dex
         printSeparator()
-        logger.info(f"Gathering Dex Tokens")
+        logger.info(f"Gathering Dex Pairs")
         printSeparator()
 
         # Start Timer
@@ -241,52 +249,162 @@ def scrape():
             dexName = dexPairs[0]["dex"]["dex"]
             logger.info(f"{dexName.upper()} On {networkName.upper()}: {len(dexPairs)} Pairs(s)")
 
-        analysedPairs = getAnalysedPairs(dbConnection=dbConnection)
+        printSeparator(newLine=True)
 
+        # Get Analysed Pairs
+        analysedPairs = getAnalysedPairs(dbConnection=dbConnection)
         unanalysedPairs = [pair for pair in combinedDexPairs if pair["pair"]["db"]["dbId"] not in analysedPairs]
 
-        pairMetadataPool = Pool(processes=1)
-        collectedPairMetadata = pairMetadataPool.map(gatherMetadataForPair, unanalysedPairs)
+        #################################################################################
+        # Gather Pair Metadata + Transactions
+        #################################################################################
+
+        printSeparator()
+        logger.info(f"Gathering Pair Metadata + Transactions")
+        printSeparator()
+
+        logger.info(f"Getting {len(unanalysedPairs)} Pair's Metadata")
+
+        # Start Timer
+        gatherPairRoutesStart = time.perf_counter()
+
+        pairMetadataPool = Pool(processes=None)
+        transactionsToDecode = pairMetadataPool.map(gatherMetadataForPair, unanalysedPairs)
         pairMetadataPool.close()
+
+        # Stop Timer
+        gatherPairRoutesEnd = time.perf_counter()
+
+        # Build Timer Str
+        gatherPairRoutesTimerStr = getNicePerfTime(timeDiff=gatherPairRoutesEnd - gatherPairRoutesStart)
+
+        validTransactionsToDecode = [transactionToDecode for transactionToDecode in transactionsToDecode if transactionToDecode]
+        combinedTransactions = list(itertools.chain(*validTransactionsToDecode))
+
+        # Print Outcome
+        logger.info(f"Took {gatherPairRoutesTimerStr}")
+        printSeparator(newLine=True)
+
+        #################################################################################
+        # Decode Transactions For Routes
+        #################################################################################
+
+        printSeparator()
+        logger.info(f"Decoding Transactions For Routes")
+        printSeparator()
+
+        logger.info(f"Decoding {len(combinedTransactions)} Pair Transactions")
+
+        # Start Timer
+        decodeTransactionsStart = time.perf_counter()
+
+        decodeTransactionsPool = Pool(processes=None)
+        decodedRoutes = decodeTransactionsPool.map(decodeTx, combinedTransactions)
+        decodeTransactionsPool.close()
+
+        # Stop Timer
+        decodeTransactionsEnd = time.perf_counter()
+
+        # Build Timer Str
+        decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
+
+        validRoutes = [decodedRoute for decodedRoute in decodedRoutes if decodedRoute]
+        combinedRoutes = list(itertools.chain(*validRoutes))
+
+        # Print Outcome
+        logger.info(f"Collected {combinedRoutes} Routes")
+        logger.info(f"Took {decodeTransactionsTimerStr}")
+        printSeparator(newLine=True)
+
+        #################################################################################
+        # Set Unavailable Tokens To Null
+        #################################################################################
+
+        printSeparator()
+        logger.info(f"Setting Unavailable Tokens To Null")
+        printSeparator()
 
         # Set The Blank
         updateUnavailableTokensToNull(
             dbConnection=dbConnection
         )
 
+        logger.info(f"All Unavailable Tokens Set To Null")
+
+        printSeparator()
+
+        #################################################################################
+        # Get Missing Token Addresses From Dexscreener API
+        #################################################################################
+
         printSeparator()
         logger.info(f"Getting Missing Token Addresses From Dexscreener API")
         printSeparator()
 
-        fillNullTokenAddresses(dbConnection=dbConnection)
+        dbPairs = getPairsWithNullTokenAddresses
 
+        logger.info(f"Getting Addresses For {len(dbPairs)} Pairs")
+
+        # Start Timer
+        missingTokenRetrievalStart = time.perf_counter()
+
+        missingTokenRetrievalPool = Pool(processes=None)
+        decodedRoutes = missingTokenRetrievalPool.map(decodeTx, combinedTransactions)
+        missingTokenRetrievalPool.close()
+
+        # Stop Timer
+        missingTokenRetrievalEnd = time.perf_counter()
+
+        # Build Timer Str
+        missingTokenRetrievalTimerStr = getNicePerfTime(timeDiff=missingTokenRetrievalEnd - missingTokenRetrievalStart)
+
+        # Print Outcome
+        logger.info(f"Collected {combinedRoutes} Routes")
+        logger.info(f"Took {missingTokenRetrievalTimerStr}")
         printSeparator(newLine=True)
+
+        #################################################################################
+        # Getting Missing Token Decimals
+        #################################################################################
 
         printSeparator()
         logger.info(f"Getting Missing Token Decimals")
         printSeparator()
 
-        fillTokenDecimals(
-            dbConnection=dbConnection
-        )
+        tokensToGetDecimalsFor = getTokensWithMissingDecimals
 
-        printSeparator(True)
+        # Start Timer
+        missingTokenDecimalsStart = time.perf_counter()
 
-        # Return our final data
-        return finalData
+        missingTokenDecimalsPool = Pool(processes=None)
+        missingTokenDecimalsPool.map(fillTokenDecimals, tokensToGetDecimalsFor)
+        missingTokenDecimalsPool.close()
+
+        # Stop Timer
+        missingTokenDecimalsEnd = time.perf_counter()
+
+        # Build Timer Str
+        missingTokenDecimalsTimerStr = getNicePerfTime(timeDiff=missingTokenDecimalsEnd - missingTokenDecimalsStart)
+
+        # Print Outcome
+        logger.info(f"Finished Filling Missing Decimals")
+        logger.info(f"Took {missingTokenDecimalsTimerStr}")
+        printSeparator(newLine=True)
+
+        #################################################################################
+        # Getting Missing Token Decimals
+        #################################################################################
+
+        # Get Final End Timer
+        masterEndTime = time.perf_counter()
+
+        # Log that out scraping is done
+        printSeparator()
+        logger.info(f"Dex Screener Scrape Complete ✅")
+        logger.info(f"Took: {masterEndTime}")
+        printSeparator()
 
 
-        # # Get our ending time
-        # timerString = getMinSecString(time.perf_counter() - startingTime)
-        #
-        # # Log that out scraping is done
-        # printSeparator()
-        # logger.info(f"Dex Screener Scrape Complete ✅")
-        # logger.info(f"Took: {timerString}")
-        # printSeparator()
 
 if __name__ == '__main__':
-    # Get our starting time
-    startingTime = time.perf_counter()
-
     scrape()
