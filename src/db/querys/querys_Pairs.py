@@ -1,6 +1,6 @@
 import sys
 
-from src.db.actions.actions_Setup import getCursor
+from src.db.actions.actions_Setup import getCursor, initDBConnection
 from src.db.actions.actions_General import executeReadQuery
 from src.db.actions.actions_Tokens import updateTokenByDbId, updatePairAnalysisByDbId
 from src.dexScreener.dexScreener_Querys import getPairs
@@ -31,8 +31,10 @@ def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
     else:
         return None
 
+def getPairsWithNullTokenAddresses():
 
-def fillNullTokenAddresses(dbConnection):
+    # Init MySQL DB
+    dbConnection = initDBConnection()
 
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -41,73 +43,96 @@ def fillNullTokenAddresses(dbConnection):
         filename="pairs/getPairsWithNullTokenAddresses.sql"
     )
 
-    numberOfPairsToUpdate = len(dbPairs)
+    return dbPairs
 
-    for dbPair in dbPairs:
+def fillNullTokenAddresses(dbPair):
 
-        pairIndex = dbPairs.index(dbPair) + 1
-        pairDbId = dbPair["pair_db_id"]
-        pairName = dbPair["pair_name"]
-        pairNetwork = dbPair["network_name"].title()
+    # Init MySQL DB
+    dbConnection = initDBConnection()
 
-        counterStr = f"{pairIndex}/{numberOfPairsToUpdate}"
-        logger.info(f"[{counterStr}] {pairNetwork} | {pairName}")
+    pairDbId = dbPair["pair_db_id"]
+    tokenFilled = False
 
-        try:
+    try:
 
-            pairInfo = getPairs(chain=dbPair["network_name"], pairAddress=dbPair["pair_address"])
+        pairInfo = getPairs(chain=dbPair["network_name"], pairAddress=dbPair["pair_address"])
 
-            if pairInfo["pair"]:
+        if pairInfo["pair"]:
 
-                pairObject = pairInfo["pair"]
+            pairObject = pairInfo["pair"]
 
-                primaryTokenIsNull = dbPair["primary_token_address"] is None
-                secondaryTokenIsNull = dbPair["secondary_token_address"] is None
+            primaryTokenIsNull = dbPair["primary_token_address"] is None
+            secondaryTokenIsNull = dbPair["secondary_token_address"] is None
 
-                if primaryTokenIsNull:
-                    updateTokenByDbId(
-                        dbConnection=dbConnection,
-                        tokenDbId=dbPair["primary_token_db_id"],
-                        fieldToUpdate="address",
-                        fieldNewValue=pairObject["quoteToken"]["address"]
-                    )
+            if primaryTokenIsNull:
+                updateTokenByDbId(
+                    dbConnection=dbConnection,
+                    tokenDbId=dbPair["primary_token_db_id"],
+                    fieldToUpdate="address",
+                    fieldNewValue=pairObject["quoteToken"]["address"]
+                )
 
-                    updateTokenByDbId(
-                        dbConnection=dbConnection,
-                        tokenDbId=dbPair["primary_token_db_id"],
-                        fieldToUpdate="name",
-                        fieldNewValue=pairObject["quoteToken"]["name"]
-                    )
+                updateTokenByDbId(
+                    dbConnection=dbConnection,
+                    tokenDbId=dbPair["primary_token_db_id"],
+                    fieldToUpdate="name",
+                    fieldNewValue=pairObject["quoteToken"]["name"]
+                )
 
-                    logger.info("  Primary Token ✅")
+                logger.info("  Primary Token ✅")
 
-                if secondaryTokenIsNull:
-                    updateTokenByDbId(
-                        dbConnection=dbConnection,
-                        tokenDbId=dbPair["secondary_token_db_id"],
-                        fieldToUpdate="address",
-                        fieldNewValue=pairObject["quoteToken"]["address"]
-                    )
+                tokenFilled = True
 
-                    updateTokenByDbId(
-                        dbConnection=dbConnection,
-                        tokenDbId=dbPair["secondary_token_db_id"],
-                        fieldToUpdate="name",
-                        fieldNewValue=pairObject["quoteToken"]["name"]
-                    )
+            if secondaryTokenIsNull:
+                updateTokenByDbId(
+                    dbConnection=dbConnection,
+                    tokenDbId=dbPair["secondary_token_db_id"],
+                    fieldToUpdate="address",
+                    fieldNewValue=pairObject["quoteToken"]["address"]
+                )
 
-                    logger.info("  Secondary Token ✅")
+                updateTokenByDbId(
+                    dbConnection=dbConnection,
+                    tokenDbId=dbPair["secondary_token_db_id"],
+                    fieldToUpdate="name",
+                    fieldNewValue=pairObject["quoteToken"]["name"]
+                )
 
-            else:
+                logger.info("  Secondary Token ✅")
 
-                logger.info("  Pair Info Unavailable ⚠️")
+                tokenFilled = True
 
-        except:
+        else:
 
-            logger.info("  API Request Failed ⛔️")
+            tokenFilled = False
+            logger.info("  Pair Info Unavailable ⚠️")
 
-        updatePairAnalysisByDbId(
-            dbConnection=dbConnection,
-            pairDbId=pairDbId,
-            analysisStatus=True
-        )
+    except:
+        tokenFilled = False
+        logger.info("  API Request Failed ⛔️")
+
+    updatePairAnalysisByDbId(
+        dbConnection=dbConnection,
+        pairDbId=pairDbId,
+        analysisStatus=True
+    )
+
+    if tokenFilled:
+        return True
+    else:
+        return None
+
+def getAnalysedPairs(dbConnection):
+
+    query = f"SELECT pairs.pair_id FROM pairs WHERE pairs.analysed"
+
+    cursor = getCursor(dbConnection=dbConnection)
+
+    analysedPairs = executeReadQuery(
+        cursor=cursor,
+        query=query
+    )
+
+    analysedPairIds = [analysedPair['pair_id'] for analysedPair in analysedPairs]
+
+    return analysedPairIds

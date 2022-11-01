@@ -7,8 +7,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.sql.sql_Files import executeScriptsFromFile
 
 from src.db.actions.actions_General import executeReadQuery
-from src.db.actions.actions_Setup import getCursor
-
+from src.db.actions.actions_Setup import getCursor, initDBConnection
 
 logger = getProjectLogger()
 
@@ -51,7 +50,9 @@ def getTokensForChainWithNoAddress(dbConnection, networkDbId):
 
     return allTokensWithNoAddress
 
-def fillTokenDecimals(dbConnection):
+def getTokensWithMissingDecimals():
+
+    dbConnection = initDBConnection()
 
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -60,39 +61,38 @@ def fillTokenDecimals(dbConnection):
         filename="tokens/getTokensWithNullDecimals.sql"
     )
 
-    amountOfTokens = len(tokensWithNoDecimal)
+    return tokensWithNoDecimal
+
+def fillTokenDecimals(token):
+
+    dbConnection = initDBConnection()
 
     # Reading from file
     ERC20_abi = json.loads(open('src/abis/ERC20.json', "r").read())
 
-    for token in tokensWithNoDecimal:
+    networkRPC = token["chain_rpc"]
 
-        networkName = (token["name"]).title()
-        networkRPC = token["chain_rpc"]
+    tokenDbId = token["token_id"]
+    tokenAddress = token["address"]
 
-        tokenIndex = tokensWithNoDecimal.index(token) + 1
-        tokenCount = f"[{tokenIndex}/{amountOfTokens}]"
-        tokenDbId = token["token_id"]
-        tokenSymbol = token["symbol"]
-        tokenAddress = token["address"]
+    web3 = Web3(Web3.HTTPProvider(networkRPC))
 
-        web3 = Web3(Web3.HTTPProvider(networkRPC))
+    tokenDecimals = None
 
-        tokenDecimals = None
+    try:
+        token_info = web3.eth.contract(web3.toChecksumAddress(tokenAddress), abi=ERC20_abi)
+        tokenDecimals = int(token_info.functions.decimals().call())
+    except:
+        pass
 
-        try:
-            token_info = web3.eth.contract(web3.toChecksumAddress(tokenAddress), abi=ERC20_abi)
-            tokenDecimals = int(token_info.functions.decimals().call())
-        except:
-            logger.info(f"{tokenCount} {tokenSymbol} On {networkName} ⛔️")
+    if tokenDecimals:
+        updateTokenByDbId(
+            dbConnection=dbConnection,
+            tokenDbId=tokenDbId,
+            fieldToUpdate="decimals",
+            fieldNewValue=tokenDecimals
+        )
 
-        if tokenDecimals:
-
-            updateTokenByDbId(
-                dbConnection=dbConnection,
-                tokenDbId=tokenDbId,
-                fieldToUpdate="decimals",
-                fieldNewValue=tokenDecimals
-            )
-
-            logger.info(f"{tokenCount} {tokenSymbol} On {networkName} [{tokenDecimals}] ✅")
+        return True
+    else:
+        return None

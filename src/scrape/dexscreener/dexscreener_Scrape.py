@@ -1,24 +1,22 @@
 import os
-import time
 from pathlib import Path
 
 import nest_asyncio
 from faker import Faker
-from playwright.async_api import BrowserContext, async_playwright
-from retrying_async import retry
+from playwright.async_api import BrowserContext
+from playwright.sync_api import sync_playwright
 
-from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
-from src.db.actions.actions_Pairs import addTokenPairToDB
-from src.db.actions.actions_Routes import addRouteToDB
-from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
-
 from src.db.actions.actions_Networks import addNetworkToDB
+from src.db.actions.actions_Pairs import addTokenPairToDB
+from src.db.actions.actions_Setup import initDBConnection
+from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB, updatePairAnalysisByDbId
+from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_General import getRowByValue
-from src.db.querys.querys_Networks import getAllNetworks
-from src.playwright.playwright_Hacks import safeClick, safePageLoad
-from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
+from src.db.querys.querys_Networks import getAllNetworks, getNetworkRPCByDbId
+from src.playwright.playwright_Hacks import safePageLoad, safeClick
+from src.playwright.playwright_Utils import findAndCheckElement, newPage, getListItems, getAItems
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFromElements, smartEval, \
     replaceNumberShorthands, getAllRowsMetadata
@@ -26,27 +24,22 @@ from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
-from src.utils.retry.retry_Settings import getRetryParameters
 
 nest_asyncio.apply()
 
-logger = getProjectLogger()
-# retryAttempts, retryDelay = getRetryParameters()
-
 # Gather all the available networks from the Dexscreener sidebar
-# @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherNetworkList(dbConnection, page):
+def gatherNetworkList(dbConnection, page):
 
     # Get the sidebar list element
     dsNetworkList = os.getenv('DS_LIST')
-    networkList = await findAndCheckElement(
+    networkList = findAndCheckElement(
         page=page,
         selector=dsNetworkList
     )
 
     # Get all the 'li' items
     allLists = networkList.locator(selector='li')
-    sidebarListItems = await allLists.all_text_contents()
+    sidebarListItems = allLists.all_text_contents()
 
     # Get index of ethereum - always the first
     ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item == 'Ethereum'), -1)
@@ -103,58 +96,73 @@ async def gatherNetworkList(dbConnection, page):
     return networkDictionary
 
 # Gather all dexs for each network
-# @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser):
+def gatherNetworkDexs(args):
 
-    # Create a new page
-    page = await newPage(browser=browser)
+    # Init MySQL DB
+    dbConnection = initDBConnection()
 
-    # Go to the networks url
-    await safePageLoad(
-        page=page,
-        url=networkDetails["url"]
-    )
+    networkName = args["networkName"]
+    networkDetails = args["networkDetails"]
 
-    # Init dexscreener
-    await validateDexscreenerInit(
-        page=page
-    )
+    with sync_playwright() as playwright:
 
-    # Gather the list of dexs for the tabs at the top of the screen
-    networksDexs = await gatherDexListFromTabs(
-        dbConnection=dbConnection,
-        networkDetails=networkDetails,
-        page=page
-    )
+        # Setup browser
+        browser: BrowserContext = playwright.chromium.launch_persistent_context(
+            headless=checkHeadless(),
+            user_data_dir=f"{Path.home()}/.config/chromium",
+            viewport={
+                "width": 1920,
+                "height": 1080
+            },
+            user_agent=Faker().user_agent(),
+        )
 
-    if not networksDexs:
-        return {}
+        # Create a new page
+        page = newPage(browser=browser)
 
-    # Count dexs
-    amountOfDexs = len(networksDexs)
+        # Load URL
+        safePageLoad(
+            page=page,
+            url=networkDetails["url"]
+        )
 
-    # Close our page as don't need it anymore
-    await page.close()
+        # Init dexscreener
+        validateDexscreenerInit(
+            page=page
+        )
 
-    # Create an object with the network and its dexs
-    networkDetails = {
-        networkName: networksDexs
-    }
+        # Gather the list of dexs for the tabs at the top of the screen
+        networksDexs = gatherDexListFromTabs(
+            dbConnection=dbConnection,
+            networkDetails=networkDetails,
+            page=page
+        )
 
-    # Log out hwo many dexs we got for this network
-    logger.info(f"{networkName.title()}: {amountOfDexs}")
+        networksDexs = [dict(networksDex, **{'network':networkName}) for networksDex in networksDexs]
 
-    # Return the network details object
-    return networkDetails
+        browser.close()
 
-# Gather the list of dexs from the top of each network page of dexscreener
-# @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherDexListFromTabs(dbConnection, networkDetails, page):
+        if not networksDexs:
+            return None
+
+        # Close our page as don't need it anymore
+        page.close()
+
+        # Create an object with the network and its dexs
+        networkDetails = (networkName, networksDexs)
+
+        dbConnection.close()
+
+        # Return the network details object
+        return networkDetails
+
+# Gather The Networks Dexs
+def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
     try:
         # Get the sidebar list element
         dexTabs = os.getenv('DS_DEX_TABS')
-        dexTabElement = await findAndCheckElement(
+        dexTabElement = findAndCheckElement(
             page=page,
             selector=dexTabs
         )
@@ -162,7 +170,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
         return {}
 
     # Get all the 'li' items
-    dexTabItems = await getListItems(
+    dexTabItems = getListItems(
         page=page,
         listElement=dexTabElement
     )
@@ -193,7 +201,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     for dexName in cleanDexList:
 
         if dexName in dexsToStore:
-            await addDexToDB(
+            addDexToDB(
                 dbConnection=dbConnection,
                 networkDbId=networkDetails["db"]["networkId"],
                 dexName=dexName
@@ -224,8 +232,14 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     return dexListDictionary
 
 # For a dex - get the top 100 tokens by liquidity
-# @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherPairsForDex(dbConnection, networkName, dexDetails):
+def gatherPairsForDex(dexDetails):
+
+    # Init MySQL DB
+    dbConnection = initDBConnection()
+    networkName = dexDetails["network"]
+
+    # Get Project Logger
+    logger = getProjectLogger()
 
     # Get the current dexs name and url
     dexName = dexDetails["name"]
@@ -239,10 +253,10 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
     runHeadless = checkHeadless()
 
     # Create async instance of playwright
-    async with async_playwright() as playwright:
+    with sync_playwright() as playwright:
 
         # Setup browser
-        browser: BrowserContext = await playwright.chromium.launch_persistent_context(
+        browser: BrowserContext = playwright.chromium.launch_persistent_context(
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
@@ -253,15 +267,15 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         )
 
         # Open a new tab
-        page = await newPage(browser=browser)
+        page = newPage(browser=browser)
 
         # Navigate to the dexs url
-        await safePageLoad(
+        safePageLoad(
             page=page,
             url=dexURL
         )
 
-        await safeClick(
+        safeClick(
             page=page,
             selector='text=Liquidity'
         )
@@ -269,7 +283,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         # Get total amount of pairs
 
         pairCountElement = page.locator("span", has_text="Showing pairs")
-        pairCountText = await pairCountElement.all_inner_texts()
+        pairCountText = pairCountElement.all_inner_texts()
 
         # Amount of pairs to get
         pairsToCollect = int(os.getenv("AMOUNT_OF_PAIRS_TO_COLLECT"))
@@ -302,35 +316,34 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         for pageNumber in range(1, loopRange):
 
             if pageNumber > 1:
-
                 # Navigate to the next pair page
                 nextPageURL = f"{dexURL}/page-{pageNumber}"
 
-                await safePageLoad(
+                safePageLoad(
                     page=page,
                     url=nextPageURL
                 )
 
-                await safeClick(
+                safeClick(
                     page=page,
                     selector='text=Liquidity'
                 )
 
             # Get the sidebar list element
             dexTable = os.getenv('DS_DEX_TABLE')
-            dexTableElement = await findAndCheckElement(
+            dexTableElement = findAndCheckElement(
                 page=page,
                 selector=dexTable
             )
 
             # Get all the 'li' items
-            dexTabItems = await getAItems(
+            dexTabItems = getAItems(
                 page=page,
                 listElement=dexTableElement
             )
 
             # Get the pair address for each token in the list
-            pairAddresses = await getAllRowsMetadata(
+            pairAddresses = getAllRowsMetadata(
                 page=page,
                 networkName=networkName
             )
@@ -429,7 +442,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                     # If it doesn't - add it
                     if not primaryTokenDetails:
                         # Add primary token to database
-                        primaryTokenDbId = await addTokenToDB(
+                        primaryTokenDbId = addTokenToDB(
                             dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             tokenName=tokenDetails["primaryToken"]["name"],
@@ -454,7 +467,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
                     if not secondaryTokenDetails:
                         # Add secondary token to database
-                        secondaryTokenDbId = await addTokenToDB(
+                        secondaryTokenDbId = addTokenToDB(
                             dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             tokenName=None,
@@ -476,7 +489,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
                         addedRanks.append(tokenRank)
 
-                        await addTokenPairToDB(
+                        pairDbId = addTokenPairToDB(
                             dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             dexDbId=dexDetails["db"]["dexId"],
@@ -494,6 +507,9 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                         if hasUniswapBadge:
                             tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
 
+                        tokenDetails["pair"]["db"] = {}
+                        tokenDetails["pair"]["db"]["dbId"] = pairDbId
+
                         # Finally, append the token to the final list
                         collectedTokens.append(tokenDetails)
 
@@ -506,8 +522,8 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                     continue
 
         # Close the page and browser as we are done
-        await page.close()
-        await browser.close()
+        page.close()
+        browser.close()
 
         # Count how many tokens we collected and log it
         amountOfTokens = len(collectedTokens)
@@ -517,149 +533,123 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
         return collectedTokens
 
 # @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherMetadataForPair(baseLink, tokenRow, rpcUrl, routerAddress, routerAbi, amountOfTokensToUpdate, dbConnection):
+def gatherMetadataForPair(pairToAnalyse):
 
-    # Create fake user agent
-    fakerInstance = Faker()
-    fakeUserAgent = fakerInstance.user_agent()
+    # Init MySQL DB
+    dbConnection = initDBConnection()
 
-    # Check if we want to start our browser in headless
-    runHeadless = checkHeadless()
+    routerAddress, routerAbi = getDexRouterDetailsByDbId(
+        dbConnection=dbConnection,
+        dexDbid=pairToAnalyse["dex"]["db"]["dbId"]
+    )
 
-    # Create async instance of playwright
-    async with async_playwright() as playwright:
+    rpcUrl = getNetworkRPCByDbId(
+        dbConnection=dbConnection,
+        networkDbId=pairToAnalyse["network"]["db"]["dbId"]
+    )
 
-        # Setup browser
-        browser: BrowserContext = await playwright.chromium.launch_persistent_context(
-            headless=runHeadless,
-            user_data_dir=f"{Path.home()}/.config/chromium",
-            viewport={
-                "width": 1920,
-                "height": 1080
-            },
-            user_agent=fakeUserAgent
-        )
+    if routerAddress and routerAbi and rpcUrl:
 
-        # Open a new tab
-        page = await newPage(browser=browser)
+        # Create fake user agent
+        fakerInstance = Faker()
+        fakeUserAgent = fakerInstance.user_agent()
 
-        # Get row data
-        pairAddress = tokenRow["pair"]["address"]
+        # Check if we want to start our browser in headless
+        runHeadless = checkHeadless()
 
-        uploadIndex = tokenRow["uploadIndex"]
-        primaryTokenDbId = tokenRow["primaryToken"]["db"]["dbId"]
-        primaryTokenDbSymbol = tokenRow["primaryToken"]["symbol"]
+        # Create async instance of playwright
+        with sync_playwright() as playwright:
 
-        logger.info(f"[{uploadIndex}/{amountOfTokensToUpdate}] {primaryTokenDbSymbol} [{pairAddress}]")
+            # Setup browser
+            browser: BrowserContext = playwright.chromium.launch_persistent_context(
+                headless=runHeadless,
+                user_data_dir=f"{Path.home()}/.config/chromium",
+                viewport={
+                    "width": 1920,
+                    "height": 1080
+                },
+                user_agent=fakeUserAgent
+            )
 
-        # Calculate our pair address
-        pairUrl = f"{baseLink}/{pairAddress}"
+            # Open a new tab
+            page = newPage(browser=browser)
 
-        # Go the pair graph page
-        await safePageLoad(
-            page=page,
-            url=pairUrl
-        )
+            # Get row data
+            pairNetwork = pairToAnalyse["network"]["network"]
+            pairAddress = pairToAnalyse["pair"]["address"]
+            primaryTokenDbId = pairToAnalyse["primaryToken"]["db"]["dbId"]
 
-        # Get all elements with the external link label
-        allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
+            # Calculate our pair url
+            dexScreenerHome = getDexscreenerRoot()
+            pairUrl = f"{dexScreenerHome}/{pairNetwork}/{pairAddress}"
 
-        # Get the second element on the page which is the address of the primary token
-        tokenExplorerLink = await allBlockExplorerLinks.nth(1).get_attribute("href")
-        primaryTokenAddress = tokenExplorerLink.split("/")[-1]
+            # Go the pair graph page
+            safePageLoad(
+                page=page,
+                url=pairUrl
+            )
 
-        # Update Token Address In DB
-        updateTokenByDbId(
-            dbConnection=dbConnection,
-            tokenDbId=primaryTokenDbId,
-            fieldToUpdate="address",
-            fieldNewValue=primaryTokenAddress
-        )
+            # Get all elements with the external link label
+            allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
 
-        # Get Pair Routes
-        collectedLinks = []
-        while len(collectedLinks) < 100:
-            txTab = page.locator("text=TXN")
-            await txTab.first.hover()
-            linksOnPage = await page.eval_on_selector_all("a[href^='https']",
-                                                          "elements => elements.map(element => element.href)")
-            txsOnPage = [link for link in linksOnPage if "0x" in link]
-            collectedLinks.extend(txsOnPage)
-            await page.mouse.wheel(0, 700)
-            collectedLinks = list(set(collectedLinks))
-            collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
+            # Get the second element on the page which is the address of the primary token
+            tokenExplorerLink = allBlockExplorerLinks.nth(1).get_attribute("href")
+            primaryTokenAddress = tokenExplorerLink.split("/")[-1]
 
-        validTransactions = [x for x in collectedLinks if len(x) == 66]
+            # Update Token Address In DB
+            updateTokenByDbId(
+                dbConnection=dbConnection,
+                tokenDbId=primaryTokenDbId,
+                fieldToUpdate="address",
+                fieldNewValue=primaryTokenAddress
+            )
 
-        logger.info(f"- Decoding {len(validTransactions)} Route Transactions...")
+            # Get Pair Routes
+            timeoutCounter = 0
+            timeoutLimit = 25
+            collectedLinks = []
+            while len(collectedLinks) < 10:
+                txTab = page.locator("text=TXN")
+                txTab.first.hover()
+                linksOnPage = page.eval_on_selector_all("a[href^='https']",
+                                                        "elements => elements.map(element => element.href)")
+                txsOnPage = [link for link in linksOnPage if "0x" in link]
+                collectedLinks.extend(txsOnPage)
+                page.mouse.wheel(0, 700)
+                collectedLinks = list(set(collectedLinks))
+                collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
+                timeoutCounter = timeoutCounter + 1
 
-        len(validTransactions)
+                if timeoutCounter > timeoutLimit:
+                    break
 
-        # Create the dict of decode tasks
-        decodedTransactions = [decodeTx(contractAddress=routerAddress, rpcUrl=rpcUrl, transactionHash=transaction, abi=routerAbi) for
-                               transaction in validTransactions]
+            page.close()
 
-        successfullyDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
-                                           decodedTransaction]
+            validTransactions = [x for x in collectedLinks if len(x) == 66]
 
-        logger.info(f"- Decoded {len(successfullyDecodedTransactions)} Route Transactions!")
+            transactionsToDecode = []
+            for validTransaction in validTransactions:
 
-        # Filter out the invalid results
-        finalDecodedTransactions = [decodedTransaction for decodedTransaction in decodedTransactions if
-                                    isinstance(decodedTransaction, dict) and "path" in decodedTransaction["params"]]
-
-        collectedRoutes = {}
-
-        logger.info(f"- Uploading {len(successfullyDecodedTransactions)} Route Transactions...")
-
-        for finalDecodedTransaction in finalDecodedTransactions:
-
-            routeUsed = finalDecodedTransaction["params"]["path"]
-
-            tokenInAddress = routeUsed[0]
-            tokenOutAddress = routeUsed[-1]
-
-            routeName = f"{tokenInAddress}-{tokenOutAddress}"
-
-            isLoopRoute = tokenInAddress == tokenOutAddress
-
-            if not isLoopRoute:
-
-                if routeName not in collectedRoutes:
-                    collectedRoutes[routeName] = []
-
-                routeObject = {
-                    "method": finalDecodedTransaction["name"],
-                    "route": "-".join(routeUsed),
-                    "blockNumber": finalDecodedTransaction["blockNumber"]
+                transactionDict = {
+                    "networkDbId": pairToAnalyse["network"]["db"]["dbId"],
+                    "dexDbId": pairToAnalyse["dex"]["db"]["dbId"],
+                    "contractAddress": routerAddress,
+                    "rpcUrl": rpcUrl,
+                    "transactionHash": validTransaction,
+                    "abi": routerAbi
                 }
 
-                if "amountIn" in finalDecodedTransaction["params"]:
-                    routeObject["amountIn"] = finalDecodedTransaction["params"]["amountIn"]
-                else:
-                    routeObject["amountIn"] = None
+                transactionsToDecode.append(transactionDict)
 
-                if "amountOutMin" in finalDecodedTransaction["params"]:
-                    routeObject["amountOutMin"] = finalDecodedTransaction["params"]["amountOutMin"]
-                else:
-                    routeObject["amountOutMin"] = None
+            updatePairAnalysisByDbId(
+                dbConnection=dbConnection,
+                pairDbId=pairToAnalyse["pair"]["db"]["dbId"],
+                analysisStatus=True
+            )
 
-                if routeObject not in collectedRoutes[routeName]:
-                    collectedRoutes[routeName].append(routeObject)
+            return transactionsToDecode
 
-                addRouteToDB(
-                    dbConnection=dbConnection,
-                    networkDbId=tokenRow["network"]["db"]["dbId"],
-                    dexDbId=tokenRow["dex"]["db"]["dbId"],
-                    tokenInAddress=tokenInAddress,
-                    tokenOutAddress=tokenOutAddress,
-                    route=routeObject["route"],
-                    method=routeObject["method"],
-                    transactionHash=finalDecodedTransaction["txHash"],
-                    txTimestamp=finalDecodedTransaction["timestamp"],
-                    blockNumber=finalDecodedTransaction["blockNumber"],
-                    amountIn=routeObject["amountIn"],
-                    amountOut=routeObject["amountOutMin"]
-                )
+    else:
 
-        logger.info(f"- Uploaded {len(successfullyDecodedTransactions)} Route Transactions!")
+        return None
+

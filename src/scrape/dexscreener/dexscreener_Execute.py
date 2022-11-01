@@ -1,38 +1,18 @@
 import os
-import sys
-from pathlib import Path
 
-from faker import Faker
-from playwright.async_api import async_playwright, BrowserContext
-
-from src.db.actions.actions_Pairs import clearPairsRankingTable
-from src.db.actions.actions_Setup import initDBConnection
-from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
-from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
-from src.db.querys.querys_Networks import getNetworkRPCByDbId
-from src.db.querys.querys_Pairs import fillNullTokenAddresses
-from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress, fillTokenDecimals
-from src.playwright.playwright_Hacks import safePageLoad
-from src.playwright.playwright_Utils import newPage
-from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
-from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherPairsForDex, \
-    gatherMetadataForPair
 from src.utils.data.data_Booleans import strToBool
-from src.utils.env.env_Environment import checkHeadless
-from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import getProjectLogger
-from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrency
 
 logger = getProjectLogger()
 lazyMode = strToBool(os.environ.get("LAZY_MODE"))
 
-# Function which runs the scraping of Dexscreener
-async def scrapeDexScreener():
+Function which runs the scraping of Dexscreener
+def scrapeDexScreener():
 
     # Log setup message
     printSeparator()
     logger.info(f"Dex Screener Setup")
-    logger.info(f"Concurrency: {getmaxConcurrency()}")
+    logger.info(f"Concurrency: {getMaxConcurrency()}")
     logger.info(f"Collecting Max Pairs: {os.getenv('AMOUNT_OF_PAIRS_TO_COLLECT')}")
     printSeparator()
 
@@ -53,7 +33,7 @@ async def scrapeDexScreener():
             logger.info(f"Starting Chromium...")
 
         # Setup browser
-        browser: BrowserContext = await p.chromium.launch_persistent_context(
+        browser: BrowserContext = p.chromium.launch_persistent_context(
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
@@ -64,7 +44,7 @@ async def scrapeDexScreener():
         )
 
         # Create new tab/page
-        page = await newPage(browser=browser)
+        page = newPage(browser=browser)
 
         # Log that chromium started
         logger.info(f"Chromium started.")
@@ -74,7 +54,7 @@ async def scrapeDexScreener():
         dexScreenerHome = getDexscreenerRoot()
         logger.info(f"Navigating to {dexScreenerHome}...")
 
-        await safePageLoad(
+        safePageLoad(
             page=page,
             url=dexScreenerHome
         )
@@ -85,7 +65,7 @@ async def scrapeDexScreener():
 
         # Check some key elements exist so we know we loaded correctly
         logger.info(f"Validating Dexscreener has loaded...")
-        await validateDexscreenerInit(
+        validateDexscreenerInit(
             page=page
         )
 
@@ -106,7 +86,7 @@ async def scrapeDexScreener():
         logger.info(f"Gathering Dex Screener Networks")
         printSeparator()
 
-        networkDictionary = await gatherNetworkList(
+        networkDictionary = gatherNetworkList(
             dbConnection=dbConnection,
             page=page
         )
@@ -132,7 +112,7 @@ async def scrapeDexScreener():
             }
 
         # Close the tab as we don't need it anymore
-        await page.close()
+        page.close()
 
         # Separator
         printSeparator(True)
@@ -144,7 +124,7 @@ async def scrapeDexScreener():
 
         # Asynchronously gather each network's dexs
         tasks = [gatherNetworkDexs(dbConnection, networkName, networkDetails, browser) for networkName, networkDetails in networkDictionary.items()]
-        allNetworkDexs = await gatherWithConcurrency(*tasks)
+        allNetworkDexs = gatherWithConcurrency(*tasks)
         nonEmptyNetworks = [network for network in allNetworkDexs if network is not None]
         finalNetworkDexs = [item for item in nonEmptyNetworks if item]
 
@@ -154,7 +134,7 @@ async def scrapeDexScreener():
         if collectedNetworks > 0:
 
             # Close the tab as we don't need it anymore
-            await browser.close()
+            browser.close()
 
             # Separator
             printSeparator(True)
@@ -192,7 +172,7 @@ async def scrapeDexScreener():
 
                 # Asynchronously gather each dex's tokens
                 tasks = [gatherPairsForDex(dbConnection, networkName, dexDetail) for dexDetail in networkDexs]
-                results = await gatherWithConcurrency(*tasks)
+                results = gatherWithConcurrency(*tasks)
                 results = [x for x in results if x != []]
 
                 printSeparator(True)
@@ -246,7 +226,7 @@ async def scrapeDexScreener():
 
                 ) for tokenRow in rowsToGetMetadataFor]
 
-                await gatherWithConcurrency(*tasks)
+                gatherWithConcurrency(*tasks)
 
                 # Collect the network results and and place them in their respective places
                 for result in results:
@@ -256,7 +236,7 @@ async def scrapeDexScreener():
                     finalData[networkName][dexName] = result
 
                 # Close the tab as we don't need it anymore
-                await browser.close()
+                browser.close()
 
                 # Check if we are on the last network
                 if networkIndex == collectedNetworks:
