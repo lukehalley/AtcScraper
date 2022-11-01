@@ -20,6 +20,6 @@ def safePageLoad(page, url):
             page.goto(url)
             pageLoaded = True
         except:
-            logger.warn(f"Trying to load {url} again...")
+            # logger.warn(f"Trying to load {url} again...")
             pageLoaded = False
             page.reload()
