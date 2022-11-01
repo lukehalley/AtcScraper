@@ -51,6 +51,7 @@ def fillNullTokenAddresses(dbPair):
     dbConnection = initDBConnection()
 
     pairDbId = dbPair["pair_db_id"]
+    tokenFilled = False
 
     try:
 
@@ -80,6 +81,8 @@ def fillNullTokenAddresses(dbPair):
 
                 logger.info("  Primary Token ✅")
 
+                tokenFilled = True
+
             if secondaryTokenIsNull:
                 updateTokenByDbId(
                     dbConnection=dbConnection,
@@ -97,12 +100,15 @@ def fillNullTokenAddresses(dbPair):
 
                 logger.info("  Secondary Token ✅")
 
+                tokenFilled = True
+
         else:
 
+            tokenFilled = False
             logger.info("  Pair Info Unavailable ⚠️")
 
     except:
-
+        tokenFilled = False
         logger.info("  API Request Failed ⛔️")
 
     updatePairAnalysisByDbId(
@@ -110,6 +116,11 @@ def fillNullTokenAddresses(dbPair):
         pairDbId=pairDbId,
         analysisStatus=True
     )
+
+    if tokenFilled:
+        return True
+    else:
+        return None
 
 def getAnalysedPairs(dbConnection):
 

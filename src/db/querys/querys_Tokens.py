@@ -92,3 +92,7 @@ def fillTokenDecimals(token):
             fieldToUpdate="decimals",
             fieldNewValue=tokenDecimals
         )
+
+        return True
+    else:
+        return None

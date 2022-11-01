@@ -12,14 +12,13 @@ def decodeTx(transactionDetails):
     # Init MySQL DB
     dbConnection = initDBConnection()
 
-    networkDbId = transactionDetails["networkDbId"]
-    dexDbId = transactionDetails["dexDbId"]
-    contractAddress = transactionDetails["contractAddress"]
-    rpcUrl = transactionDetails["rpcUrl"]
-    transactionHash = transactionDetails["transactionHash"]
-    abi = transactionDetails["abi"]
-
     try:
+        networkDbId = transactionDetails["networkDbId"]
+        dexDbId = transactionDetails["dexDbId"]
+        contractAddress = transactionDetails["contractAddress"]
+        rpcUrl = transactionDetails["rpcUrl"]
+        transactionHash = transactionDetails["transactionHash"]
+        abi = transactionDetails["abi"]
 
         web3 = Web3(Web3.HTTPProvider(rpcUrl))
         web3.middleware_onion.inject(geth_poa_middleware, layer=0)
@@ -85,6 +84,8 @@ def decodeTx(transactionDetails):
                     amountIn=routeObject["amountIn"],
                     amountOut=routeObject["amountOutMin"]
                 )
+
+                return routeObject
         else:
             return None
     except:

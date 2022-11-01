@@ -10,7 +10,7 @@ from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
 from src.db.actions.actions_Setup import initDBConnection
-from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
+from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB, updatePairAnalysisByDbId
 from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_General import getRowByValue
@@ -640,6 +640,12 @@ def gatherMetadataForPair(pairToAnalyse):
                 }
 
                 transactionsToDecode.append(transactionDict)
+
+            updatePairAnalysisByDbId(
+                dbConnection=dbConnection,
+                pairDbId=pairToAnalyse["pair"]["db"]["dbId"],
+                analysisStatus=True
+            )
 
             return transactionsToDecode
 
