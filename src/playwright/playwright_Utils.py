@@ -1,11 +1,7 @@
 import os
-from pathlib import Path
 
-from faker import Faker
-from playwright.async_api import expect, BrowserContext
-from playwright.sync_api import sync_playwright
+from playwright.async_api import BrowserContext
 
-from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 
 globalTimeout = int(os.getenv("PLAYWRIGHT_TIMEOUT_SECS")) * 1000

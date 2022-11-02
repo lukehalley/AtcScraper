@@ -1,10 +1,9 @@
-from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
 from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
 from src.utils.data.data_Clean import cleanString
 
 
-def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, pairRanking, pairLiquidity, pairVolume, pairFdv):
+def addTokenPairToDB(networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, pairRanking, pairLiquidity, pairVolume, pairFdv):
 
     # DB Ids
     primaryTokenDbId = int(primaryTokenDbId)
@@ -34,8 +33,6 @@ def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secon
     except:
         pairFdv = 0
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     keys = f"primary_token_id, secondary_token_id, network_id, dex_id, name, address"
 
     selectStatement = f"SELECT " \
@@ -49,7 +46,6 @@ def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secon
     compareStatement = f"pairs.address = '{pairAddress}' AND pairs.network_id = {networkDbId}"
 
     existingPairDetails = getPairForAddressAndNetworkId(
-        dbConnection=dbConnection,
         pairAddress=pairAddress,
         networkDbId=networkDbId
     )
@@ -62,21 +58,15 @@ def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secon
                 f"(SELECT * FROM pairs WHERE {compareStatement}) " \
                 f"LIMIT 1"
 
-        executeWriteQuery(
-            dbConnection=dbConnection,
-            cursor=cursor,
+        pairDbId = executeWriteQuery(
             query=query
         )
-
-        pairDbId = cursor.lastrowid
 
     else:
 
         pairDbId = existingPairDetails["pair_id"]
 
     addPairRankToDB(
-        dbConnection=dbConnection,
-        cursor=cursor,
         pairDbId=pairDbId,
         networkDbId=networkDbId,
         dexDbId=dexDbId,
@@ -89,7 +79,7 @@ def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secon
     return pairDbId
 
 
-def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, pairVolume, pairFdv):
+def addPairRankToDB(pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, pairVolume, pairFdv):
 
     keys = f"pair_id, network_id, dex_id, ranking, liquidity, volume, fdv"
 
@@ -111,20 +101,14 @@ def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, pairRa
             f"LIMIT 1"
 
     executeWriteQuery(
-        dbConnection=dbConnection,
-        cursor=cursor,
         query=query
     )
 
-def clearPairsRankingTable(dbConnection):
+def clearPairsRankingTable():
 
     query = "DELETE FROM pair_market_data"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     return executeWriteQuery(
-        dbConnection=dbConnection,
-        cursor=cursor,
         query=query
     )
 

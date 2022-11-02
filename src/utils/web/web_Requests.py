@@ -1,4 +1,3 @@
-from retry import retry
 import requests
 
 from src.utils.logging.logging_Setup import getProjectLogger

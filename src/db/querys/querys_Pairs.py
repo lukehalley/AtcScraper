@@ -1,6 +1,5 @@
 import sys
 
-from src.db.actions.actions_Setup import getCursor, initDBConnection
 from src.db.actions.actions_General import executeReadQuery
 from src.db.actions.actions_Tokens import updateTokenByDbId, updatePairAnalysisByDbId
 from src.dexScreener.dexScreener_Querys import getPairs
@@ -10,15 +9,12 @@ from src.utils.sql.sql_Files import executeScriptsFromFile
 logger = getProjectLogger()
 
 
-def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
+def getPairForAddressAndNetworkId(pairAddress, networkDbId):
     compareStatement = f"pairs.address = '{pairAddress}' AND pairs.network_id = {networkDbId}"
 
     query = f"SELECT * FROM pairs WHERE {compareStatement}"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     pairResults = executeReadQuery(
-        cursor=cursor,
         query=query
     )
 
@@ -33,22 +29,13 @@ def getPairForAddressAndNetworkId(dbConnection, pairAddress, networkDbId):
 
 def getPairsWithNullTokenAddresses():
 
-    # Init MySQL DB
-    dbConnection = initDBConnection()
-
-    cursor = getCursor(dbConnection=dbConnection)
-
     dbPairs = executeScriptsFromFile(
-        cursor=cursor,
         filename="pairs/getPairsWithNullTokenAddresses.sql"
     )
 
     return dbPairs
 
 def fillNullTokenAddresses(dbPair):
-
-    # Init MySQL DB
-    dbConnection = initDBConnection()
 
     pairDbId = dbPair["pair_db_id"]
     tokenFilled = False
@@ -66,14 +53,12 @@ def fillNullTokenAddresses(dbPair):
 
             if primaryTokenIsNull:
                 updateTokenByDbId(
-                    dbConnection=dbConnection,
                     tokenDbId=dbPair["primary_token_db_id"],
                     fieldToUpdate="address",
                     fieldNewValue=pairObject["quoteToken"]["address"]
                 )
 
                 updateTokenByDbId(
-                    dbConnection=dbConnection,
                     tokenDbId=dbPair["primary_token_db_id"],
                     fieldToUpdate="name",
                     fieldNewValue=pairObject["quoteToken"]["name"]
@@ -85,14 +70,12 @@ def fillNullTokenAddresses(dbPair):
 
             if secondaryTokenIsNull:
                 updateTokenByDbId(
-                    dbConnection=dbConnection,
                     tokenDbId=dbPair["secondary_token_db_id"],
                     fieldToUpdate="address",
                     fieldNewValue=pairObject["quoteToken"]["address"]
                 )
 
                 updateTokenByDbId(
-                    dbConnection=dbConnection,
                     tokenDbId=dbPair["secondary_token_db_id"],
                     fieldToUpdate="name",
                     fieldNewValue=pairObject["quoteToken"]["name"]
@@ -112,7 +95,6 @@ def fillNullTokenAddresses(dbPair):
         logger.info("  API Request Failed ⛔️")
 
     updatePairAnalysisByDbId(
-        dbConnection=dbConnection,
         pairDbId=pairDbId,
         analysisStatus=True
     )
@@ -122,14 +104,11 @@ def fillNullTokenAddresses(dbPair):
     else:
         return None
 
-def getAnalysedPairs(dbConnection):
+def getAnalysedPairs():
 
     query = f"SELECT pairs.pair_id FROM pairs WHERE pairs.analysed"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     analysedPairs = executeReadQuery(
-        cursor=cursor,
         query=query
     )
 

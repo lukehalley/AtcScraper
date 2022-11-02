@@ -1,7 +1,13 @@
 from mysql.connector import OperationalError
 
+from src.db.actions.actions_Setup import initDBConnection, getCursor
 
-def executeScriptsFromFile(cursor, filename):
+
+def executeScriptsFromFile(filename):
+
+    dbConnection = initDBConnection()
+    cursor = getCursor(dbConnection=dbConnection)
+
     # Open and read the file as a single buffer
     fd = open(f"src/db/sql/{filename}", 'r')
     sqlFile = fd.read()
@@ -13,6 +19,10 @@ def executeScriptsFromFile(cursor, filename):
     try:
         cursor.execute(sqlCommands[0])
         result = cursor.fetchall()
+        dbConnection.close()
         return result
     except OperationalError as msg:
         print("Command skipped: ", msg)
+        dbConnection.close()
+        return None
+

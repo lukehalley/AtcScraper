@@ -1,4 +1,7 @@
-import logging, os, sys
+import logging
+import os
+import sys
+
 
 # Setup logger
 def setupLogging():

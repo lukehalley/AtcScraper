@@ -1,25 +1,21 @@
 from src.db.actions.actions_General import executeWriteQuery
-from src.db.actions.actions_Setup import getCursor
 from src.db.querys.querys_Tokens import getTokenByNetworkIdAndAddress
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
 
-def addRouteToDB(dbConnection, networkDbId, dexDbId, tokenInAddress, tokenOutAddress, route, method, transactionHash,
+def addRouteToDB(networkDbId, dexDbId, tokenInAddress, tokenOutAddress, route, method, transactionHash,
                  txTimestamp, blockNumber, amountIn, amountOut):
-    cursor = getCursor(dbConnection=dbConnection)
 
     keys = f"network_id, dex_id, token_in_id, token_in_address, token_out_id, token_out_address, route, method, transaction_hash, block_number, "
 
     tokenInDetails = getTokenByNetworkIdAndAddress(
-        dbConnection=dbConnection,
         networkDbId=networkDbId,
         tokenAddress=tokenInAddress
     )
 
     tokenOutDetails = getTokenByNetworkIdAndAddress(
-        dbConnection=dbConnection,
         networkDbId=networkDbId,
         tokenAddress=tokenOutAddress
     )
@@ -76,10 +72,8 @@ def addRouteToDB(dbConnection, networkDbId, dexDbId, tokenInAddress, tokenOutAdd
                     f"(SELECT * FROM routes WHERE {compareStatement}) " \
                     f"LIMIT 1"
 
-            executeWriteQuery(
-                dbConnection=dbConnection,
-                cursor=cursor,
+            lastRowID = executeWriteQuery(
                 query=query
             )
 
-            return cursor.lastrowid
+            return lastRowID
