@@ -1,6 +1,6 @@
 import logging
 import os
-import sys
+import sys, time
 
 
 # Setup logger
@@ -14,6 +14,13 @@ def setupLogging():
                         stream=sys.stdout, datefmt=dateFormat)
 
     return logger
+
+def printLog(msg):
+
+    t = time.localtime()
+    ascTime = time.asctime(t)
+
+    print(f'{ascTime} | PINFO | {msg}')
 
 # Get the project logger
 def getProjectLogger():

@@ -21,7 +21,7 @@ from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFrom
     replaceNumberShorthands, getAllRowsMetadata
 from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
-from src.utils.logging.logging_Setup import getProjectLogger
+from src.utils.logging.logging_Setup import getProjectLogger, printLog
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
 
 nest_asyncio.apply()
@@ -521,6 +521,8 @@ def gatherMetadataForPair(pairToAnalyse):
     rpcUrl = getNetworkRPCByDbId(
         networkDbId=pairToAnalyse["network"]["db"]["dbId"]
     )
+
+    printLog(msg="")
 
     if routerAddress and routerAbi and rpcUrl:
 

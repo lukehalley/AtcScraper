@@ -261,6 +261,10 @@ def scrape():
         # Start Timer
         gatherPairRoutesStart = time.perf_counter()
 
+        for unanalysedPair in unanalysedPairs:
+            index = unanalysedPairs.index(unanalysedPair)
+            unanalysedPair["index"] = index
+
         pairMetadataPool = Pool(processes=None)
         transactionsToDecode = pairMetadataPool.map(gatherMetadataForPair, unanalysedPairs)
         pairMetadataPool.close()
