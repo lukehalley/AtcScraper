@@ -21,7 +21,7 @@ from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFrom
     replaceNumberShorthands, getAllRowsMetadata
 from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
-from src.utils.logging.logging_Setup import getProjectLogger
+from src.utils.logging.logging_Setup import getProjectLogger, printLog
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
 
 nest_asyncio.apply()
@@ -581,7 +581,7 @@ def gatherMetadataForPair(pairToAnalyse):
             timeoutCounter = 0
             timeoutLimit = 25
             collectedLinks = []
-            while len(collectedLinks) < 10:
+            while len(collectedLinks) < 250:
                 txTab = page.locator("text=TXN")
                 txTab.first.hover()
                 linksOnPage = page.eval_on_selector_all("a[href^='https']",
@@ -604,6 +604,7 @@ def gatherMetadataForPair(pairToAnalyse):
             for validTransaction in validTransactions:
 
                 transactionDict = {
+                    "pairDbId": pairToAnalyse["pair"]["db"]["dbId"],
                     "networkDbId": pairToAnalyse["network"]["db"]["dbId"],
                     "dexDbId": pairToAnalyse["dex"]["db"]["dbId"],
                     "contractAddress": routerAddress,
@@ -614,14 +615,17 @@ def gatherMetadataForPair(pairToAnalyse):
 
                 transactionsToDecode.append(transactionDict)
 
-            updatePairAnalysisByDbId(
-                pairDbId=pairToAnalyse["pair"]["db"]["dbId"],
-                analysisStatus=True
+            printLog(
+                msg=f'{pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["network"]["network"]).title()} ✅'
             )
 
             return transactionsToDecode
 
     else:
+
+        printLog(
+            msg=f'{pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["network"]["network"]).title()} ⛔️'
+        )
 
         return None
 

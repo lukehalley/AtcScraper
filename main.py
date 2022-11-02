@@ -184,6 +184,9 @@ def scrape():
     combinedDexs = [item for sublist in [i for sub in finalNetworkDexs for i in sub if not isinstance(i, str)] for item
                     in sublist]
 
+    if checkIsLazyMode():
+        combinedDexs = combinedDexs[0:1]
+
     # Count how many networks and dexs we collected
     collectedNetworks = len(finalNetworkDexs)
     collectedDexs = len(combinedDexs)
@@ -256,7 +259,12 @@ def scrape():
         logger.info(f"Gathering Unprocessed Pair Metadata + Transactions")
         printSeparator()
 
+        if checkIsLazyMode():
+            unanalysedPairs = unanalysedPairs[0:9]
+
         logger.info(f"Getting {len(unanalysedPairs)} Pair's Metadata")
+
+        printSeparator()
 
         # Start Timer
         gatherPairRoutesStart = time.perf_counter()
