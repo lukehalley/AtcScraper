@@ -9,7 +9,6 @@ from playwright.sync_api import sync_playwright
 from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
-from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB, updatePairAnalysisByDbId
 from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
@@ -28,7 +27,7 @@ from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
 nest_asyncio.apply()
 
 # Gather all the available networks from the Dexscreener sidebar
-def gatherNetworkList(dbConnection, page):
+def gatherNetworkList(page):
 
     # Get the sidebar list element
     dsNetworkList = os.getenv('DS_LIST')
@@ -54,9 +53,7 @@ def gatherNetworkList(dbConnection, page):
     # Base url of dexscreener
     baseUrl = getDexscreenerRoot()
 
-    currentStoredNetworks = getAllNetworks(
-        dbConnection=dbConnection
-    )
+    currentStoredNetworks = getAllNetworks()
 
     s = set(currentStoredNetworks)
     networksToStore = [x for x in cleanNetworkList if x not in s]
@@ -70,12 +67,10 @@ def gatherNetworkList(dbConnection, page):
 
         if networkName in networksToStore:
             addNetworkToDB(
-                dbConnection=dbConnection,
                 networkName=networkName
             )
 
         networkRow = getRowByValue(
-            dbConnection=dbConnection,
             table="networks",
             conditions=[
                 {
@@ -97,9 +92,6 @@ def gatherNetworkList(dbConnection, page):
 
 # Gather all dexs for each network
 def gatherNetworkDexs(args):
-
-    # Init MySQL DB
-    dbConnection = initDBConnection()
 
     networkName = args["networkName"]
     networkDetails = args["networkDetails"]
@@ -133,7 +125,6 @@ def gatherNetworkDexs(args):
 
         # Gather the list of dexs for the tabs at the top of the screen
         networksDexs = gatherDexListFromTabs(
-            dbConnection=dbConnection,
             networkDetails=networkDetails,
             page=page
         )
@@ -151,13 +142,11 @@ def gatherNetworkDexs(args):
         # Create an object with the network and its dexs
         networkDetails = (networkName, networksDexs)
 
-        dbConnection.close()
-
         # Return the network details object
         return networkDetails
 
 # Gather The Networks Dexs
-def gatherDexListFromTabs(dbConnection, networkDetails, page):
+def gatherDexListFromTabs(networkDetails, page):
 
     try:
         # Get the sidebar list element
@@ -190,7 +179,6 @@ def gatherDexListFromTabs(dbConnection, networkDetails, page):
     baseUrl = page.url
 
     currentlyStoredDexs = getAllDexsForNetwork(
-        dbConnection=dbConnection,
         networkDbId=networkDetails["db"]["networkId"]
     )
 
@@ -202,13 +190,11 @@ def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
         if dexName in dexsToStore:
             addDexToDB(
-                dbConnection=dbConnection,
                 networkDbId=networkDetails["db"]["networkId"],
                 dexName=dexName
             )
 
         dexRow = getRowByValue(
-            dbConnection=dbConnection,
             table="dexs",
             conditions=[
                 {
@@ -234,8 +220,6 @@ def gatherDexListFromTabs(dbConnection, networkDetails, page):
 # For a dex - get the top 100 tokens by liquidity
 def gatherPairsForDex(dexDetails):
 
-    # Init MySQL DB
-    dbConnection = initDBConnection()
     networkName = dexDetails["network"]
 
     # Get Project Logger
@@ -430,7 +414,6 @@ def gatherPairsForDex(dexDetails):
 
                     # Check if primary token already exists
                     primaryTokenDetails = getRowByValue(
-                        dbConnection=dbConnection,
                         table="tokens",
                         conditions=[
                             {
@@ -443,7 +426,6 @@ def gatherPairsForDex(dexDetails):
                     if not primaryTokenDetails:
                         # Add primary token to database
                         primaryTokenDbId = addTokenToDB(
-                            dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             tokenName=tokenDetails["primaryToken"]["name"],
                             tokenSymbol=tokenDetails["primaryToken"]["symbol"]
@@ -456,7 +438,6 @@ def gatherPairsForDex(dexDetails):
 
                     # Check if primary token already exists
                     secondaryTokenDetails = getRowByValue(
-                        dbConnection=dbConnection,
                         table="tokens",
                         conditions=[
                             {
@@ -468,7 +449,6 @@ def gatherPairsForDex(dexDetails):
                     if not secondaryTokenDetails:
                         # Add secondary token to database
                         secondaryTokenDbId = addTokenToDB(
-                            dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             tokenName=None,
                             tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
@@ -490,7 +470,6 @@ def gatherPairsForDex(dexDetails):
                         addedRanks.append(tokenRank)
 
                         pairDbId = addTokenPairToDB(
-                            dbConnection=dbConnection,
                             networkDbId=dexDetails["db"]["networkId"],
                             dexDbId=dexDetails["db"]["dexId"],
                             primaryTokenDbId=primaryTokenDbId,
@@ -535,16 +514,11 @@ def gatherPairsForDex(dexDetails):
 # @retry(attempts=retryAttempts, delay=retryDelay)
 def gatherMetadataForPair(pairToAnalyse):
 
-    # Init MySQL DB
-    dbConnection = initDBConnection()
-
     routerAddress, routerAbi = getDexRouterDetailsByDbId(
-        dbConnection=dbConnection,
         dexDbid=pairToAnalyse["dex"]["db"]["dbId"]
     )
 
     rpcUrl = getNetworkRPCByDbId(
-        dbConnection=dbConnection,
         networkDbId=pairToAnalyse["network"]["db"]["dbId"]
     )
 
@@ -598,7 +572,6 @@ def gatherMetadataForPair(pairToAnalyse):
 
             # Update Token Address In DB
             updateTokenByDbId(
-                dbConnection=dbConnection,
                 tokenDbId=primaryTokenDbId,
                 fieldToUpdate="address",
                 fieldNewValue=primaryTokenAddress
@@ -642,7 +615,6 @@ def gatherMetadataForPair(pairToAnalyse):
                 transactionsToDecode.append(transactionDict)
 
             updatePairAnalysisByDbId(
-                dbConnection=dbConnection,
                 pairDbId=pairToAnalyse["pair"]["db"]["dbId"],
                 analysisStatus=True
             )

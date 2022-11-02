@@ -1,15 +1,36 @@
 from mysql.connector import OperationalError
+
+from src.db.actions.actions_Setup import initDBConnection, getCursor
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
-def executeReadQuery(cursor, query):
-    cursor.execute(query)
-    return cursor.fetchall()
+def executeReadQuery(query):
 
-def executeWriteQuery(dbConnection, cursor, query):
+    dbConnection = initDBConnection()
+    cursor = getCursor(dbConnection=dbConnection)
+
+    cursor.execute(query)
+
+    result = cursor.fetchall()
+
+    dbConnection.close()
+
+    return result
+
+def executeWriteQuery(query):
+
+    dbConnection = initDBConnection()
+    cursor = getCursor(dbConnection=dbConnection)
+
     cursor.execute(query)
     dbConnection.commit()
+
+    lastRowID = cursor.lastrowid
+
+    dbConnection.close()
+
+    return lastRowID
 
 def executeScriptsFromFile(dbConnection, filename):
     from src.db.actions.actions_Setup import getCursor

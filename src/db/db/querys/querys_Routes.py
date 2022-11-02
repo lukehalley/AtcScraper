@@ -1,7 +1,6 @@
-from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
 
-def getLatestProcessedBlockNetworkIdAndDexId(dbConnection, networkDbId, dexDbId):
+def getLatestProcessedBlockNetworkIdAndDexId(networkDbId, dexDbId):
 
     query = f"SELECT block_number " \
         f"FROM routes " \
@@ -10,10 +9,7 @@ def getLatestProcessedBlockNetworkIdAndDexId(dbConnection, networkDbId, dexDbId)
         f"ORDER BY block_number ASC " \
         f"LIMIT 1"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     result = executeReadQuery(
-        cursor=cursor,
         query=query
     )
 
@@ -22,7 +18,7 @@ def getLatestProcessedBlockNetworkIdAndDexId(dbConnection, networkDbId, dexDbId)
     else:
         return None
 
-def getFirstProcessedBlockNetworkIdAndDexId(dbConnection, networkDbId, dexDbId):
+def getFirstProcessedBlockNetworkIdAndDexId(networkDbId, dexDbId):
 
     query = f"SELECT block_number " \
         f"FROM routes " \
@@ -31,10 +27,7 @@ def getFirstProcessedBlockNetworkIdAndDexId(dbConnection, networkDbId, dexDbId):
         f"ORDER BY block_number DESC " \
         f"LIMIT 1"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     result = executeReadQuery(
-        cursor=cursor,
         query=query
     )
 

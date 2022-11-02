@@ -16,7 +16,6 @@ from faker import Faker
 from playwright.sync_api import sync_playwright, BrowserContext
 
 from src.db.actions.actions_Pairs import clearPairsRankingTable
-from src.db.actions.actions_Setup import initDBConnection
 from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
@@ -34,8 +33,8 @@ from src.db.querys.querys_Pairs import getAnalysedPairs, fillNullTokenAddresses,
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
 
-def scrape():
 
+def scrape():
     masterStartTime = time.perf_counter()
 
     # Set up logging
@@ -45,13 +44,8 @@ def scrape():
     logger.info(f"ATC Scraper")
     printSeparator(newLine=True)
 
-    # Init MySQL DB
-    dbConnection = initDBConnection()
-
     # Wipe the ranking the table
-    clearPairsRankingTable(
-        dbConnection=dbConnection
-    )
+    clearPairsRankingTable()
 
     # Download All Out Abis From S3
     printSeparator()
@@ -123,7 +117,6 @@ def scrape():
 
         # Get a dictionary of networks we can scrape
         networkDictionary = gatherNetworkList(
-            dbConnection=dbConnection,
             page=page
         )
 
@@ -162,7 +155,6 @@ def scrape():
     # Create A Pool For Dex Gather
     networksToCollect = []
     for networkName, networkDetails in networkDictionary.items():
-
         arg = {
             "networkName": networkName,
             "networkDetails": networkDetails
@@ -189,7 +181,8 @@ def scrape():
     nonEmptyNetworks = [network for network in collectedNetworkDexs if network is not None]
     finalNetworkDexs = [item for item in nonEmptyNetworks if item]
 
-    combinedDexs = [item for sublist in [i for sub in finalNetworkDexs for i in sub if not isinstance(i, str)] for item in sublist]
+    combinedDexs = [item for sublist in [i for sub in finalNetworkDexs for i in sub if not isinstance(i, str)] for item
+                    in sublist]
 
     # Count how many networks and dexs we collected
     collectedNetworks = len(finalNetworkDexs)
@@ -256,7 +249,7 @@ def scrape():
         #################################################################################
 
         # Get Analysed Pairs
-        analysedPairs = getAnalysedPairs(dbConnection=dbConnection)
+        analysedPairs = getAnalysedPairs()
         unanalysedPairs = [pair for pair in combinedDexPairs if pair["pair"]["db"]["dbId"] not in analysedPairs]
 
         printSeparator()
@@ -278,7 +271,8 @@ def scrape():
         # Build Timer Str
         gatherPairRoutesTimerStr = getNicePerfTime(timeDiff=gatherPairRoutesEnd - gatherPairRoutesStart)
 
-        validTransactionsToDecode = [transactionToDecode for transactionToDecode in transactionsToDecode if transactionToDecode]
+        validTransactionsToDecode = [transactionToDecode for transactionToDecode in transactionsToDecode if
+                                     transactionToDecode]
         combinedTransactions = list(itertools.chain(*validTransactionsToDecode))
 
         # Print Outcome
@@ -333,9 +327,7 @@ def scrape():
         printSeparator()
 
         # Set The Blank
-        updateUnavailableTokensToNull(
-            dbConnection=dbConnection
-        )
+        updateUnavailableTokensToNull()
 
         logger.info(f"All Unavailable Tokens Set To Null")
         printSeparator(newLine=True)
@@ -367,7 +359,8 @@ def scrape():
             missingTokenRetrievalEnd = time.perf_counter()
 
             # Build Timer Str
-            missingTokenRetrievalTimerStr = getNicePerfTime(timeDiff=missingTokenRetrievalEnd - missingTokenRetrievalStart)
+            missingTokenRetrievalTimerStr = getNicePerfTime(
+                timeDiff=missingTokenRetrievalEnd - missingTokenRetrievalStart)
 
             # Print Outcome
             printSeparator()
@@ -380,7 +373,6 @@ def scrape():
             # Print Outcome
             logger.info(f"No Pairs To Update!")
             printSeparator(newLine=True)
-
 
         #################################################################################
         # Getting Missing Token Decimals
@@ -435,7 +427,6 @@ def scrape():
         logger.info(f"Dex Screener Scrape Complete ✅")
         logger.info(f"Took: {masterTimerStr}")
         printSeparator()
-
 
 
 if __name__ == '__main__':

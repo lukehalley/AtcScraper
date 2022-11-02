@@ -1,18 +1,14 @@
 from src.db.actions.actions_General import executeReadQuery
-from src.db.actions.actions_Setup import getCursor
 
 
-def getTokenByNetworkIdAndAddress(dbConnection, networkDbId, tokenAddress):
+def getTokenByNetworkIdAndAddress(networkDbId, tokenAddress):
 
     query = "" \
             f"SELECT * " \
             f"FROM tokens " \
             f"WHERE network_id='{networkDbId}' AND address='{tokenAddress}'"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     result = executeReadQuery(
-        cursor=cursor,
         query=query
     )
 

@@ -1,13 +1,10 @@
 import re
 
 from src.db.actions.actions_General import executeWriteQuery
-from src.db.actions.actions_Setup import getCursor
 from src.utils.data.data_Clean import cleanString
 
 
-def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenAddress=None):
-
-    cursor = getCursor(dbConnection=dbConnection)
+def addTokenToDB(networkDbId, tokenName, tokenSymbol, tokenAddress=None):
 
     networkDbId = int(networkDbId)
     tokenName = cleanString(re.sub('[^A-Za-z0-9 ]+', '', str(tokenName)))
@@ -24,15 +21,13 @@ def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenAddress
             f"(SELECT * FROM tokens WHERE {compareStatement}) " \
             f"LIMIT 1"
 
-    executeWriteQuery(
-        dbConnection=dbConnection,
-        cursor=cursor,
+    lastRowID = executeWriteQuery(
         query=query
     )
 
-    return cursor.lastrowid
+    return lastRowID
 
-def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
+def updateTokenByDbId(tokenDbId, fieldToUpdate, fieldNewValue):
 
     isStr = isinstance(fieldNewValue, str)
 
@@ -47,40 +42,28 @@ def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
             f"SET {cleanString(fieldToUpdate)}={insertValue} " \
             f"WHERE token_id={tokenDbId}"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     return executeWriteQuery(
-        dbConnection=dbConnection,
-        cursor=cursor,
         query=query
     )
 
-def updatePairAnalysisByDbId(dbConnection, pairDbId, analysisStatus):
+def updatePairAnalysisByDbId(pairDbId, analysisStatus):
 
     query = "" \
             f"UPDATE pairs " \
             f"SET analysed={analysisStatus} " \
             f"WHERE pair_id={pairDbId}"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     return executeWriteQuery(
-        dbConnection=dbConnection,
-        cursor=cursor,
         query=query
     )
 
-def updateUnavailableTokensToNull(dbConnection):
+def updateUnavailableTokensToNull():
 
     query = "" \
             f"UPDATE tokens " \
             f"SET address = NULL " \
             f"WHERE address = 'None'"
 
-    cursor = getCursor(dbConnection=dbConnection)
-
     return executeWriteQuery(
-        dbConnection=dbConnection,
-        cursor=cursor,
         query=query
     )

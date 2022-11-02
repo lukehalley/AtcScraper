@@ -1,16 +1,12 @@
-import json
+from web3 import Web3
 from web3.middleware import geth_poa_middleware
-from web3 import Web3, HTTPProvider
+
 from src.chain.abi.abi_Contract import getContract
 from src.chain.convert.convert_Hex import convertToHex
 from src.db.actions.actions_Routes import addRouteToDB
-from src.db.actions.actions_Setup import initDBConnection
 
 
 def decodeTx(transactionDetails):
-
-    # Init MySQL DB
-    dbConnection = initDBConnection()
 
     try:
         networkDbId = transactionDetails["networkDbId"]
@@ -71,7 +67,6 @@ def decodeTx(transactionDetails):
                     routeObject["amountOutMin"] = None
 
                 addRouteToDB(
-                    dbConnection=dbConnection,
                     networkDbId=networkDbId,
                     dexDbId=dexDbId,
                     tokenInAddress=tokenInAddress,

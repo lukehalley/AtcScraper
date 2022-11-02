@@ -2,6 +2,7 @@ import os
 
 from src.utils.data.data_Booleans import strToBool
 
+
 # Check if we are running in a docker container
 def checkIsDocker():
     return strToBool(os.environ.get("RUNNING_IN_DOCKER"))

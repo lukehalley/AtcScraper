@@ -3,6 +3,7 @@ from pathlib import Path
 
 import boto3
 
+
 def downloadAbisFromS3():
 
     s3 = boto3.resource('s3')
