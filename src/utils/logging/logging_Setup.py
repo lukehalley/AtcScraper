@@ -1,7 +1,7 @@
 import logging
 import os
 import sys, time
-
+from datetime import datetime
 
 # Setup logger
 def setupLogging():
@@ -16,11 +16,10 @@ def setupLogging():
     return logger
 
 def printLog(msg):
-
-    t = time.localtime()
-    ascTime = time.asctime(t)
-
-    print(f'{ascTime} | PINFO | {msg}')
+    now = datetime.now()
+    dateFormat = "%Y-%m-%d %H:%M:%S,%f"
+    timeStr = now.strftime(dateFormat)[:-3]
+    print(f'{timeStr} | PINFO | {msg}')
 
 # Get the project logger
 def getProjectLogger():

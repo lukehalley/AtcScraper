@@ -94,11 +94,6 @@ def fillNullTokenAddresses(dbPair):
         tokenFilled = False
         logger.info("  API Request Failed ⛔️")
 
-    updatePairAnalysisByDbId(
-        pairDbId=pairDbId,
-        analysisStatus=True
-    )
-
     if tokenFilled:
         return True
     else:
