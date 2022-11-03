@@ -10,19 +10,24 @@ from src.utils.logging.logging_Setup import printLog
 
 def decodeTx(transactionDetails):
 
+    networkDbId = transactionDetails["pairDetails"]["network"]["db"]["dbId"]
+    dexDbId = transactionDetails["pairDetails"]["dex"]["db"]["dbId"]
+    contractAddress = transactionDetails["contractAddress"]
+    rpcUrl = transactionDetails["rpcUrl"]
+    transactionHash = transactionDetails["transactionHash"]
+    abi = transactionDetails["abi"]
+
     try:
-        networkDbId = transactionDetails["networkDbId"]
-        dexDbId = transactionDetails["dexDbId"]
-        contractAddress = transactionDetails["contractAddress"]
-        rpcUrl = transactionDetails["rpcUrl"]
-        transactionHash = transactionDetails["transactionHash"]
-        abi = transactionDetails["abi"]
 
         web3 = Web3(Web3.HTTPProvider(rpcUrl))
         web3.middleware_onion.inject(geth_poa_middleware, layer=0)
         transaction = web3.eth.get_transaction(transactionHash)
 
         if transaction["to"] == contractAddress:
+
+            printLog(
+                msg=f'Decoding TX: {transactionHash}'
+            )
 
             inputData = transaction["input"]
             blockNumber = int(transaction["blockNumber"])
@@ -83,7 +88,7 @@ def decodeTx(transactionDetails):
                 )
 
                 updatePairAnalysisByDbId(
-                    pairDbId=decodedTransaction["pairDbId"],
+                    pairDbId=transactionDetails["pairDetails"]["pair"]["db"]["dbId"],
                     analysisStatus=True
                 )
 

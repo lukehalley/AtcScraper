@@ -10,7 +10,7 @@ from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB, updatePairAnalysisByDbId
-from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId
+from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId, getDexByNameAndNetworkId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
 from src.db.querys.querys_General import getRowByValue
 from src.db.querys.querys_Networks import getAllNetworks, getNetworkRPCByDbId
@@ -129,7 +129,7 @@ def gatherNetworkDexs(args):
             page=page
         )
 
-        networksDexs = [dict(networksDex, **{'network':networkName}) for networksDex in networksDexs]
+        networksDexs = [network for network in networksDexs if network['db']['networkId'] == args["networkDetails"]["db"]["networkId"]]
 
         browser.close()
 
@@ -194,25 +194,29 @@ def gatherDexListFromTabs(networkDetails, page):
                 dexName=dexName
             )
 
-        dexRow = getRowByValue(
-            table="dexs",
-            conditions=[
-                {
-                    "name": dexName
-                }
-            ]
+        dexRow = getDexByNameAndNetworkId(
+            dexName=dexName,
+            networkId=networkDetails["db"]["networkId"]
         )
 
-        dexObject = {
-            "name": dexName,
-            "url": f"{baseUrl}/{dexName}",
-            "db": {
-                "networkId": dexRow["network_id"],
-                "dexId": dexRow["dex_id"],
-            }
-        }
+        if dexRow["factory"] and dexRow["factory_s3_path"] and dexRow["router"] and dexRow["router_s3_path"]:
 
-        dexListDictionary.append(dexObject)
+            dexObject = {
+                "name": dexName,
+                "url": f"{baseUrl}/{dexName}",
+                "db": {
+                    "networkId": dexRow["network_id"],
+                    "dexId": dexRow["dex_id"],
+                },
+                "abi": {
+                    "factory": dexRow["factory"],
+                    "factory_s3_path": dexRow["factory_s3_path"],
+                    "router": dexRow["router"],
+                    "router_s3_path": dexRow["router_s3_path"]
+                }
+            }
+
+            dexListDictionary.append(dexObject)
 
     # Return the dex dictionary
     return dexListDictionary
@@ -578,10 +582,10 @@ def gatherMetadataForPair(pairToAnalyse):
             )
 
             # Get Pair Routes
-            timeoutCounter = 0
-            timeoutLimit = 25
             collectedLinks = []
-            while len(collectedLinks) < 250:
+            loopCount = 0
+            loopLimit = 20
+            while len(collectedLinks) < 100:
                 txTab = page.locator("text=TXN")
                 txTab.first.hover()
                 linksOnPage = page.eval_on_selector_all("a[href^='https']",
@@ -591,36 +595,45 @@ def gatherMetadataForPair(pairToAnalyse):
                 page.mouse.wheel(0, 700)
                 collectedLinks = list(set(collectedLinks))
                 collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
-                timeoutCounter = timeoutCounter + 1
-
-                if timeoutCounter > timeoutLimit:
+                loopCount = loopCount + 1
+                if loopCount >= loopLimit:
+                    printLog(
+                        msg=f'Loop Limit Reached For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                    )
                     break
 
             page.close()
 
             validTransactions = [x for x in collectedLinks if len(x) == 66]
 
-            transactionsToDecode = []
-            for validTransaction in validTransactions:
+            if validTransactions:
 
-                transactionDict = {
-                    "pairDbId": pairToAnalyse["pair"]["db"]["dbId"],
-                    "networkDbId": pairToAnalyse["network"]["db"]["dbId"],
-                    "dexDbId": pairToAnalyse["dex"]["db"]["dbId"],
-                    "contractAddress": routerAddress,
-                    "rpcUrl": rpcUrl,
-                    "transactionHash": validTransaction,
-                    "abi": routerAbi
-                }
+                transactionsToDecode = []
+                for validTransaction in validTransactions:
 
-                transactionsToDecode.append(transactionDict)
+                    transactionDict = {
+                        "pairDetails": pairToAnalyse,
+                        "contractAddress": routerAddress,
+                        "rpcUrl": rpcUrl,
+                        "transactionHash": validTransaction,
+                        "abi": routerAbi
+                    }
 
-            printLog(
-                msg=f'{pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["network"]["network"]).title()} ✅'
-            )
+                    transactionsToDecode.append(transactionDict)
 
-            return transactionsToDecode
+                printLog(
+                    msg=f'Collected {len(transactionsToDecode)} Transactions For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                )
 
+                return transactionsToDecode
+
+            else:
+
+                printLog(
+                    msg=f'No Transactions Collected For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                )
+
+                return None
     else:
 
         printLog(
