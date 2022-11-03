@@ -133,13 +133,14 @@ def gatherNetworkDexs(args):
 
         networksDexs = [network for network in networksDexs if network['db']['networkId'] == args["networkDetails"]["db"]["networkId"]]
 
-        browser.close()
-
         if not networksDexs:
             return None
 
         # Close our page as don't need it anymore
         page.close()
+
+        # Close Browser
+        browser.close()
 
         # Create an object with the network and its dexs
         networkDetails = (networkName, networksDexs)
@@ -606,6 +607,8 @@ def gatherMetadataForPair(pairToAnalyse):
                     break
 
             page.close()
+
+            browser.close()
 
             validTransactions = [x for x in collectedLinks if len(x) == 66]
 

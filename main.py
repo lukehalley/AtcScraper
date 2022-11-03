@@ -145,6 +145,9 @@ def scrape():
         # Close the tab as we don't need it anymore
         page.close()
 
+        # Close Browser
+        browser.close()
+
     # Separator
     printSeparator(True)
 
