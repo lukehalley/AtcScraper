@@ -588,8 +588,9 @@ def gatherMetadataForPair(pairToAnalyse):
             # Get Pair Routes
             collectedLinks = []
             loopCount = 0
-            loopLimit = 20
-            while len(collectedLinks) < 100:
+            loopLimit = int(os.getenv("TRANSACTION_LOOP_LIMIT"))
+            amountOfLinksToCollect = int(os.getenv("TRANSACTION_AMOUNT_OF_LINKS_TO_COLLECT"))
+            while len(collectedLinks) < amountOfLinksToCollect:
                 txTab = page.locator("text=TXN")
                 txTab.first.hover()
                 linksOnPage = page.eval_on_selector_all("a[href^='https']",
