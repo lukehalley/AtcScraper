@@ -29,3 +29,16 @@ def getDexRouterDetailsByDbId(dexDbid):
     except:
 
         return None, None
+
+def getDexByNameAndNetworkId(dexName, networkId):
+
+    query = "" \
+            f"SELECT dexs.* " \
+            f"FROM dexs " \
+            f"WHERE dexs.name = '{dexName}' AND dexs.network_id = {networkId}"
+
+    dexInfo = executeReadQuery(
+        query=query
+    )
+
+    return dexInfo[0]

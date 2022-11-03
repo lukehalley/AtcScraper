@@ -10,13 +10,18 @@ from src.utils.logging.logging_Setup import printLog
 
 def decodeTx(transactionDetails):
 
+    pairName = transactionDetails["pairDetails"]["pair"]["name"]
+    networkName = transactionDetails["pairDetails"]["network"]["network"]
+    dexName = transactionDetails["pairDetails"]["dex"]["dex"]["name"]
+
+    networkDbId = transactionDetails["pairDetails"]["network"]["db"]["dbId"]
+    dexDbId = transactionDetails["pairDetails"]["dex"]["db"]["dbId"]
+    contractAddress = transactionDetails["contractAddress"]
+    rpcUrl = transactionDetails["rpcUrl"]
+    transactionHash = transactionDetails["transactionHash"]
+    abi = transactionDetails["abi"]
+
     try:
-        networkDbId = transactionDetails["networkDbId"]
-        dexDbId = transactionDetails["dexDbId"]
-        contractAddress = transactionDetails["contractAddress"]
-        rpcUrl = transactionDetails["rpcUrl"]
-        transactionHash = transactionDetails["transactionHash"]
-        abi = transactionDetails["abi"]
 
         web3 = Web3(Web3.HTTPProvider(rpcUrl))
         web3.middleware_onion.inject(geth_poa_middleware, layer=0)
@@ -68,7 +73,7 @@ def decodeTx(transactionDetails):
                 else:
                     routeObject["amountOutMin"] = None
 
-                addRouteToDB(
+                routeId = addRouteToDB(
                     networkDbId=networkDbId,
                     dexDbId=dexDbId,
                     tokenInAddress=tokenInAddress,
@@ -82,16 +87,26 @@ def decodeTx(transactionDetails):
                     amountOut=routeObject["amountOutMin"]
                 )
 
-                updatePairAnalysisByDbId(
-                    pairDbId=decodedTransaction["pairDbId"],
-                    analysisStatus=True
-                )
+                if routeId:
 
-                printLog(
-                    msg=f'Added Routes For {tokenInAddress} -> {tokenOutAddress} 🗺'
-                )
+                    updatePairAnalysisByDbId(
+                        pairDbId=transactionDetails["pairDetails"]["pair"]["db"]["dbId"],
+                        analysisStatus=True
+                    )
 
-                return routeObject
+                    printLog(
+                        msg=f'Added Route {pairName} On {dexName.title()} | {networkName.title()}'
+                    )
+
+                    return routeObject
+
+                else:
+                    printLog(
+                        msg=f'Route Already Present {pairName} On {dexName.title()} | {networkName.title()}'
+                    )
+
+                    return None
+
         else:
             return None
     except:

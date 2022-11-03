@@ -12,3 +12,15 @@ def getNetworkById(networkDbId):
 
     return result
 
+def getNetworkByName(networkName):
+    query = "" \
+            f"SELECT * " \
+            f"FROM networks " \
+            f"WHERE name='{networkName}'"
+
+    result = executeReadQuery(
+        query=query
+    )[0]
+
+    return result
+
