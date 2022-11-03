@@ -25,7 +25,8 @@ from src.utils.aws.aws_S3 import downloadAbisFromS3
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.misc.misc_Lazy import checkIsLazyMode
 from src.utils.time.time_Calculations import getNicePerfTime
-from src.db.querys.querys_Pairs import getAnalysedPairs, fillNullTokenAddresses, getPairsWithNullTokenAddresses
+from src.db.querys.querys_Pairs import getAnalysedPairs, getPairsWithNullTokenAddresses, \
+    fillPairAddressesDecimals
 
 # Import helpers
 
@@ -236,7 +237,7 @@ def scrape():
         # Log Count
         for dexPairs in nonEmptyDexPairs:
             networkName = dexPairs[0]["network"]["network"]
-            dexName = dexPairs[0]["dex"]["dex"]
+            dexName = dexPairs[0]["dex"]["dex"]["name"]
             logger.info(f"{dexName.upper()} On {networkName.upper()}: {len(dexPairs)} Pairs(s)")
 
         printSeparator(newLine=True)
@@ -256,6 +257,9 @@ def scrape():
         logger.info(f"Getting {len(unanalysedPairs)} Pair's Metadata")
 
         printSeparator()
+
+        if checkIsLazyMode():
+            unanalysedPairs = unanalysedPairs[0:99]
 
         # Start Timer
         gatherPairRoutesStart = time.perf_counter()
@@ -291,6 +295,8 @@ def scrape():
 
             logger.info(f"Decoding {len(combinedTransactions)} Pair Transactions")
 
+            printSeparator()
+
             # Start Timer
             decodeTransactionsStart = time.perf_counter()
 
@@ -306,6 +312,8 @@ def scrape():
 
             validRoutes = [decodedRoute for decodedRoute in decodedRoutes if decodedRoute]
             combinedRoutes = list(itertools.chain(*validRoutes))
+
+            printSeparator()
 
             # Print Outcome
             logger.info(f"Collected {len(combinedRoutes)} Routes")
@@ -331,48 +339,6 @@ def scrape():
 
         logger.info(f"All Unavailable Tokens Set To Null")
         printSeparator(newLine=True)
-
-        #################################################################################
-        # Get Missing Token Addresses From Dexscreener API
-        #################################################################################
-
-        printSeparator()
-        logger.info(f"Getting Missing Token Addresses From Dexscreener API")
-        printSeparator()
-
-        dbPairs = getPairsWithNullTokenAddresses()
-
-        if dbPairs:
-
-            logger.info(f"Getting Addresses For {len(dbPairs)} Pairs")
-
-            # Start Timer
-            missingTokenRetrievalStart = time.perf_counter()
-
-            missingTokenRetrievalPool = Pool(processes=None)
-            updateResults = missingTokenRetrievalPool.map(fillNullTokenAddresses, dbPairs)
-            missingTokenRetrievalPool.close()
-
-            updatedTokens = [updateResult for updateResult in updateResults if updateResult]
-
-            # Stop Timer
-            missingTokenRetrievalEnd = time.perf_counter()
-
-            # Build Timer Str
-            missingTokenRetrievalTimerStr = getNicePerfTime(
-                timeDiff=missingTokenRetrievalEnd - missingTokenRetrievalStart)
-
-            # Print Outcome
-            printSeparator()
-            logger.info(f"Updated {len(updatedTokens)} Pairs")
-            logger.info(f"Took {missingTokenRetrievalTimerStr}")
-            printSeparator(newLine=True)
-
-        else:
-
-            # Print Outcome
-            logger.info(f"No Pairs To Update!")
-            printSeparator(newLine=True)
 
         #################################################################################
         # Getting Missing Token Decimals
@@ -410,6 +376,48 @@ def scrape():
 
             # Print Outcome
             logger.info(f"No Tokens Decimals To Retrieve")
+            printSeparator(newLine=True)
+
+        #################################################################################
+        # Get Missing Token Addresses From Dexscreener API
+        #################################################################################
+
+        printSeparator()
+        logger.info(f"Getting Missing Token Addresses From Dexscreener API")
+        printSeparator()
+
+        dbPairs = getPairsWithNullTokenAddresses()
+
+        if dbPairs:
+
+            logger.info(f"Getting Addresses For {len(dbPairs)} Pairs")
+
+            # Start Timer
+            missingTokenRetrievalStart = time.perf_counter()
+
+            missingTokenRetrievalPool = Pool(processes=None)
+            updateResults = missingTokenRetrievalPool.map(fillPairAddressesDecimals, dbPairs)
+            missingTokenRetrievalPool.close()
+
+            updatedTokens = [updateResult for updateResult in updateResults if updateResult]
+
+            # Stop Timer
+            missingTokenRetrievalEnd = time.perf_counter()
+
+            # Build Timer Str
+            missingTokenRetrievalTimerStr = getNicePerfTime(
+                timeDiff=missingTokenRetrievalEnd - missingTokenRetrievalStart)
+
+            # Print Outcome
+            printSeparator()
+            logger.info(f"Updated {len(updatedTokens)} Pairs")
+            logger.info(f"Took {missingTokenRetrievalTimerStr}")
+            printSeparator(newLine=True)
+
+        else:
+
+            # Print Outcome
+            logger.info(f"No Pairs To Update!")
             printSeparator(newLine=True)
 
         #################################################################################

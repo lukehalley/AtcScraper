@@ -11,7 +11,8 @@ SELECT
   secondary_tokens.address AS secondary_token_address,
   networks.network_id AS network_db_id,
   networks.name AS network_name,
-  networks.chain_number AS network_chain_number
+  networks.chain_number AS network_chain_number,
+  networks.chain_rpc AS chain_rpc
 FROM
   (
     pairs

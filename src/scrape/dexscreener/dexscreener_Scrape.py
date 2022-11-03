@@ -94,7 +94,9 @@ def gatherNetworkList(page):
 def gatherNetworkDexs(args):
 
     networkName = args["networkName"]
+
     networkDetails = args["networkDetails"]
+    networkDetails["name"] = networkName
 
     with sync_playwright() as playwright:
 
@@ -203,15 +205,16 @@ def gatherDexListFromTabs(networkDetails, page):
 
             dexObject = {
                 "name": dexName,
+                "network": networkDetails["name"],
                 "url": f"{baseUrl}/{dexName}",
                 "db": {
                     "networkId": dexRow["network_id"],
                     "dexId": dexRow["dex_id"],
                 },
                 "abi": {
-                    "factory": dexRow["factory"],
+                    "factory": dexRow["factory"][0:42],
                     "factory_s3_path": dexRow["factory_s3_path"],
-                    "router": dexRow["router"],
+                    "router": dexRow["router"][0:42],
                     "router_s3_path": dexRow["router_s3_path"]
                 }
             }
@@ -401,7 +404,7 @@ def gatherPairsForDex(dexDetails):
                             "txCount": smartEval(row[5]),
                         },
                         "dex": {
-                            "dex": dexName,
+                            "dex": dexDetails,
                         },
                         "primaryToken": {
                             "name": row[3],
@@ -598,7 +601,7 @@ def gatherMetadataForPair(pairToAnalyse):
                 loopCount = loopCount + 1
                 if loopCount >= loopLimit:
                     printLog(
-                        msg=f'Loop Limit Reached For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                        msg=f'Loop Limit Reached For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
                     )
                     break
 
@@ -622,7 +625,7 @@ def gatherMetadataForPair(pairToAnalyse):
                     transactionsToDecode.append(transactionDict)
 
                 printLog(
-                    msg=f'Collected {len(transactionsToDecode)} Transactions For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                    msg=f'Collected {len(transactionsToDecode)} Transactions For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
                 )
 
                 return transactionsToDecode
@@ -630,7 +633,7 @@ def gatherMetadataForPair(pairToAnalyse):
             else:
 
                 printLog(
-                    msg=f'No Transactions Collected For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                    msg=f'No Transactions Collected For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
                 )
 
                 return None
