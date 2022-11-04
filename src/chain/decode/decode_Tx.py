@@ -87,25 +87,22 @@ def decodeTx(transactionDetails):
                     amountOut=routeObject["amountOutMin"]
                 )
 
+                toReturn = None
+
                 if routeId:
 
-                    updatePairAnalysisByDbId(
-                        pairDbId=transactionDetails["pairDetails"]["pair"]["db"]["dbId"],
-                        analysisStatus=True
-                    )
+                    # printLog(
+                    #     msg=f'Added Route {pairName} On {dexName.title()} | {networkName.title()}'
+                    # )
 
-                    printLog(
-                        msg=f'Added Route {pairName} On {dexName.title()} | {networkName.title()}'
-                    )
+                    toReturn = routeObject
 
-                    return routeObject
+                updatePairAnalysisByDbId(
+                    pairDbId=transactionDetails["pairDetails"]["pair"]["db"]["dbId"],
+                    analysisStatus=True
+                )
 
-                else:
-                    printLog(
-                        msg=f'Route Already Present {pairName} On {dexName.title()} | {networkName.title()}'
-                    )
-
-                    return None
+                return toReturn
 
         else:
             return None

@@ -6,6 +6,7 @@ from faker import Faker
 from playwright.async_api import BrowserContext
 from playwright.sync_api import sync_playwright
 
+from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
@@ -602,9 +603,9 @@ def gatherMetadataForPair(pairToAnalyse):
                 collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
                 loopCount = loopCount + 1
                 if loopCount >= loopLimit:
-                    printLog(
-                        msg=f'Loop Limit Reached For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
-                    )
+                    # printLog(
+                    #     msg=f'Loop Limit Reached For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                    # )
                     break
 
             page.close()
@@ -615,7 +616,7 @@ def gatherMetadataForPair(pairToAnalyse):
 
             if validTransactions:
 
-                transactionsToDecode = []
+                decodedTransactions = []
                 for validTransaction in validTransactions:
 
                     transactionDict = {
@@ -626,18 +627,29 @@ def gatherMetadataForPair(pairToAnalyse):
                         "abi": routerAbi
                     }
 
-                    transactionsToDecode.append(transactionDict)
+                    decodedTx = decodeTx(
+                        transactionDetails=transactionDict
+                    )
 
-                printLog(
-                    msg=f'Collected {len(transactionsToDecode)} Transactions For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
-                )
+                    if decodedTx:
+                        decodedTransactions.append(decodedTx)
 
-                return transactionsToDecode
+                if decodedTransactions:
+
+                    printLog(
+                        msg=f'Decoded {len(decodedTransactions)} Transactions For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                    )
+
+                    return decodedTransactions
+
+                else:
+
+                    return None
 
             else:
 
                 printLog(
-                    msg=f'No Transactions Collected For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                    msg=f'No Transactions Decoded For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
                 )
 
                 return None

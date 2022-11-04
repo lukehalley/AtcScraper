@@ -290,44 +290,44 @@ def scrape():
         # Decode Transactions For Routes
         #################################################################################
 
-        printSeparator()
-        logger.info(f"Decoding Transactions For Routes")
-        printSeparator()
-
-        if combinedTransactions:
-
-            logger.info(f"Decoding {len(combinedTransactions)} Pair Transactions")
-
-            printSeparator()
-
-            # Start Timer
-            decodeTransactionsStart = time.perf_counter()
-
-            decodeTransactionsPool = Pool(processes=None)
-            decodedRoutes = decodeTransactionsPool.map(decodeTx, combinedTransactions)
-            decodeTransactionsPool.close()
-
-            # Stop Timer
-            decodeTransactionsEnd = time.perf_counter()
-
-            # Build Timer Str
-            decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
-
-            validRoutes = [decodedRoute for decodedRoute in decodedRoutes if decodedRoute]
-            combinedRoutes = list(itertools.chain(*validRoutes))
-
-            printSeparator()
-
-            # Print Outcome
-            logger.info(f"Collected {len(combinedRoutes)} Routes")
-            logger.info(f"Took {decodeTransactionsTimerStr}")
-            printSeparator(newLine=True)
-
-        else:
-
-            # Print Outcome
-            logger.info(f"No Routes To Collect!")
-            printSeparator(newLine=True)
+        # printSeparator()
+        # logger.info(f"Decoding Transactions For Routes")
+        # printSeparator()
+        #
+        # if combinedTransactions:
+        #
+        #     logger.info(f"Decoding {len(combinedTransactions)} Pair Transactions")
+        #
+        #     printSeparator()
+        #
+        #     # Start Timer
+        #     decodeTransactionsStart = time.perf_counter()
+        #
+        #     decodeTransactionsPool = Pool(processes=None)
+        #     decodedRoutes = decodeTransactionsPool.map(decodeTx, combinedTransactions)
+        #     decodeTransactionsPool.close()
+        #
+        #     # Stop Timer
+        #     decodeTransactionsEnd = time.perf_counter()
+        #
+        #     # Build Timer Str
+        #     decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
+        #
+        #     validRoutes = [decodedRoute for decodedRoute in decodedRoutes if decodedRoute]
+        #     combinedRoutes = list(itertools.chain(*validRoutes))
+        #
+        #     printSeparator()
+        #
+        #     # Print Outcome
+        #     logger.info(f"Collected {len(combinedRoutes)} Routes")
+        #     logger.info(f"Took {decodeTransactionsTimerStr}")
+        #     printSeparator(newLine=True)
+        #
+        # else:
+        #
+        #     # Print Outcome
+        #     logger.info(f"No Routes To Collect!")
+        #     printSeparator(newLine=True)
 
         #################################################################################
         # Set Unavailable Tokens To Null
