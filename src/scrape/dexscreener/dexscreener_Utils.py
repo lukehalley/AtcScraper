@@ -1,7 +1,7 @@
 import re
 from ast import literal_eval
 
-# Remove any illegal characters from the raw HTML we scrape
+# Remove any illegal characters from the raw HTML we collectPairs
 # when getting the rows from the token lists for a dex
 def removeIllegalCharactersFromElements(elementList):
     cleanList = []

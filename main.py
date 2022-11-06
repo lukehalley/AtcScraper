@@ -1,9 +1,13 @@
+import asyncio
 from multiprocessing import Pool
 
+import aiohttp
 from dotenv import load_dotenv
+from playwright.async_api import async_playwright
 
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
 from src.db.querys.querys_Tokens import fillTokenDecimals, getTokensWithMissingDecimals
+from src.scrape.dexscreener.dexscreener_Transactions import gatherTransactionsForPair
 
 load_dotenv()
 
@@ -32,7 +36,7 @@ from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
 
 
-def scrape():
+def collectPairs():
     masterStartTime = time.perf_counter()
 
     # Set up logging
@@ -113,7 +117,7 @@ def scrape():
         logger.info(f"Gathering Dex Screener Networks")
         printSeparator()
 
-        # Get a dictionary of networks we can scrape
+        # Get a dictionary of networks we can collectPairs
         networkDictionary = gatherNetworkList(
             page=page
         )
@@ -170,9 +174,9 @@ def scrape():
 
     # Create A Pool For Recipe Simulation
     # Map Our Recipes To The Pool An Run
-    recipeSimulationPool = Pool(processes=None)
-    collectedNetworkDexs = recipeSimulationPool.map(gatherNetworkDexs, networksToCollect)
-    recipeSimulationPool.close()
+    transactionCollectionPool = Pool(processes=None)
+    collectedNetworkDexs = transactionCollectionPool.map(gatherNetworkDexs, networksToCollect)
+    transactionCollectionPool.close()
 
     printSeparator()
 
@@ -222,9 +226,9 @@ def scrape():
         gatherDexPairsStart = time.perf_counter()
 
         # Collect all dex pairs
-        recipeSimulationPool = Pool(processes=None)
-        collectedDexPairs = recipeSimulationPool.map(gatherPairsForDex, combinedDexs)
-        recipeSimulationPool.close()
+        transactionCollectionPool = Pool(processes=None)
+        collectedDexPairs = transactionCollectionPool.map(gatherPairsForDex, combinedDexs)
+        transactionCollectionPool.close()
 
         printSeparator()
 
@@ -237,6 +241,12 @@ def scrape():
         # Process Data
         nonEmptyDexPairs = [x for x in collectedDexPairs if x != []]
         combinedDexPairs = [p for pair in nonEmptyDexPairs for p in pair]
+
+        # Combine
+        gatheredTokenDbIds = list(
+            sum([(combinedDexPair["primaryToken"]["token_id"], combinedDexPair["secondaryToken"]["token_id"]) for
+                 combinedDexPair in combinedDexPairs], ()))
+        gatherPairIds = [(combinedDexPair["pair"]["pair_id"]) for combinedDexPair in combinedDexPairs]
 
         # Log Count
         for dexPairs in nonEmptyDexPairs:
@@ -254,6 +264,21 @@ def scrape():
         #################################################################################
         # Gather Pair Transactions
         #################################################################################
+
+        transactionUrls = []
+        for pair in combinedDexPairs:
+            url = f'https://io.dexscreener.com/u/' \
+                  f'trading-history/recent/' \
+                  f'{pair["network"]["network"]}/' \
+                  f'{pair["pair"]["address"]}' \
+                  f'?q=' \
+                  f'{pair["secondaryToken"]["address"]}'
+            transactionUrls.append(url)
+
+        # Collect all dex pairs
+        transactionCollectionPool = Pool(processes=None)
+        collectedPairTransactions = transactionCollectionPool.map(gatherTransactionsForPair, transactionUrls)
+        transactionCollectionPool.close()
 
         #################################################################################
         # Set Unavailable Tokens To Null
@@ -278,17 +303,18 @@ def scrape():
         printSeparator()
 
         tokensToGetDecimalsFor = getTokensWithMissingDecimals()
+        filteredTokensToGetDecimalsFor = [tokenToGetDecimalsFor for tokenToGetDecimalsFor in tokensToGetDecimalsFor if tokenToGetDecimalsFor["token_id"] in gatheredTokenDbIds]
 
-        if tokensToGetDecimalsFor:
+        if filteredTokensToGetDecimalsFor:
 
-            logger.info(f"Getting Decimals For {len(tokensToGetDecimalsFor)} Tokens")
+            logger.info(f"Getting Decimals For {len(filteredTokensToGetDecimalsFor)} Tokens")
             printSeparator()
 
             # Start Timer
             missingTokenDecimalsStart = time.perf_counter()
 
             missingTokenDecimalsPool = Pool(processes=None)
-            decimalsRetrieved = missingTokenDecimalsPool.map(fillTokenDecimals, tokensToGetDecimalsFor)
+            decimalsRetrieved = missingTokenDecimalsPool.map(fillTokenDecimals, filteredTokensToGetDecimalsFor)
             missingTokenDecimalsPool.close()
 
             updatedDecimals = [decimalRetrieved for decimalRetrieved in decimalsRetrieved if decimalRetrieved]
@@ -299,15 +325,13 @@ def scrape():
             # Build Timer Str
             missingTokenDecimalsTimerStr = getNicePerfTime(timeDiff=missingTokenDecimalsEnd - missingTokenDecimalsStart)
 
-            printSeparator()
-
             # Print Outcome
             if updatedDecimals:
                 logger.info(f"Added {len(updatedDecimals)} Token Decimals")
+                logger.info(f"Took {missingTokenDecimalsTimerStr}")
             else:
                 logger.info(f"No Token Decimals Added")
 
-            logger.info(f"Took {missingTokenDecimalsTimerStr}")
             printSeparator(newLine=True)
 
         else:
@@ -324,17 +348,18 @@ def scrape():
         logger.info(f"Getting Missing Token Addresses From Pair Contracts")
         printSeparator()
 
-        dbPairs = getPairsWithNullTokenAddresses()
+        pairsToGetAddressesFor = getPairsWithNullTokenAddresses()
+        filteredPairsToGetAddressesFor = [pairToGetAddressesFor for pairToGetAddressesFor in pairsToGetAddressesFor if pairToGetAddressesFor["pair_db_id"] in gatherPairIds]
 
-        if dbPairs:
+        if filteredPairsToGetAddressesFor:
 
-            logger.info(f"Getting Addresses For {len(dbPairs)} Pairs")
+            logger.info(f"Getting Addresses For {len(filteredPairsToGetAddressesFor)} Pairs")
 
             # Start Timer
             missingTokenRetrievalStart = time.perf_counter()
 
             missingTokenRetrievalPool = Pool(processes=None)
-            updateResults = missingTokenRetrievalPool.map(fillPairAddresses, dbPairs)
+            updateResults = missingTokenRetrievalPool.map(fillPairAddresses, filteredPairsToGetAddressesFor)
             missingTokenRetrievalPool.close()
 
             updatedTokens = [updateResult for updateResult in updateResults if updateResult]
@@ -355,10 +380,8 @@ def scrape():
         else:
 
             # Print Outcome
-            logger.info(f"No Pairs To Update!")
+            logger.info(f"No Pairs To Update")
             printSeparator(newLine=True)
-
-        x = 1
 
         #################################################################################
         # End
@@ -376,6 +399,9 @@ def scrape():
         logger.info(f"Took: {masterTimerStr}")
         printSeparator()
 
+    else:
+
+        return None
 
 if __name__ == '__main__':
-    scrape()
+    collectPairs()
