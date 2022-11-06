@@ -47,22 +47,6 @@ def smartEval(text):
     except:
         return text
 
-# Open the timespan menu on the token list page and click the time we want
-def openTimespan(page, timeToSelect):
-
-    if timeToSelect == "5M":
-        text="Last 5 minutes"
-
-    elif timeToSelect == "1H":
-        text="Last hour"
-
-    elif timeToSelect == "6H":
-        text="Last 6 hours"
-    else:
-        text="Last 24 hours"
-
-    page.locator(f'text={text}').first.click()
-
 # Get the address of the pair, primary and secondary token as well as the network explorer url
 def getAllRowsMetadata(page, networkName):
 

@@ -10,11 +10,13 @@ from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
-from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB, updatePairAnalysisByDbId
+from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
 from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId, getDexByNameAndNetworkId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
-from src.db.querys.querys_General import getRowByValue
-from src.db.querys.querys_Networks import getAllNetworks, getNetworkRPCByDbId
+from src.db.querys.querys_Networks import getAllNetworks, getNetworkRPCByDbId, getNetworkByName
+from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId, getPairForNetworkIdAndPairDbId
+from src.db.querys.querys_Tokens import getTokenByNetworkIdAndSymbol, \
+    getTokenByNetworkIdAndTokenId
 from src.playwright.playwright_Hacks import safePageLoad, safeClick
 from src.playwright.playwright_Utils import findAndCheckElement, newPage, getListItems, getAItems
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
@@ -62,31 +64,18 @@ def gatherNetworkList(page):
     # Get the urls to each network
     for networkName in cleanNetworkList:
 
-        networkDictionary[networkName] = {
-            "url": f"{baseUrl}/{networkName}"
-        }
+        printLog(f"{networkName.title()} ✅")
 
         if networkName in networksToStore:
             addNetworkToDB(
                 networkName=networkName
             )
 
-        networkRow = getRowByValue(
-            table="networks",
-            conditions=[
-                {
-                    "name": networkName
-                }
-            ]
+        networkDictionary[networkName] = getNetworkByName(
+            networkName=networkName
         )
 
-        if "db" not in networkDictionary[networkName]:
-            networkDictionary[networkName]["db"] = {}
-
-        try:
-            networkDictionary[networkName]["db"]["networkId"] = networkRow["network_id"]
-        except:
-            x = 1
+        networkDictionary[networkName]["url"] = f"{baseUrl}/{networkName}"
 
     # Return the network dictionary
     return networkDictionary
@@ -132,7 +121,7 @@ def gatherNetworkDexs(args):
             page=page
         )
 
-        networksDexs = [network for network in networksDexs if network['db']['networkId'] == args["networkDetails"]["db"]["networkId"]]
+        networksDexs = [network for network in networksDexs if network["db"]["networkId"] == args["networkDetails"]["network_id"]]
 
         if not networksDexs:
             return None
@@ -145,6 +134,10 @@ def gatherNetworkDexs(args):
 
         # Create an object with the network and its dexs
         networkDetails = (networkName, networksDexs)
+
+        printLog(
+            msg=f"{networkName.title()} ✅"
+        )
 
         # Return the network details object
         return networkDetails
@@ -183,7 +176,7 @@ def gatherDexListFromTabs(networkDetails, page):
     baseUrl = page.url
 
     currentlyStoredDexs = getAllDexsForNetwork(
-        networkDbId=networkDetails["db"]["networkId"]
+        networkDbId=networkDetails["network_id"]
     )
 
     uniqueCurrentlyStoredDexs = set(currentlyStoredDexs)
@@ -194,13 +187,13 @@ def gatherDexListFromTabs(networkDetails, page):
 
         if dexName in dexsToStore:
             addDexToDB(
-                networkDbId=networkDetails["db"]["networkId"],
+                networkDbId=networkDetails["network_id"],
                 dexName=dexName
             )
 
         dexRow = getDexByNameAndNetworkId(
             dexName=dexName,
-            networkId=networkDetails["db"]["networkId"]
+            networkId=networkDetails["network_id"]
         )
 
         if dexRow["factory"] and dexRow["factory_s3_path"] and dexRow["router"] and dexRow["router_s3_path"]:
@@ -298,7 +291,7 @@ def gatherPairsForDex(dexDetails):
             pairsPagesToIterate = 1
 
         # List which will store our token objects
-        collectedTokens = []
+        collectedPairs = []
 
         lazyMode = strToBool(os.getenv("LAZY_MODE"))
         if lazyMode:
@@ -388,137 +381,142 @@ def gatherPairsForDex(dexDetails):
                 else:
                     tokenIndex = (tokenRank - ((pageNumber - 1) * 100))
 
-                try:
+                # Get the pair address for this row
+                pairAddress = pairAddresses[tokenIndex - 1]
 
-                    # Get the pair address for this row
-                    pairAddress = pairAddresses[tokenIndex - 1]
+                # Primary Token
+                primaryTokenSymbol = row[1]
 
-                    # Create a token object from all the properties we scraped
-                    tokenDetails = {
-                        "rank": tokenRank,
-                        "market": {
-                            "volume": smartEval(replaceNumberShorthands(row[6])),
-                            "liquidity": smartEval(replaceNumberShorthands(row[11])),
-                            "fdv": smartEval(replaceNumberShorthands(row[12]))
-                        },
-                        "network": {
-                            "network": networkName,
-                            "txCount": smartEval(row[5]),
-                        },
-                        "dex": {
-                            "dex": dexDetails,
-                        },
-                        "primaryToken": {
-                            "name": row[3],
-                            "symbol": row[1]
-                        },
-                        "secondaryToken": {
-                            "symbol": row[2],
-                        },
-                        "pair": {
-                            "name": f"{row[1]}/{row[2]}",
-                            "address": pairAddress
-                        }
+                # Secondary Token
+                secondaryTokenSymbol = row[2]
+
+                # Create a token object from all the properties we scraped
+                tokenDetails = {
+                    "rank": tokenRank,
+                    "market": {
+                        "volume": smartEval(replaceNumberShorthands(row[6])),
+                        "liquidity": smartEval(replaceNumberShorthands(row[11])),
+                        "fdv": smartEval(replaceNumberShorthands(row[12]))
+                    },
+                    "network": {
+                        "network": networkName,
+                        "txCount": smartEval(row[5]),
+                    },
+                    "dex": {
+                        "dex": dexDetails,
+                    },
+                    "primaryToken": {
+                        "name": row[3],
+                        "symbol": primaryTokenSymbol
+                    },
+                    "secondaryToken": {
+                        "symbol": row[2],
+                    },
+                    "pair": {
+                        "name": f"{row[1]}/{row[2]}",
+                        "address": pairAddress
                     }
+                }
 
-                    # Check if primary token already exists
-                    primaryTokenDetails = getRowByValue(
-                        table="tokens",
-                        conditions=[
-                            {
-                                "symbol": tokenDetails["primaryToken"]["symbol"]
-                            }
-                        ]
+                # Check if primary token already exists
+                primaryTokenDetails = getTokenByNetworkIdAndSymbol(
+                    networkDbId=dexDetails["db"]["networkId"],
+                    tokenSymbol=primaryTokenSymbol
+                )
+
+                # If it doesn't - add it
+                if not primaryTokenDetails:
+                    # Add primary token to database
+                    primaryTokenDbId = addTokenToDB(
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenName=tokenDetails["primaryToken"]["name"],
+                        tokenSymbol=tokenDetails["primaryToken"]["symbol"]
                     )
 
-                    # If it doesn't - add it
-                    if not primaryTokenDetails:
-                        # Add primary token to database
-                        primaryTokenDbId = addTokenToDB(
-                            networkDbId=dexDetails["db"]["networkId"],
-                            tokenName=tokenDetails["primaryToken"]["name"],
-                            tokenSymbol=tokenDetails["primaryToken"]["symbol"]
-                        )
-                    else:
-                        primaryTokenDbId = primaryTokenDetails["token_id"]
+                    primaryTokenDetails = getTokenByNetworkIdAndTokenId(
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenDbId=primaryTokenDbId
+                    )
+                else:
+                    primaryTokenDbId = primaryTokenDetails["token_id"]
 
-                    tokenDetails["primaryToken"]["db"] = {}
-                    tokenDetails["primaryToken"]["db"]["dbId"] = primaryTokenDbId
+                tokenDetails["primaryToken"] = primaryTokenDetails
 
-                    # Check if primary token already exists
-                    secondaryTokenDetails = getRowByValue(
-                        table="tokens",
-                        conditions=[
-                            {
-                                "symbol": tokenDetails["secondaryToken"]["symbol"]
-                            }
-                        ]
+                # Check if secondary token already exists
+                secondaryTokenDetails = getTokenByNetworkIdAndSymbol(
+                    networkDbId=dexDetails["db"]["networkId"],
+                    tokenSymbol=secondaryTokenSymbol
+                )
+
+                if not secondaryTokenDetails:
+                    # Add secondary token to database
+                    secondaryTokenDbId = addTokenToDB(
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenName=None,
+                        tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
                     )
 
-                    if not secondaryTokenDetails:
-                        # Add secondary token to database
-                        secondaryTokenDbId = addTokenToDB(
-                            networkDbId=dexDetails["db"]["networkId"],
-                            tokenName=None,
-                            tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
-                        )
-                    else:
-                        secondaryTokenDbId = secondaryTokenDetails["token_id"]
+                    secondaryTokenDetails = getTokenByNetworkIdAndTokenId(
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenDbId=secondaryTokenDbId
+                    )
+                else:
+                    secondaryTokenDbId = secondaryTokenDetails["token_id"]
 
-                    tokenDetails["network"]["db"] = {}
-                    tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
+                tokenDetails["primaryToken"] = primaryTokenDetails
 
-                    tokenDetails["dex"]["db"] = {}
-                    tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
+                tokenDetails["network"]["db"] = {}
+                tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
 
-                    tokenDetails["secondaryToken"]["db"] = {}
-                    tokenDetails["secondaryToken"]["db"]["dbId"] = secondaryTokenDbId
+                tokenDetails["dex"]["db"] = {}
+                tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
 
-                    if tokenRank not in addedRanks:
+                tokenDetails["secondaryToken"] = secondaryTokenDetails
 
-                        addedRanks.append(tokenRank)
+                if tokenRank not in addedRanks:
 
-                        pairDbId = addTokenPairToDB(
-                            networkDbId=dexDetails["db"]["networkId"],
-                            dexDbId=dexDetails["db"]["dexId"],
-                            primaryTokenDbId=primaryTokenDbId,
-                            secondaryTokenDbId=secondaryTokenDbId,
-                            pairName=tokenDetails["pair"]["name"],
+                    addedRanks.append(tokenRank)
+
+                    pairDbId = addTokenPairToDB(
+                        networkDbId=dexDetails["db"]["networkId"],
+                        dexDbId=dexDetails["db"]["dexId"],
+                        primaryTokenDbId=primaryTokenDbId,
+                        secondaryTokenDbId=secondaryTokenDbId,
+                        pairName=tokenDetails["pair"]["name"],
+                        pairAddress=tokenDetails["pair"]["address"],
+                        pairRanking=tokenRank,
+                        pairLiquidity=tokenDetails["market"]["liquidity"],
+                        pairVolume=tokenDetails["market"]["volume"],
+                        pairFdv=tokenDetails["market"]["fdv"]
+                    )
+
+                    if not pairDbId:
+                        tokenDetails["pair"] = getPairForAddressAndNetworkId(
                             pairAddress=tokenDetails["pair"]["address"],
-                            pairRanking=tokenRank,
-                            pairLiquidity=tokenDetails["market"]["liquidity"],
-                            pairVolume=tokenDetails["market"]["volume"],
-                            pairFdv=tokenDetails["market"]["fdv"]
+                            networkDbId=dexDetails["db"]["networkId"]
+                        )
+                    else:
+                        tokenDetails["pair"] = getPairForNetworkIdAndPairDbId(
+                            pairDbId=pairDbId,
+                            networkDbId=dexDetails["db"]["networkId"]
                         )
 
-                        # Add the uniswap version back in if we have it
-                        if hasUniswapBadge:
-                            tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+                    # Add the uniswap version back in if we have it
+                    if hasUniswapBadge:
+                        tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
 
-                        tokenDetails["pair"]["db"] = {}
-                        tokenDetails["pair"]["db"]["dbId"] = pairDbId
-
-                        # Finally, append the token to the final list
-                        collectedTokens.append(tokenDetails)
-
-                    else:
-
-                        logger.info(f"Already added pair ranked {tokenRank} - skipping")
-
-                except:
-
-                    continue
+                    # Finally, append the token to the final list
+                    collectedPairs.append(tokenDetails)
 
         # Close the page and browser as we are done
         page.close()
         browser.close()
 
         # Count how many tokens we collected and log it
-        amountOfTokens = len(collectedTokens)
-        logger.info(f"- {dexName.title()}: {amountOfTokens}")
+        printLog(f"{dexName.title()} On {networkName.title()} ✅")
 
         # Return our collected tokens
-        return collectedTokens
+        return collectedPairs
 
 # @retry(attempts=retryAttempts, delay=retryDelay)
 def gatherMetadataForPair(pairToAnalyse):
