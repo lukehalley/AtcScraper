@@ -4,45 +4,89 @@ from pathlib import Path
 from faker import Faker
 from playwright.sync_api import sync_playwright, BrowserContext
 
+from src.db.querys.querys_Networks import getNetworkRPCByDbId
 from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
+from src.utils.data.data_ABI import loadLocalABI
 from src.utils.env.env_Environment import checkHeadless
+from src.utils.logging.logging_Setup import printLog
 
-def gatherTransactionsForPair(transactionUrl):
 
-    # Create fake user agent
-    fakerInstance = Faker()
-    fakeUserAgent = fakerInstance.user_agent()
+def gatherTransactionsForPair(pair):
 
-    # Check if we want to start our browser in headless
-    runHeadless = checkHeadless()
+    try:
 
-    # Create async instance of playwright
-    with sync_playwright() as playwright:
+        # Create fake user agent
+        fakerInstance = Faker()
+        fakeUserAgent = fakerInstance.user_agent()
 
-        # Setup browser
-        browser: BrowserContext = playwright.chromium.launch_persistent_context(
-            headless=runHeadless,
-            user_data_dir=f"{Path.home()}/.config/chromium",
-            viewport={
-                "width": 1920,
-                "height": 1080
-            },
-            user_agent=fakeUserAgent
+        # Check if we want to start our browser in headless
+        runHeadless = checkHeadless()
+
+        # Create async instance of playwright
+        with sync_playwright() as playwright:
+
+            # Setup browser
+            browser: BrowserContext = playwright.chromium.launch_persistent_context(
+                headless=runHeadless,
+                user_data_dir=f"{Path.home()}/.config/chromium",
+                viewport={
+                    "width": 1920,
+                    "height": 1080
+                },
+                user_agent=fakeUserAgent
+            )
+
+            # Open a new tab
+            page = newPage(browser=browser)
+
+            transactionUrl = pair["pair"]["transactions_url"]
+
+            # Navigate to the dexs url
+            safePageLoad(
+                page=page,
+                url=transactionUrl
+            )
+
+            # Get JSON On Page
+            innerText = page.inner_text("*")
+
+            # Try And Load It
+            try:
+                resultJson = json.loads(innerText)
+                if resultJson['tradingHistory']:
+                    transactions = resultJson['tradingHistory']
+                    printLog(
+                        msg=f"Got {len(resultJson['tradingHistory'])} Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} ✅"
+                    )
+                else:
+                    printLog(
+                        msg=f"No Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} 😶"
+                    )
+                    transactions = None
+            except:
+                printLog(
+                    msg=f"Couldn't Load Any Transactions From {transactionUrl} ⛔️"
+                )
+                transactions = None
+
+            pair["network"]["rpcUrl"] = getNetworkRPCByDbId(
+                networkDbId=pair["network"]["db"]["dbId"]
+            )
+
+            pair["dex"]["dex"]["abi"]["router_abi"] = loadLocalABI(
+                path=pair["dex"]["dex"]["abi"]["router_s3_path"]
+            )
+
+            if transactions:
+                transactionsWithPairs = [dict(transaction, **{'pairDetails': pair}) for transaction in transactions if transaction]
+                return transactionsWithPairs
+            else:
+                return None
+
+    except:
+        printLog(
+            msg=f"Couldn't Load Any Transactions From {transactionUrl} ⛔️"
         )
-
-        # Open a new tab
-        page = newPage(browser=browser)
-
-        # Navigate to the dexs url
-        safePageLoad(
-            page=page,
-            url=transactionUrl
-        )
-
-        innerText = page.inner_text("*")
-
-        resultJson = json.loads(innerText)
-
-        return resultJson
+        return None
 

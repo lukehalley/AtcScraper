@@ -1,10 +1,9 @@
-import asyncio
+import copy
 from multiprocessing import Pool
 
-import aiohttp
 from dotenv import load_dotenv
-from playwright.async_api import async_playwright
 
+from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
 from src.db.querys.querys_Tokens import fillTokenDecimals, getTokensWithMissingDecimals
 from src.scrape.dexscreener.dexscreener_Transactions import gatherTransactionsForPair
@@ -260,25 +259,82 @@ def collectPairs():
         logger.info(f"Took {gatherDexPairsTimerStr}")
         printSeparator(newLine=True)
 
-
         #################################################################################
         # Gather Pair Transactions
         #################################################################################
 
-        transactionUrls = []
+        printSeparator()
+        logger.info(f"Gathering Pair Transactions")
+        printSeparator()
+
         for pair in combinedDexPairs:
-            url = f'https://io.dexscreener.com/u/' \
+
+            pair["pair"]["transactions_url"] = f'https://io.dexscreener.com/u/' \
                   f'trading-history/recent/' \
                   f'{pair["network"]["network"]}/' \
                   f'{pair["pair"]["address"]}' \
                   f'?q=' \
                   f'{pair["secondaryToken"]["address"]}'
-            transactionUrls.append(url)
 
-        # Collect all dex pairs
-        transactionCollectionPool = Pool(processes=None)
-        collectedPairTransactions = transactionCollectionPool.map(gatherTransactionsForPair, transactionUrls)
-        transactionCollectionPool.close()
+        if combinedDexPairs:
+
+            logger.info(f"Collecting Transactions For {len(combinedDexPairs)} Pairs")
+            printSeparator()
+
+            # Start Timer
+            gatherPairTransactionsStart = time.perf_counter()
+
+            # Collect all dex pairs
+            transactionCollectionPool = Pool(processes=None)
+            allPairsResults = transactionCollectionPool.map(gatherTransactionsForPair, combinedDexPairs)
+            transactionCollectionPool.close()
+
+            # Stop Timer
+            gatherPairTransactionsEnd = time.perf_counter()
+
+            # Build Timer Str
+            gatherPairTransactionsTimerStr = getNicePerfTime(timeDiff=gatherPairTransactionsEnd - gatherPairTransactionsStart)
+
+            # Flatten Transactions
+            allTransactions = [dexTransaction for dexTransactions in allPairsResults for dexTransaction in dexTransactions if dexTransaction]
+
+            # Print Outcome
+            printSeparator()
+            logger.info(f"Collected {len(allTransactions)} Pair's Transactions")
+            logger.info(f"Took {gatherPairTransactionsTimerStr}")
+            printSeparator(newLine=True)
+
+            #################################################################################
+            # Decode Transactions
+            #################################################################################
+
+            if allTransactions:
+
+                printSeparator()
+                logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
+                printSeparator()
+
+                # Start Timer
+                decodeTransactionsStart = time.perf_counter()
+
+                # Collect all dex pairs
+                decodeTransactionsPool = Pool(processes=None)
+                obtainedRoutes = decodeTransactionsPool.map(decodeTx, allTransactions)
+                decodeTransactionsPool.close()
+
+                # Stop Timer
+                decodeTransactionsEnd = time.perf_counter()
+
+                # Build Timer Str
+                decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
+
+                validRoutes = [validRoute for validRoute in obtainedRoutes if validRoute]
+
+                # Print Outcome
+                printSeparator()
+                logger.info(f"Got {len(obtainedRoutes)} Routes")
+                logger.info(f"Took {decodeTransactionsTimerStr}")
+                printSeparator(newLine=True)
 
         #################################################################################
         # Set Unavailable Tokens To Null
