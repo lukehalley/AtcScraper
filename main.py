@@ -278,6 +278,9 @@ def collectPairs():
 
         if combinedDexPairs:
 
+            if checkIsLazyMode():
+                combinedDexPairs = combinedDexPairs[0:9]
+
             logger.info(f"Collecting Transactions For {len(combinedDexPairs)} Pairs")
             printSeparator()
 
@@ -296,7 +299,7 @@ def collectPairs():
             gatherPairTransactionsTimerStr = getNicePerfTime(timeDiff=gatherPairTransactionsEnd - gatherPairTransactionsStart)
 
             # Flatten Transactions
-            allTransactions = [dexTransaction for dexTransactions in allPairsResults for dexTransaction in dexTransactions if dexTransaction]
+            allTransactions = [dexTransaction for dexTransactions in allPairsResults if dexTransactions for dexTransaction in dexTransactions if dexTransaction]
 
             # Print Outcome
             printSeparator()
@@ -332,7 +335,7 @@ def collectPairs():
 
                 # Print Outcome
                 printSeparator()
-                logger.info(f"Got {len(obtainedRoutes)} Routes")
+                logger.info(f"Got {len(validRoutes)} Routes")
                 logger.info(f"Took {decodeTransactionsTimerStr}")
                 printSeparator(newLine=True)
 

@@ -7,6 +7,7 @@ from src.chain.abi.abi_Contract import getContract
 from src.chain.convert.convert_Hex import convertToHex
 from src.db.actions.actions_Routes import addRouteToDB
 from src.db.actions.actions_Tokens import updatePairAnalysisByDbId
+from src.utils.logging.logging_Setup import printLog
 
 
 def decodeTx(transactionDetails):
@@ -115,11 +116,14 @@ def decodeTx(transactionDetails):
                 toReturn = None
 
                 if routeId:
-
                     toReturn = routeObject
 
+                    printLog(
+                        msg=f"Added Route For {pairName} ✅"
+                    )
+
                 updatePairAnalysisByDbId(
-                    pairDbId=transactionDetails["pair"]["pair"]["db"]["dbId"],
+                    pairDbId=pairDbId,
                     analysisStatus=True
                 )
 
