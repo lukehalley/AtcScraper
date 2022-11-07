@@ -5,10 +5,28 @@ from web3 import Web3
 from src.db.actions.actions_General import executeReadQuery
 from src.db.actions.actions_Setup import getCursor, initDBConnection
 from src.db.actions.actions_Tokens import updateTokenByDbId
-from src.utils.logging.logging_Setup import getProjectLogger
+from src.utils.logging.logging_Setup import getProjectLogger, printLog
 from src.utils.sql.sql_Files import executeScriptsFromFile
 
 logger = getProjectLogger()
+
+def getTokenByNetworkIdAndTokenId(networkDbId, tokenDbId):
+
+    query = "" \
+            f"SELECT * " \
+            f"FROM tokens " \
+            f"WHERE network_id='{networkDbId}' AND token_id='{tokenDbId}'"
+
+    result = executeReadQuery(
+        query=query
+    )
+
+    if len(result) < 1:
+        return None
+    if len(result) == 1:
+        return result[0]
+    else:
+        return sorted(result, key=lambda d: d['token_id'])[0]
 
 def getTokenByNetworkIdAndAddress(networkDbId, tokenAddress):
 
@@ -26,22 +44,25 @@ def getTokenByNetworkIdAndAddress(networkDbId, tokenAddress):
     if len(result) == 1:
         return result[0]
     else:
-        return sorted(result, key=lambda d: d['token_id'])[0]
+        logger.error("More Than One Token Matches!")
 
-def getTokensForChainWithNoAddress(networkDbId):
+def getTokenByNetworkIdAndSymbol(networkDbId, tokenSymbol):
 
     query = "" \
-            f"SELECT symbol " \
+            f"SELECT * " \
             f"FROM tokens " \
-            f"WHERE address='None' AND network_id={networkDbId}"
+            f"WHERE network_id='{networkDbId}' AND symbol='{tokenSymbol}'"
 
-    queryResults = executeReadQuery(
+    result = executeReadQuery(
         query=query
     )
 
-    allTokensWithNoAddress = [token['symbol'] for token in queryResults]
-
-    return allTokensWithNoAddress
+    if len(result) < 1:
+        return None
+    if len(result) == 1:
+        return result[0]
+    else:
+        logger.error("More Than One Token Matches!")
 
 def getTokensWithMissingDecimals():
 
@@ -76,6 +97,10 @@ def fillTokenDecimals(token):
             tokenDbId=tokenDbId,
             fieldToUpdate="decimals",
             fieldNewValue=tokenDecimals
+        )
+
+        printLog(
+            msg=f'Token: {tokenAddress} Decimals Added ✅'
         )
 
         return True

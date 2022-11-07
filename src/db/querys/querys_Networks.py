@@ -1,4 +1,7 @@
 from src.db.actions.actions_General import executeReadQuery
+from src.utils.logging.logging_Setup import getProjectLogger
+
+logger = getProjectLogger()
 
 def getAllNetworks():
 
@@ -12,15 +15,22 @@ def getAllNetworks():
 
     return [networkName['name'] for networkName in allNetworksDict]
 
-def getNetworkDbIdByName(networkName):
+def getNetworkByName(networkName):
     query = "" \
-            f"SELECT network_id " \
+            f"SELECT networks.* " \
             f"FROM networks " \
             f"WHERE name='{networkName}'"
 
-    return executeReadQuery(
+    result = executeReadQuery(
         query=query
     )
+
+    if len(result) < 1:
+        return None
+    if len(result) == 1:
+        return result[0]
+    else:
+        logger.error("More Than One Network Matches!")
 
 def getNetworkRPCByDbId(networkDbId):
 
@@ -32,12 +42,11 @@ def getNetworkRPCByDbId(networkDbId):
         query=query
     )
 
-    if result:
-
-        return result[0]["chain_rpc"]
-
-    else:
-
+    if len(result) < 1:
         return None
+    if len(result) == 1:
+        return result[0]["chain_rpc"]
+    else:
+        logger.error("More Than One Network Matches!")
 
 

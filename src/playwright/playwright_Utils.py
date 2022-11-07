@@ -14,20 +14,6 @@ def findAndCheckElement(page, selector):
     element.is_visible(timeout=globalTimeout)
     return element
 
-# Wait for element to be removed from DOM
-def waitForElementToGoAway(page, selector):
-
-    elementGoneAway = False
-    while not elementGoneAway:
-        try:
-            element = page.locator(selector)
-            element.not_to_be_visible(timeout=globalTimeout)
-            elementGoneAway = True
-        except:
-            logger.warn(f"Waiting for {selector} to go away again...")
-            elementGoneAway = False
-            page.reload()
-
 # Get all 'li' items inside a parent element
 def getListItems(page, listElement):
     listLocated = False

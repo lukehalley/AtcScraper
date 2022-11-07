@@ -19,7 +19,7 @@ def printLog(msg):
     now = datetime.now()
     dateFormat = "%Y-%m-%d %H:%M:%S,%f"
     timeStr = now.strftime(dateFormat)[:-3]
-    print(f'{timeStr} | PINFO | {msg}')
+    print(f'{timeStr} | PNFO | {msg}')
 
 # Get the project logger
 def getProjectLogger():

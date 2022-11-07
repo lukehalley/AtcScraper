@@ -1,3 +1,5 @@
+import json
+
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
@@ -10,16 +12,37 @@ from src.utils.logging.logging_Setup import printLog
 
 def decodeTx(transactionDetails):
 
-    pairName = transactionDetails["pairDetails"]["pair"]["name"]
-    networkName = transactionDetails["pairDetails"]["network"]["network"]
-    dexName = transactionDetails["pairDetails"]["dex"]["dex"]["name"]
+    ###############################################
+    # Pair Details
+    ###############################################
+    pairDetails = transactionDetails["pairDetails"]
 
-    networkDbId = transactionDetails["pairDetails"]["network"]["db"]["dbId"]
-    dexDbId = transactionDetails["pairDetails"]["dex"]["db"]["dbId"]
-    contractAddress = transactionDetails["contractAddress"]
-    rpcUrl = transactionDetails["rpcUrl"]
-    transactionHash = transactionDetails["transactionHash"]
-    abi = transactionDetails["abi"]
+    # Metadata ####################################
+    # Pair
+    pairDbId = pairDetails["pair"]["pair_id"]
+    pairName = pairDetails["pair"]["name"]
+
+    # Token
+    tokenInDbId = pairDetails["primaryToken"]["token_id"]
+    tokenOutDbId = pairDetails["secondaryToken"]["token_id"]
+
+    # Network
+    networkDbId = pairDetails["network"]["db"]["dbId"]
+    networkName = pairDetails["network"]["network"]
+    rpcUrl = pairDetails["network"]["rpcUrl"]
+
+    # Dex
+    dexName = pairDetails["dex"]["dex"]["name"]
+    dexDbId = pairDetails["dex"]["db"]["dbId"]
+
+    # Router
+    routerAddress = pairDetails["dex"]["dex"]["abi"]["router"]
+    routerAbi = pairDetails["dex"]["dex"]["abi"]["router_abi"]
+
+    ###############################################
+    # Tx Details
+    ###############################################
+    transactionHash = transactionDetails["txnHash"]
 
     try:
 
@@ -27,14 +50,14 @@ def decodeTx(transactionDetails):
         web3.middleware_onion.inject(geth_poa_middleware, layer=0)
         transaction = web3.eth.get_transaction(transactionHash)
 
-        if transaction["to"] == contractAddress:
+        if transaction["to"] == routerAddress:
 
             inputData = transaction["input"]
             blockNumber = int(transaction["blockNumber"])
 
-            (contract, abi) = getContract(contractAddress, abi)
+            (contract, routerAbi) = getContract(routerAddress, json.dumps(routerAbi))
             func_obj, func_params = contract.decode_function_input(inputData)
-            target_schema = [a['inputs'] for a in abi if 'name' in a and a['name'] == func_obj.fn_name][0]
+            target_schema = [a['inputs'] for a in routerAbi if 'name' in a and a['name'] == func_obj.fn_name][0]
             decoded_func_params = convertToHex(func_params, target_schema)
 
             timestamp = web3.eth.getBlock(blockNumber).timestamp
@@ -76,7 +99,10 @@ def decodeTx(transactionDetails):
                 routeId = addRouteToDB(
                     networkDbId=networkDbId,
                     dexDbId=dexDbId,
+                    pairDbId=pairDbId,
+                    tokenInDbId=tokenInDbId,
                     tokenInAddress=tokenInAddress,
+                    tokenOutDbId=tokenOutDbId,
                     tokenOutAddress=tokenOutAddress,
                     route=routeObject["route"],
                     method=routeObject["method"],
@@ -90,15 +116,14 @@ def decodeTx(transactionDetails):
                 toReturn = None
 
                 if routeId:
-
-                    # printLog(
-                    #     msg=f'Added Route {pairName} On {dexName.title()} | {networkName.title()}'
-                    # )
-
                     toReturn = routeObject
 
+                    printLog(
+                        msg=f"Added Route For {pairName} ✅"
+                    )
+
                 updatePairAnalysisByDbId(
-                    pairDbId=transactionDetails["pairDetails"]["pair"]["db"]["dbId"],
+                    pairDbId=pairDbId,
                     analysisStatus=True
                 )
 
