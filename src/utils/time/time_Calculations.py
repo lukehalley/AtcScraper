@@ -5,6 +5,7 @@
 Supports timezone conversions, duration calculations, and timestamp operations.
 """
 # Time calculation and conversion utilities
+# All timestamps are stored in UTC to avoid timezone conversion issues
 """Utilities for timestamp calculations and time-based operations."""
 """Time calculation utilities for timestamp and interval operations."""
 """Time-based calculations and timestamp utilities."""
