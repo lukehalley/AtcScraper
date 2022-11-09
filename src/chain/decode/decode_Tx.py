@@ -118,9 +118,14 @@ def decodeTx(transactionDetails):
                 if routeId:
                     toReturn = routeObject
 
-                    # printLog(
-                    #     msg=f"- Added Route For {pairName} ✅"
-                    # )
+                    printLog(
+                        msg=f"- Added Route For {pairName} ✅"
+                    )
+
+                updatePairAnalysisByDbId(
+                    pairDbId=pairDbId,
+                    analysisStatus=True
+                )
 
                 return toReturn
 
