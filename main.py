@@ -28,12 +28,11 @@ from src.utils.time.time_Calculations import getNicePerfTime
 from src.db.querys.querys_Pairs import getPairsWithNullTokenAddresses, \
     fillPairAddresses
 
-# Import helpers
-
-# Load the .env file
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
 
+THREAD_NUMBER = int(os.getenv("THREAD_NUMBER"))
+THREAD_NUMBER = 1
 
 def collectPairs():
     masterStartTime = time.perf_counter()
@@ -119,31 +118,31 @@ def collectPairs():
             printSeparator()
 
             # Get a dictionary of networks we can collectPairs
-            networkDictionary = gatherNetworkList(
+            networkDictionarys = gatherNetworkList(
                 page=page
             )
 
             printSeparator()
 
             # Count how many networks we got
-            amountOfNetworks = len(networkDictionary.keys())
+            amountOfNetworks = len(networkDictionarys.keys())
 
             # Delete any networks we have declared to be skipped
             networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
             logger.info(f"{amountOfNetworks} Networks Gathered")
             for network in networksToSkip:
-                if network in networkDictionary:
-                    del networkDictionary[network]
+                if network in networkDictionarys:
+                    del networkDictionarys[network]
 
             # Print out skipped networks if we have some
             if len(networksToSkip) > 0:
                 logger.info(f"Skipped: {', '.join(networksToSkip).title()}")
 
             if checkIsLazyMode():
-                firstNetwork = next(iter(networkDictionary))
-                networkDictionary = {
+                firstNetwork = next(iter(networkDictionarys))
+                networkDictionarys = {
                     f"{firstNetwork}":
-                        [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == f'{firstNetwork}'][0]
+                        [networkDictionarys.pop(k) for k in list(networkDictionarys.keys()) if k == f'{firstNetwork}'][0]
                 }
 
             # Close the tab as we don't need it anymore
@@ -159,319 +158,305 @@ def collectPairs():
     # Separator
     printSeparator(True)
 
-    # Log that we are going to collect all dexs for each network
-    printSeparator()
-    logger.info(f"Gathering Dex Screener Dexs")
-    printSeparator()
+    for networkName, networkDetails in networkDictionarys.items():
 
-    # Create A Pool For Dex Gather
-    networksToCollect = []
-    for networkName, networkDetails in networkDictionary.items():
-        arg = {
-            "networkName": networkName,
-            "networkDetails": networkDetails
-        }
-
-        networksToCollect.append(arg)
-
-    # Start Timer
-    gatherNetworkDexsStart = time.perf_counter()
-
-    # Create A Pool For Recipe Simulation
-    # Map Our Recipes To The Pool An Run
-    transactionCollectionPool = Pool(processes=None)
-    collectedNetworkDexs = transactionCollectionPool.map(gatherNetworkDexs, networksToCollect)
-    transactionCollectionPool.close()
-
-    printSeparator()
-
-    # Stop Timer
-    gatherNetworkDexsEnd = time.perf_counter()
-
-    # Build Timer Str
-    gatherNetworkDexsTimerStr = getNicePerfTime(timeDiff=gatherNetworkDexsEnd - gatherNetworkDexsStart)
-
-    # Parse Collected Data
-    nonEmptyNetworks = [network for network in collectedNetworkDexs if network is not None]
-    finalNetworkDexs = [item for item in nonEmptyNetworks if item]
-
-    combinedDexs = [item for sublist in [i for sub in finalNetworkDexs for i in sub if not isinstance(i, str)] for item
-                    in sublist]
-
-    # Count how many networks and dexs we collected
-    collectedNetworks = len(finalNetworkDexs)
-    collectedDexs = len(combinedDexs)
-
-    logger.info(f"Collected {collectedDexs} Dexs Across {collectedNetworks} Networks")
-    logger.info(f"Took {gatherNetworkDexsTimerStr}")
-
-    printSeparator()
-
-    for networkDexs in finalNetworkDexs:
-        logger.info(f"{(networkDexs[0]).upper()}: {len(networkDexs[0])} Dex(s)")
-
-    if collectedNetworks > 0 and collectedDexs > 0:
-
-        # Separator
+        # Log that we are going to collect all dexs for each network
+        printSeparator()
+        logger.info(f"Current Network: {networkName.upper()}")
         printSeparator(True)
 
-        #################################################################################
-        # Gather Pairs
-        #################################################################################
-
-        # Log that we are going to collect the (top 100 by liquidity) tokens for each dex
+        # Log that we are going to collect all dexs for each network
         printSeparator()
-        logger.info(f"Gathering Dex Pairs")
-        printSeparator()
-
-        logger.info(f"Collecting Max Pairs: {os.getenv('AMOUNT_OF_PAIRS_TO_COLLECT')}")
+        logger.info(f"Gathering Dex Screener Dexs")
         printSeparator()
 
         # Start Timer
-        gatherDexPairsStart = time.perf_counter()
+        gatherNetworkDexsStart = time.perf_counter()
 
-        # Collect all dex pairs
-        transactionCollectionPool = Pool(processes=None)
-        collectedDexPairs = transactionCollectionPool.map(gatherPairsForDex, combinedDexs)
-        transactionCollectionPool.close()
+        # Collect The Networks Dexs
+        collectedNetworkDexs = gatherNetworkDexs(networkName=networkName, networkDetails=networkDetails)
 
         printSeparator()
 
         # Stop Timer
-        gatherDexPairsEnd = time.perf_counter()
+        gatherNetworkDexsEnd = time.perf_counter()
 
         # Build Timer Str
-        gatherDexPairsTimerStr = getNicePerfTime(timeDiff=gatherDexPairsEnd - gatherDexPairsStart)
+        gatherNetworkDexsTimerStr = getNicePerfTime(timeDiff=gatherNetworkDexsEnd - gatherNetworkDexsStart)
 
-        # Process Data
-        nonEmptyDexPairs = [x for x in collectedDexPairs if x != []]
-        combinedDexPairs = [p for pair in nonEmptyDexPairs for p in pair]
+        # Parse Collected Data
+        nonEmptyDexs = [network for network in collectedNetworkDexs if network is not None]
+        finalNetworkDexs = [item for item in nonEmptyDexs if item]
 
-        # Combine
-        gatheredTokenDbIds = list(
-            sum([(combinedDexPair["primaryToken"]["token_id"], combinedDexPair["secondaryToken"]["token_id"]) for
-                 combinedDexPair in combinedDexPairs], ()))
-        gatherPairIds = [(combinedDexPair["pair"]["pair_id"]) for combinedDexPair in combinedDexPairs]
+        # Count how many networks and dexs we collected
+        collectedNetworks = len(finalNetworkDexs)
+        collectedDexs = len(finalNetworkDexs)
 
-        # Log Count
-        for dexPairs in nonEmptyDexPairs:
-            networkName = dexPairs[0]["network"]["network"]
-            dexName = dexPairs[0]["dex"]["dex"]["name"]
-            logger.info(f"{dexName.upper()} On {networkName.upper()}: {len(dexPairs)} Pairs(s)")
+        logger.info(f"Collected {collectedDexs} Dexs For {networkName.title()} Network")
+        logger.info(f"Took {gatherNetworkDexsTimerStr}")
 
-        # Print Outcome
-        printSeparator()
-        logger.info(f"Collected {len(combinedDexPairs)} Pairs Across {len(nonEmptyDexPairs)} Dexs")
-        logger.info(f"Took {gatherDexPairsTimerStr}")
-        printSeparator(newLine=True)
+        # Separator
+        printSeparator(True)
 
-        #################################################################################
-        # Gather Pair Transactions
-        #################################################################################
+        if collectedNetworks > 0 and collectedDexs > 0:
 
-        printSeparator()
-        logger.info(f"Gathering Pair Transactions")
-        printSeparator()
+            #################################################################################
+            # Gather Pairs
+            #################################################################################
 
-        for pair in combinedDexPairs:
+            # Log that we are going to collect the (top 100 by liquidity) tokens for each dex
+            printSeparator()
+            logger.info(f"Gathering Dex Pairs")
+            printSeparator()
 
-            pair["pair"]["transactions_url"] = f'https://io.dexscreener.com/u/' \
-                  f'trading-history/recent/' \
-                  f'{pair["network"]["network"]}/' \
-                  f'{pair["pair"]["address"]}' \
-                  f'?q=' \
-                  f'{pair["secondaryToken"]["address"]}'
-
-        if combinedDexPairs:
-
-            if checkIsLazyMode():
-                combinedDexPairs = combinedDexPairs[0:9]
-
-            logger.info(f"Collecting Transactions For {len(combinedDexPairs)} Pairs")
+            logger.info(f"Collecting Max Pairs: {os.getenv('AMOUNT_OF_PAIRS_TO_COLLECT')}")
             printSeparator()
 
             # Start Timer
-            gatherPairTransactionsStart = time.perf_counter()
+            gatherDexPairsStart = time.perf_counter()
 
             # Collect all dex pairs
-            transactionCollectionPool = Pool(processes=None)
-            allPairsResults = transactionCollectionPool.map(gatherTransactionsForPair, combinedDexPairs)
+            transactionCollectionPool = Pool(processes=THREAD_NUMBER)
+            collectedDexPairs = transactionCollectionPool.map(gatherPairsForDex, finalNetworkDexs)
             transactionCollectionPool.close()
 
+            printSeparator()
+
             # Stop Timer
-            gatherPairTransactionsEnd = time.perf_counter()
+            gatherDexPairsEnd = time.perf_counter()
 
             # Build Timer Str
-            gatherPairTransactionsTimerStr = getNicePerfTime(timeDiff=gatherPairTransactionsEnd - gatherPairTransactionsStart)
+            gatherDexPairsTimerStr = getNicePerfTime(timeDiff=gatherDexPairsEnd - gatherDexPairsStart)
 
-            # Flatten Transactions
-            allTransactions = [dexTransaction for dexTransactions in allPairsResults if dexTransactions for dexTransaction in dexTransactions if dexTransaction]
+            # Process Data
+            nonEmptyDexPairs = [x for x in collectedDexPairs if x != []]
+            combinedDexPairs = [p for pair in nonEmptyDexPairs for p in pair]
+
+            # Combine
+            gatheredTokenDbIds = list(
+                sum([(combinedDexPair["primaryToken"]["token_id"], combinedDexPair["secondaryToken"]["token_id"]) for
+                     combinedDexPair in combinedDexPairs], ()))
+            gatherPairIds = [(combinedDexPair["pair"]["pair_id"]) for combinedDexPair in combinedDexPairs]
+
+            # Log Count
+            for dexPairs in nonEmptyDexPairs:
+                networkName = dexPairs[0]["network"]["network"]
+                dexName = dexPairs[0]["dex"]["dex"]["name"]
+                logger.info(f"{dexName.upper()} On {networkName.upper()}: {len(dexPairs)} Pairs(s)")
 
             # Print Outcome
             printSeparator()
-            logger.info(f"Collected {len(allTransactions)} Pair's Transactions")
-            logger.info(f"Took {gatherPairTransactionsTimerStr}")
+            logger.info(f"Collected {len(combinedDexPairs)} Pairs Across {len(nonEmptyDexPairs)} Dexs")
+            logger.info(f"Took {gatherDexPairsTimerStr}")
             printSeparator(newLine=True)
 
             #################################################################################
-            # Decode Transactions
+            # Gather Pair Transactions
             #################################################################################
 
-            # if allTransactions:
-            #
-            #     printSeparator()
-            #     logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
-            #     printSeparator()
-            #
-            #     # Start Timer
-            #     decodeTransactionsStart = time.perf_counter()
-            #
-            #     # Collect all dex pairs
-            #     decodeTransactionsPool = Pool(processes=None)
-            #     obtainedRoutes = decodeTransactionsPool.map(decodeTx, allTransactions)
-            #     decodeTransactionsPool.close()
-            #
-            #     # Stop Timer
-            #     decodeTransactionsEnd = time.perf_counter()
-            #
-            #     # Build Timer Str
-            #     decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
-            #
-            #     validRoutes = [validRoute for validRoute in obtainedRoutes if validRoute]
-            #
-            #     # Print Outcome
-            #     printSeparator()
-            #     logger.info(f"Got {len(validRoutes)} Routes")
-            #     logger.info(f"Took {decodeTransactionsTimerStr}")
-            #     printSeparator(newLine=True)
-
-        #################################################################################
-        # Set Unavailable Tokens To Null
-        #################################################################################
-
-        printSeparator()
-        logger.info(f"Setting Unavailable Tokens To Null")
-        printSeparator()
-
-        # Set The Blank
-        updateUnavailableTokensToNull()
-
-        logger.info(f"All Unavailable Tokens Set To Null")
-        printSeparator(newLine=True)
-
-        #################################################################################
-        # Get Missing Token Decimals From Token Contracts
-        #################################################################################
-
-        printSeparator()
-        logger.info(f"Getting Missing Token Decimals From Token Contracts")
-        printSeparator()
-
-        tokensToGetDecimalsFor = getTokensWithMissingDecimals()
-        filteredTokensToGetDecimalsFor = [tokenToGetDecimalsFor for tokenToGetDecimalsFor in tokensToGetDecimalsFor if tokenToGetDecimalsFor["token_id"] in gatheredTokenDbIds]
-
-        if filteredTokensToGetDecimalsFor:
-
-            logger.info(f"Getting Decimals For {len(filteredTokensToGetDecimalsFor)} Tokens")
+            printSeparator()
+            logger.info(f"Gathering Pair Transactions")
             printSeparator()
 
-            # Start Timer
-            missingTokenDecimalsStart = time.perf_counter()
+            for pair in combinedDexPairs:
 
-            missingTokenDecimalsPool = Pool(processes=None)
-            decimalsRetrieved = missingTokenDecimalsPool.map(fillTokenDecimals, filteredTokensToGetDecimalsFor)
-            missingTokenDecimalsPool.close()
+                pair["pair"]["transactions_url"] = f'https://io.dexscreener.com/u/' \
+                      f'trading-history/recent/' \
+                      f'{pair["network"]["network"]}/' \
+                      f'{pair["pair"]["address"]}' \
+                      f'?q=' \
+                      f'{pair["secondaryToken"]["address"]}'
 
-            updatedDecimals = [decimalRetrieved for decimalRetrieved in decimalsRetrieved if decimalRetrieved]
+            if combinedDexPairs:
 
-            # Stop Timer
-            missingTokenDecimalsEnd = time.perf_counter()
+                if checkIsLazyMode():
+                    combinedDexPairs = combinedDexPairs[0:9]
 
-            # Build Timer Str
-            missingTokenDecimalsTimerStr = getNicePerfTime(timeDiff=missingTokenDecimalsEnd - missingTokenDecimalsStart)
+                logger.info(f"Collecting Transactions For {len(combinedDexPairs)} Pairs")
+                printSeparator()
 
-            # Print Outcome
-            if updatedDecimals:
-                logger.info(f"Added {len(updatedDecimals)} Token Decimals")
-                logger.info(f"Took {missingTokenDecimalsTimerStr}")
+                # Start Timer
+                gatherPairTransactionsStart = time.perf_counter()
+
+                # Collect all dex pairs
+                transactionCollectionPool = Pool(processes=THREAD_NUMBER)
+                allPairsResults = transactionCollectionPool.map(gatherTransactionsForPair, combinedDexPairs)
+                transactionCollectionPool.close()
+
+                # Stop Timer
+                gatherPairTransactionsEnd = time.perf_counter()
+
+                # Build Timer Str
+                gatherPairTransactionsTimerStr = getNicePerfTime(timeDiff=gatherPairTransactionsEnd - gatherPairTransactionsStart)
+
+                # Flatten Transactions
+                allTransactions = [dexTransaction for dexTransactions in allPairsResults if dexTransactions for dexTransaction in dexTransactions if dexTransaction]
+
+                # Print Outcome
+                printSeparator()
+                logger.info(f"Collected {len(allTransactions)} Pair's Transactions")
+                logger.info(f"Took {gatherPairTransactionsTimerStr}")
+                printSeparator(newLine=True)
+
+                #################################################################################
+                # Decode Transactions
+                #################################################################################
+
+                if allTransactions:
+
+                    printSeparator()
+                    logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
+                    printSeparator()
+
+                    # Start Timer
+                    decodeTransactionsStart = time.perf_counter()
+
+                    # Collect all dex pairs
+                    decodeTransactionsPool = Pool(processes=THREAD_NUMBER)
+                    obtainedRoutes = decodeTransactionsPool.map(decodeTx, allTransactions)
+                    decodeTransactionsPool.close()
+
+                    # Stop Timer
+                    decodeTransactionsEnd = time.perf_counter()
+
+                    # Build Timer Str
+                    decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
+
+                    validRoutes = [validRoute for validRoute in obtainedRoutes if validRoute]
+
+                    # Print Outcome
+                    printSeparator()
+                    logger.info(f"Got {len(validRoutes)} Routes")
+                    logger.info(f"Took {decodeTransactionsTimerStr}")
+                    printSeparator(newLine=True)
+
+            #################################################################################
+            # Set Unavailable Tokens To Null
+            #################################################################################
+
+            printSeparator()
+            logger.info(f"Setting Unavailable Tokens To Null")
+            printSeparator()
+
+            # Set The Blank
+            updateUnavailableTokensToNull()
+
+            logger.info(f"All Unavailable Tokens Set To Null")
+            printSeparator(newLine=True)
+
+            #################################################################################
+            # Get Missing Token Decimals From Token Contracts
+            #################################################################################
+
+            printSeparator()
+            logger.info(f"Getting Missing Token Decimals From Token Contracts")
+            printSeparator()
+
+            tokensToGetDecimalsFor = getTokensWithMissingDecimals()
+            filteredTokensToGetDecimalsFor = [tokenToGetDecimalsFor for tokenToGetDecimalsFor in tokensToGetDecimalsFor if tokenToGetDecimalsFor["token_id"] in gatheredTokenDbIds]
+
+            if filteredTokensToGetDecimalsFor:
+
+                logger.info(f"Getting Decimals For {len(filteredTokensToGetDecimalsFor)} Tokens")
+                printSeparator()
+
+                # Start Timer
+                missingTokenDecimalsStart = time.perf_counter()
+
+                missingTokenDecimalsPool = Pool(processes=THREAD_NUMBER)
+                decimalsRetrieved = missingTokenDecimalsPool.map(fillTokenDecimals, filteredTokensToGetDecimalsFor)
+                missingTokenDecimalsPool.close()
+
+                updatedDecimals = [decimalRetrieved for decimalRetrieved in decimalsRetrieved if decimalRetrieved]
+
+                # Stop Timer
+                missingTokenDecimalsEnd = time.perf_counter()
+
+                # Build Timer Str
+                missingTokenDecimalsTimerStr = getNicePerfTime(timeDiff=missingTokenDecimalsEnd - missingTokenDecimalsStart)
+
+                # Print Outcome
+                if updatedDecimals:
+                    logger.info(f"Added {len(updatedDecimals)} Token Decimals")
+                    logger.info(f"Took {missingTokenDecimalsTimerStr}")
+                else:
+                    logger.info(f"No Token Decimals Added")
+
+                printSeparator(newLine=True)
+
             else:
-                logger.info(f"No Token Decimals Added")
 
-            printSeparator(newLine=True)
+                # Print Outcome
+                logger.info(f"No Tokens Decimals To Retrieve")
+                printSeparator(newLine=True)
 
-        else:
+            #################################################################################
+            # Get Missing Token Addresses From Pair Contracts
+            #################################################################################
 
-            # Print Outcome
-            logger.info(f"No Tokens Decimals To Retrieve")
-            printSeparator(newLine=True)
+            printSeparator()
+            logger.info(f"Getting Missing Token Addresses From Pair Contracts")
+            printSeparator()
 
-        #################################################################################
-        # Get Missing Token Addresses From Pair Contracts
-        #################################################################################
+            pairsToGetAddressesFor = getPairsWithNullTokenAddresses()
+            filteredPairsToGetAddressesFor = [pairToGetAddressesFor for pairToGetAddressesFor in pairsToGetAddressesFor if pairToGetAddressesFor["pair_db_id"] in gatherPairIds]
 
-        printSeparator()
-        logger.info(f"Getting Missing Token Addresses From Pair Contracts")
-        printSeparator()
+            if filteredPairsToGetAddressesFor:
 
-        pairsToGetAddressesFor = getPairsWithNullTokenAddresses()
-        filteredPairsToGetAddressesFor = [pairToGetAddressesFor for pairToGetAddressesFor in pairsToGetAddressesFor if pairToGetAddressesFor["pair_db_id"] in gatherPairIds]
+                logger.info(f"Getting Addresses For {len(filteredPairsToGetAddressesFor)} Pairs")
 
-        if filteredPairsToGetAddressesFor:
+                # Start Timer
+                missingTokenRetrievalStart = time.perf_counter()
 
-            logger.info(f"Getting Addresses For {len(filteredPairsToGetAddressesFor)} Pairs")
+                missingTokenRetrievalPool = Pool(processes=THREAD_NUMBER)
+                updateResults = missingTokenRetrievalPool.map(fillPairAddresses, filteredPairsToGetAddressesFor)
+                missingTokenRetrievalPool.close()
 
-            # Start Timer
-            missingTokenRetrievalStart = time.perf_counter()
+                updatedTokens = [updateResult for updateResult in updateResults if updateResult]
 
-            missingTokenRetrievalPool = Pool(processes=None)
-            updateResults = missingTokenRetrievalPool.map(fillPairAddresses, filteredPairsToGetAddressesFor)
-            missingTokenRetrievalPool.close()
+                # Stop Timer
+                missingTokenRetrievalEnd = time.perf_counter()
 
-            updatedTokens = [updateResult for updateResult in updateResults if updateResult]
+                # Build Timer Str
+                missingTokenRetrievalTimerStr = getNicePerfTime(
+                    timeDiff=missingTokenRetrievalEnd - missingTokenRetrievalStart)
 
-            # Stop Timer
-            missingTokenRetrievalEnd = time.perf_counter()
+                # Print Outcome
+                printSeparator()
+                logger.info(f"Updated {len(updatedTokens)} Pairs")
+                logger.info(f"Took {missingTokenRetrievalTimerStr}")
+                printSeparator(newLine=True)
+
+            else:
+
+                # Print Outcome
+                logger.info(f"No Pairs To Update")
+                printSeparator(newLine=True)
+
+            #################################################################################
+            # End
+            #################################################################################
+
+            # Get Final End Timer
+            masterEndTime = time.perf_counter()
 
             # Build Timer Str
-            missingTokenRetrievalTimerStr = getNicePerfTime(
-                timeDiff=missingTokenRetrievalEnd - missingTokenRetrievalStart)
+            masterTimerStr = getNicePerfTime(timeDiff=masterEndTime - masterStartTime)
 
-            # Print Outcome
+            # Log that out scraping is done
             printSeparator()
-            logger.info(f"Updated {len(updatedTokens)} Pairs")
-            logger.info(f"Took {missingTokenRetrievalTimerStr}")
-            printSeparator(newLine=True)
+            logger.info(f"Dex Screener Scrape Complete ✅")
+            logger.info(f"Took: {masterTimerStr}")
+            printSeparator()
 
         else:
 
-            # Print Outcome
-            logger.info(f"No Pairs To Update")
-            printSeparator(newLine=True)
+            # Log that out scraping is done
+            printSeparator()
+            logger.info(f"No Networks Found ⛔️")
+            printSeparator()
 
-        #################################################################################
-        # End
-        #################################################################################
-
-        # Get Final End Timer
-        masterEndTime = time.perf_counter()
-
-        # Build Timer Str
-        masterTimerStr = getNicePerfTime(timeDiff=masterEndTime - masterStartTime)
-
-        # Log that out scraping is done
-        printSeparator()
-        logger.info(f"Dex Screener Scrape Complete ✅")
-        logger.info(f"Took: {masterTimerStr}")
-        printSeparator()
-
-    else:
-
-        # Log that out scraping is done
-        printSeparator()
-        logger.info(f"No Networks Found ⛔️")
-        printSeparator()
-
-        return None
+            return None
 
 if __name__ == '__main__':
     collectPairs()

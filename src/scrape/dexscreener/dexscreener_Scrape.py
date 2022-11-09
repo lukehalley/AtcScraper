@@ -80,11 +80,8 @@ def gatherNetworkList(page):
     return networkDictionary
 
 # Gather all dexs for each network
-def gatherNetworkDexs(args):
+def gatherNetworkDexs(networkName, networkDetails):
 
-    networkName = args["networkName"]
-
-    networkDetails = args["networkDetails"]
     networkDetails["name"] = networkName
 
     with sync_playwright() as playwright:
@@ -122,7 +119,7 @@ def gatherNetworkDexs(args):
                 page=page
             )
 
-            networksDexs = [network for network in networksDexs if network["db"]["networkId"] == args["networkDetails"]["network_id"]]
+            networksDexs = [network for network in networksDexs if network["db"]["networkId"] == networkDetails["network_id"]]
 
             if not networksDexs:
                 return None
@@ -133,15 +130,12 @@ def gatherNetworkDexs(args):
             # Close Browser
             browser.close()
 
-            # Create an object with the network and its dexs
-            networkDetails = (networkName, networksDexs)
-
             printLog(
                 msg=f"{networkName.title()} ✅"
             )
 
             # Return the network details object
-            return networkDetails
+            return networksDexs
 
         else:
 
