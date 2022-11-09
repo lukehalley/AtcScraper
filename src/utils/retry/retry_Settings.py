@@ -9,6 +9,7 @@
 # Retry configuration and settings
 # Retry configuration and exponential backoff settings
 # Configure retry behavior: max attempts, backoff strategy, and timeout values
+# Exponential backoff reduces server load during transient failures
 """Configure retry settings for async tasks with exponential backoff"""
 # Retry settings: max attempts, backoff strategy, and timeout configurations
 """
