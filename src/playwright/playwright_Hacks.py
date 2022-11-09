@@ -1,3 +1,5 @@
+import os
+
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
@@ -14,12 +16,21 @@ def safeClick(page, selector):
             page.reload()
 
 def safePageLoad(page, url):
+    retryLimit = int(os.getenv("PAGE_LOAD_RETRY_LIMIT"))
+    retryCounter = 0
     pageLoaded = False
     while not pageLoaded:
-        try:
-            page.goto(url)
-            pageLoaded = True
-        except:
-            # logger.warn(f"Trying to load {url} again...")
+        if retryCounter < retryLimit:
+            try:
+                page.goto(url)
+                pageLoaded = True
+                return pageLoaded
+            except:
+                retryLimit = retryLimit + 1
+                logger.warn(f"Trying to load {url} again...")
+                pageLoaded = False
+                page.reload()
+        else:
+            logger.warn(f"Reached retry limit loading {url}!")
             pageLoaded = False
-            page.reload()
+            return pageLoaded

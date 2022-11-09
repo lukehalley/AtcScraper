@@ -1,3 +1,4 @@
+import sys
 from multiprocessing import Pool
 
 from dotenv import load_dotenv
@@ -91,63 +92,69 @@ def collectPairs():
         logger.info(f"Navigating to {dexScreenerHome}...")
 
         # Wait for it to load
-        safePageLoad(
+        pageLoaded = safePageLoad(
             page=page,
             url=dexScreenerHome
         )
 
-        # Confirm were there
-        logger.info(f"Navigated to Dexscreener.")
-        printSeparator()
+        if pageLoaded:
 
-        # Check some key elements exist so we know we loaded correctly
-        logger.info(f"Validating Dexscreener has loaded...")
-        validateDexscreenerInit(
-            page=page
-        )
+            # Confirm were there
+            logger.info(f"Navigated to Dexscreener.")
+            printSeparator()
 
-        # Confirm validation
-        logger.info(f"Dexscreener validated.")
-        printSeparator(True)
+            # Check some key elements exist so we know we loaded correctly
+            logger.info(f"Validating Dexscreener has loaded...")
+            validateDexscreenerInit(
+                page=page
+            )
 
-        # Gather all the networks from the sidebar
-        printSeparator()
-        logger.info(f"Gathering Dex Screener Networks")
-        printSeparator()
+            # Confirm validation
+            logger.info(f"Dexscreener validated.")
+            printSeparator(True)
 
-        # Get a dictionary of networks we can collectPairs
-        networkDictionary = gatherNetworkList(
-            page=page
-        )
+            # Gather all the networks from the sidebar
+            printSeparator()
+            logger.info(f"Gathering Dex Screener Networks")
+            printSeparator()
 
-        printSeparator()
+            # Get a dictionary of networks we can collectPairs
+            networkDictionary = gatherNetworkList(
+                page=page
+            )
 
-        # Count how many networks we got
-        amountOfNetworks = len(networkDictionary.keys())
+            printSeparator()
 
-        # Delete any networks we have declared to be skipped
-        networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
-        logger.info(f"{amountOfNetworks} Networks Gathered")
-        for network in networksToSkip:
-            if network in networkDictionary:
-                del networkDictionary[network]
+            # Count how many networks we got
+            amountOfNetworks = len(networkDictionary.keys())
 
-        # Print out skipped networks if we have some
-        if len(networksToSkip) > 0:
-            logger.info(f"Skipped: {', '.join(networksToSkip).title()}")
+            # Delete any networks we have declared to be skipped
+            networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
+            logger.info(f"{amountOfNetworks} Networks Gathered")
+            for network in networksToSkip:
+                if network in networkDictionary:
+                    del networkDictionary[network]
 
-        if checkIsLazyMode():
-            firstNetwork = next(iter(networkDictionary))
-            networkDictionary = {
-                f"{firstNetwork}":
-                    [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == f'{firstNetwork}'][0]
-            }
+            # Print out skipped networks if we have some
+            if len(networksToSkip) > 0:
+                logger.info(f"Skipped: {', '.join(networksToSkip).title()}")
 
-        # Close the tab as we don't need it anymore
-        page.close()
+            if checkIsLazyMode():
+                firstNetwork = next(iter(networkDictionary))
+                networkDictionary = {
+                    f"{firstNetwork}":
+                        [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == f'{firstNetwork}'][0]
+                }
 
-        # Close Browser
-        browser.close()
+            # Close the tab as we don't need it anymore
+            page.close()
+
+            # Close Browser
+            browser.close()
+
+        else:
+
+            sys.exit("Couldn't Load Initial Dexscreener!")
 
     # Separator
     printSeparator(True)
@@ -458,6 +465,11 @@ def collectPairs():
         printSeparator()
 
     else:
+
+        # Log that out scraping is done
+        printSeparator()
+        logger.info(f"No Networks Found ⛔️")
+        printSeparator()
 
         return None
 

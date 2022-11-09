@@ -43,48 +43,54 @@ def gatherTransactionsForPair(pair):
             transactionUrl = pair["pair"]["transactions_url"]
 
             # Navigate to the dexs url
-            safePageLoad(
+            pageLoaded = safePageLoad(
                 page=page,
                 url=transactionUrl
             )
 
-            # Get JSON On Page
-            innerText = page.inner_text("*")
+            if pageLoaded:
 
-            # Close Browser
-            browser.close()
+                # Get JSON On Page
+                innerText = page.inner_text("*")
 
-            # Try And Load It
-            try:
-                resultJson = json.loads(innerText)
-                if resultJson['tradingHistory']:
-                    transactions = resultJson['tradingHistory']
+                # Close Browser
+                browser.close()
+
+                # Try And Load It
+                try:
+                    resultJson = json.loads(innerText)
+                    if resultJson['tradingHistory']:
+                        transactions = resultJson['tradingHistory']
+                        printLog(
+                            msg=f"Got {len(resultJson['tradingHistory'])} Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} ✅"
+                        )
+                    else:
+                        printLog(
+                            msg=f"No Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} 😶"
+                        )
+                        transactions = None
+                except:
                     printLog(
-                        msg=f"Got {len(resultJson['tradingHistory'])} Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} ✅"
-                    )
-                else:
-                    printLog(
-                        msg=f"No Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} 😶"
+                        msg=f"Couldn't Load Any Transactions From {transactionUrl} ⛔️"
                     )
                     transactions = None
-            except:
-                printLog(
-                    msg=f"Couldn't Load Any Transactions From {transactionUrl} ⛔️"
+
+                pair["network"]["rpcUrl"] = getNetworkRPCByDbId(
+                    networkDbId=pair["network"]["db"]["dbId"]
                 )
-                transactions = None
 
-            pair["network"]["rpcUrl"] = getNetworkRPCByDbId(
-                networkDbId=pair["network"]["db"]["dbId"]
-            )
+                pair["dex"]["dex"]["abi"]["router_abi"] = loadLocalABI(
+                    path=pair["dex"]["dex"]["abi"]["router_s3_path"]
+                )
 
-            pair["dex"]["dex"]["abi"]["router_abi"] = loadLocalABI(
-                path=pair["dex"]["dex"]["abi"]["router_s3_path"]
-            )
+                if transactions:
+                    transactionsWithPairs = [dict(transaction, **{'pairDetails': pair}) for transaction in transactions if transaction]
+                    return transactionsWithPairs
+                else:
+                    return None
 
-            if transactions:
-                transactionsWithPairs = [dict(transaction, **{'pairDetails': pair}) for transaction in transactions if transaction]
-                return transactionsWithPairs
             else:
+
                 return None
 
     except:
