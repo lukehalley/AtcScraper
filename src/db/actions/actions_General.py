@@ -1,5 +1,3 @@
-from functools import wraps
-
 from mysql.connector import OperationalError
 from retry import retry
 
@@ -8,37 +6,12 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
-MAXIMUM_RETRY_ON_DEADLOCK = 8
-
-def retry_on_deadlock_decorator(func):
-    lock_messages_error = ['Deadlock found', 'Lock wait timeout exceeded']
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        attempt_count = 0
-        while attempt_count < MAXIMUM_RETRY_ON_DEADLOCK:
-            try:
-                return func(*args, **kwargs)
-            except OperationalError as e:
-                if any(msg in e.msg for msg in lock_messages_error) \
-                        and attempt_count <= MAXIMUM_RETRY_ON_DEADLOCK:
-                    logger.error('Deadlock detected. Trying sql transaction once more. Attempts count: %s'
-                                 % (attempt_count + 1))
-                else:
-                    raise
-            attempt_count += 1
-
-    return wrapper
-
-@retry_on_deadlock_decorator
-def deadlock_safe_execute(db, stmt, *args, **kw):
-    return db.execute(stmt, *args, **kw)
-
 def executeReadQuery(query):
+
     dbConnection = initDBConnection()
     cursor = getCursor(dbConnection=dbConnection)
 
-    deadlock_safe_execute(cursor, query)
+    cursor.execute(query)
 
     result = cursor.fetchall()
 
@@ -46,9 +19,9 @@ def executeReadQuery(query):
 
     return result
 
-
 @retry()
 def executeWriteQuery(query):
+
     dbConnection = initDBConnection()
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -60,7 +33,6 @@ def executeWriteQuery(query):
     dbConnection.close()
 
     return lastRowID
-
 
 def executeScriptsFromFile(dbConnection, filename):
     from src.db.actions.actions_Setup import getCursor
