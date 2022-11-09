@@ -28,12 +28,11 @@ from src.utils.time.time_Calculations import getNicePerfTime
 from src.db.querys.querys_Pairs import getPairsWithNullTokenAddresses, \
     fillPairAddresses
 
-# Import helpers
-
 # Load the .env file
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
 
+THREAD_NUMBER = int(os.getenv("THREAD_NUMBER"))
 
 def collectPairs():
     masterStartTime = time.perf_counter()
@@ -173,7 +172,7 @@ def collectPairs():
 
     # Create A Pool For Recipe Simulation
     # Map Our Recipes To The Pool An Run
-    transactionCollectionPool = Pool(processes=None)
+    transactionCollectionPool = Pool(processes=THREAD_NUMBER)
     collectedNetworkDexs = transactionCollectionPool.map(gatherNetworkDexs, networksToCollect)
     transactionCollectionPool.close()
 
@@ -225,7 +224,7 @@ def collectPairs():
         gatherDexPairsStart = time.perf_counter()
 
         # Collect all dex pairs
-        transactionCollectionPool = Pool(processes=None)
+        transactionCollectionPool = Pool(processes=THREAD_NUMBER)
         collectedDexPairs = transactionCollectionPool.map(gatherPairsForDex, combinedDexs)
         transactionCollectionPool.close()
 
@@ -288,7 +287,7 @@ def collectPairs():
             gatherPairTransactionsStart = time.perf_counter()
 
             # Collect all dex pairs
-            transactionCollectionPool = Pool(processes=None)
+            transactionCollectionPool = Pool(processes=THREAD_NUMBER)
             allPairsResults = transactionCollectionPool.map(gatherTransactionsForPair, combinedDexPairs)
             transactionCollectionPool.close()
 
@@ -321,7 +320,7 @@ def collectPairs():
                 decodeTransactionsStart = time.perf_counter()
 
                 # Collect all dex pairs
-                decodeTransactionsPool = Pool(processes=None)
+                decodeTransactionsPool = Pool(processes=THREAD_NUMBER)
                 obtainedRoutes = decodeTransactionsPool.map(decodeTx, allTransactions)
                 decodeTransactionsPool.close()
 
@@ -372,7 +371,7 @@ def collectPairs():
             # Start Timer
             missingTokenDecimalsStart = time.perf_counter()
 
-            missingTokenDecimalsPool = Pool(processes=None)
+            missingTokenDecimalsPool = Pool(processes=THREAD_NUMBER)
             decimalsRetrieved = missingTokenDecimalsPool.map(fillTokenDecimals, filteredTokensToGetDecimalsFor)
             missingTokenDecimalsPool.close()
 
@@ -417,7 +416,7 @@ def collectPairs():
             # Start Timer
             missingTokenRetrievalStart = time.perf_counter()
 
-            missingTokenRetrievalPool = Pool(processes=None)
+            missingTokenRetrievalPool = Pool(processes=THREAD_NUMBER)
             updateResults = missingTokenRetrievalPool.map(fillPairAddresses, filteredPairsToGetAddressesFor)
             missingTokenRetrievalPool.close()
 
