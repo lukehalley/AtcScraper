@@ -9,9 +9,9 @@ def addDexToDB(networkDbId, dexName):
     query = f"INSERT IGNORE INTO dexs (network_id, name, factory, router) " \
             f"VALUES ('{networkDbId}', '{cleanString(dexName)}', NULL, NULL)"
 
-    lastRowID = executeWriteQuery(
+    dexDbId = executeWriteQuery(
         query=query
     )
 
-    return lastRowID
+    return dexDbId
 

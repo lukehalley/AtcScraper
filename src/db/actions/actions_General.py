@@ -1,6 +1,4 @@
 from mysql.connector import OperationalError
-from retry import retry
-
 from src.db.actions.actions_Setup import initDBConnection, getCursor
 from src.utils.logging.logging_Setup import getProjectLogger
 
@@ -19,7 +17,6 @@ def executeReadQuery(query):
 
     return result
 
-@retry()
 def executeWriteQuery(query):
 
     dbConnection = initDBConnection()

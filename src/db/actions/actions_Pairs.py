@@ -100,9 +100,11 @@ def addPairRankToDB(pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, 
             f"(SELECT * FROM pair_market_data WHERE {compareStatement}) " \
             f"LIMIT 1"
 
-    executeWriteQuery(
+    pairRankDbId = executeWriteQuery(
         query=query
     )
+
+    return pairRankDbId
 
 def clearPairsRankingTable():
 

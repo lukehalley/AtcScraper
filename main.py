@@ -1,4 +1,3 @@
-import copy
 from multiprocessing import Pool
 
 from dotenv import load_dotenv
@@ -311,33 +310,33 @@ def collectPairs():
             # Decode Transactions
             #################################################################################
 
-            if allTransactions:
-
-                printSeparator()
-                logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
-                printSeparator()
-
-                # Start Timer
-                decodeTransactionsStart = time.perf_counter()
-
-                # Collect all dex pairs
-                decodeTransactionsPool = Pool(processes=None)
-                obtainedRoutes = decodeTransactionsPool.map(decodeTx, allTransactions)
-                decodeTransactionsPool.close()
-
-                # Stop Timer
-                decodeTransactionsEnd = time.perf_counter()
-
-                # Build Timer Str
-                decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
-
-                validRoutes = [validRoute for validRoute in obtainedRoutes if validRoute]
-
-                # Print Outcome
-                printSeparator()
-                logger.info(f"Got {len(validRoutes)} Routes")
-                logger.info(f"Took {decodeTransactionsTimerStr}")
-                printSeparator(newLine=True)
+            # if allTransactions:
+            #
+            #     printSeparator()
+            #     logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
+            #     printSeparator()
+            #
+            #     # Start Timer
+            #     decodeTransactionsStart = time.perf_counter()
+            #
+            #     # Collect all dex pairs
+            #     decodeTransactionsPool = Pool(processes=None)
+            #     obtainedRoutes = decodeTransactionsPool.map(decodeTx, allTransactions)
+            #     decodeTransactionsPool.close()
+            #
+            #     # Stop Timer
+            #     decodeTransactionsEnd = time.perf_counter()
+            #
+            #     # Build Timer Str
+            #     decodeTransactionsTimerStr = getNicePerfTime(timeDiff=decodeTransactionsEnd - decodeTransactionsStart)
+            #
+            #     validRoutes = [validRoute for validRoute in obtainedRoutes if validRoute]
+            #
+            #     # Print Outcome
+            #     printSeparator()
+            #     logger.info(f"Got {len(validRoutes)} Routes")
+            #     logger.info(f"Took {decodeTransactionsTimerStr}")
+            #     printSeparator(newLine=True)
 
         #################################################################################
         # Set Unavailable Tokens To Null

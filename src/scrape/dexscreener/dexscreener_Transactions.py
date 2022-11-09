@@ -51,6 +51,9 @@ def gatherTransactionsForPair(pair):
             # Get JSON On Page
             innerText = page.inner_text("*")
 
+            # Close Browser
+            browser.close()
+
             # Try And Load It
             try:
                 resultJson = json.loads(innerText)

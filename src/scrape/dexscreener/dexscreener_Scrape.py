@@ -11,8 +11,7 @@ from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
 from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
-from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId, getDexByNameAndNetworkId
-from src.db.querys.querys_Dexs import getAllDexsForNetwork
+from src.db.querys.querys_Dexs import getAllDexsForNetwork, getDexByNameAndNetworkId, getDexRouterDetailsByDbId
 from src.db.querys.querys_Networks import getAllNetworks, getNetworkRPCByDbId, getNetworkByName
 from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId, getPairForNetworkIdAndPairDbId
 from src.db.querys.querys_Tokens import getTokenByNetworkIdAndSymbol, \
