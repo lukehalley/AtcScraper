@@ -98,46 +98,58 @@ def gatherNetworkDexs(args):
             user_agent=Faker().user_agent(),
         )
 
-        # Create a new page
-        page = newPage(browser=browser)
+        try:
 
-        # Load URL
-        safePageLoad(
-            page=page,
-            url=networkDetails["url"]
-        )
+            # Create a new page
+            page = newPage(browser=browser)
 
-        # Init dexscreener
-        validateDexscreenerInit(
-            page=page
-        )
+            # Load URL
+            safePageLoad(
+                page=page,
+                url=networkDetails["url"]
+            )
 
-        # Gather the list of dexs for the tabs at the top of the screen
-        networksDexs = gatherDexListFromTabs(
-            networkDetails=networkDetails,
-            page=page
-        )
+            # Init dexscreener
+            validateDexscreenerInit(
+                page=page
+            )
 
-        networksDexs = [network for network in networksDexs if network["db"]["networkId"] == args["networkDetails"]["network_id"]]
+            # Gather the list of dexs for the tabs at the top of the screen
+            networksDexs = gatherDexListFromTabs(
+                networkDetails=networkDetails,
+                page=page
+            )
 
-        if not networksDexs:
+            # Close our page as don't need it anymore
+            page.close()
+
+            # Close Browser
+            browser.close()
+
+            networksDexs = [network for network in networksDexs if network["db"]["networkId"] == args["networkDetails"]["network_id"]]
+
+            if not networksDexs:
+                return None
+            else:
+                # Create an object with the network and its dexs
+                networkDetails = (networkName, networksDexs)
+
+                printLog(
+                    msg=f"{networkName.title()} ✅"
+                )
+
+                # Return the network details object
+                return networkDetails
+
+        except:
+
+            try:
+                page.close()
+                browser.close()
+            except:
+                pass
+
             return None
-
-        # Close our page as don't need it anymore
-        page.close()
-
-        # Close Browser
-        browser.close()
-
-        # Create an object with the network and its dexs
-        networkDetails = (networkName, networksDexs)
-
-        printLog(
-            msg=f"{networkName.title()} ✅"
-        )
-
-        # Return the network details object
-        return networkDetails
 
 # Gather The Networks Dexs
 def gatherDexListFromTabs(networkDetails, page):
@@ -249,273 +261,284 @@ def gatherPairsForDex(dexDetails):
             user_agent=fakeUserAgent
         )
 
-        # Open a new tab
-        page = newPage(browser=browser)
+        try:
 
-        # Navigate to the dexs url
-        safePageLoad(
-            page=page,
-            url=dexURL
-        )
+            # Open a new tab
+            page = newPage(browser=browser)
 
-        safeClick(
-            page=page,
-            selector='text=Liquidity'
-        )
+            # Navigate to the dexs url
+            safePageLoad(
+                page=page,
+                url=dexURL
+            )
 
-        # Get total amount of pairs
+            safeClick(
+                page=page,
+                selector='text=Liquidity'
+            )
 
-        pairCountElement = page.locator("span", has_text="Showing pairs")
-        pairCountText = pairCountElement.all_inner_texts()
+            # Get total amount of pairs
 
-        # Amount of pairs to get
-        pairsToCollect = int(os.getenv("AMOUNT_OF_PAIRS_TO_COLLECT"))
+            pairCountElement = page.locator("span", has_text="Showing pairs")
+            pairCountText = pairCountElement.all_inner_texts()
 
-        if pairCountText:
+            # Amount of pairs to get
+            pairsToCollect = int(os.getenv("AMOUNT_OF_PAIRS_TO_COLLECT"))
 
-            pairCount = int(pairCountText[0].split(" ")[-1].replace(",", ""))
-            roundCount = replaceTrailingDigitsWithZeros(number=pairCount)
+            if pairCountText:
 
-            if pairCount <= 100:
-                pairsPagesToIterate = 1
-            elif pairCount >= pairsToCollect:
-                pairsPagesToIterate = int(pairsToCollect / 100)
+                pairCount = int(pairCountText[0].split(" ")[-1].replace(",", ""))
+                roundCount = replaceTrailingDigitsWithZeros(number=pairCount)
+
+                if pairCount <= 100:
+                    pairsPagesToIterate = 1
+                elif pairCount >= pairsToCollect:
+                    pairsPagesToIterate = int(pairsToCollect / 100)
+                else:
+                    pairsPagesToIterate = int((roundCount / 100) + 1)
+
             else:
-                pairsPagesToIterate = int((roundCount / 100) + 1)
 
-        else:
+                pairsPagesToIterate = 1
 
-            pairsPagesToIterate = 1
+            # List which will store our token objects
+            collectedPairs = []
 
-        # List which will store our token objects
-        collectedPairs = []
+            lazyMode = strToBool(os.getenv("LAZY_MODE"))
+            if lazyMode:
+                pairsPagesToIterate = 1
 
-        lazyMode = strToBool(os.getenv("LAZY_MODE"))
-        if lazyMode:
-            pairsPagesToIterate = 1
+            loopRange = pairsPagesToIterate + 1
 
-        loopRange = pairsPagesToIterate + 1
+            for pageNumber in range(1, loopRange):
 
-        for pageNumber in range(1, loopRange):
+                if pageNumber > 1:
+                    # Navigate to the next pair page
+                    nextPageURL = f"{dexURL}/page-{pageNumber}"
 
-            if pageNumber > 1:
-                # Navigate to the next pair page
-                nextPageURL = f"{dexURL}/page-{pageNumber}"
+                    safePageLoad(
+                        page=page,
+                        url=nextPageURL
+                    )
 
-                safePageLoad(
+                    safeClick(
+                        page=page,
+                        selector='text=Liquidity'
+                    )
+
+                # Get the sidebar list element
+                dexTable = os.getenv('DS_DEX_TABLE')
+                dexTableElement = findAndCheckElement(
                     page=page,
-                    url=nextPageURL
+                    selector=dexTable
                 )
 
-                safeClick(
+                # Get all the 'li' items
+                dexTabItems = getAItems(
                     page=page,
-                    selector='text=Liquidity'
+                    listElement=dexTableElement
                 )
 
-            # Get the sidebar list element
-            dexTable = os.getenv('DS_DEX_TABLE')
-            dexTableElement = findAndCheckElement(
-                page=page,
-                selector=dexTable
-            )
-
-            # Get all the 'li' items
-            dexTabItems = getAItems(
-                page=page,
-                listElement=dexTableElement
-            )
-
-            # Get the pair address for each token in the list
-            pairAddresses = getAllRowsMetadata(
-                page=page,
-                networkName=networkName
-            )
-
-            # Filter the inner text we got back by only items which start with #
-            rows = [i for i in dexTabItems if i.startswith('#')]
-
-            # Split them by the \n character
-            rowsSplit = [l.split("\n") for l in rows]
-
-            # Remove "#" "$" "%" or "/"
-            cleanRows = [removeIllegalCharactersFromElements(item) for item in rowsSplit]
-
-            # Remove any blank lines
-            finalRows = [list(filter(None, item)) for item in cleanRows]
-
-            # List for keeping track of added ranks
-            addedRanks = []
-
-            # Iterate through the list of raw tokens we collected
-            for row in finalRows:
-
-                # Check if the row has info on its uniswap version
-                hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
-                uniswapVersion = "NULL"
-
-                # If it does, remove it - we can add it back later if it exists
-                if hasUniswapBadge:
-                    uniswapVersion = row.pop(1)
-
-                # Fix some rows coming back with missing data
-                # Sometimes data is missing so we just fill the list with blanks
-                # or cut it short
-                expectedListSize = 13
-                rowLength = len(row)
-                if rowLength != 13:
-                    if rowLength > expectedListSize:
-                        row = row[0:13]
-                    else:
-                        slotsToFill = abs(13 - len(row))
-                        for _ in range(slotsToFill):
-                            row.append("NULL")
-
-                tokenRank = smartEval(row[0])
-
-                # Get the token rank
-                if pageNumber <= 1:
-                    tokenIndex = smartEval(row[0])
-                else:
-                    tokenIndex = (tokenRank - ((pageNumber - 1) * 100))
-
-                # Get the pair address for this row
-                pairAddress = pairAddresses[tokenIndex - 1]
-
-                # Primary Token
-                primaryTokenSymbol = row[1]
-
-                # Secondary Token
-                secondaryTokenSymbol = row[2]
-
-                # Create a token object from all the properties we scraped
-                tokenDetails = {
-                    "rank": tokenRank,
-                    "market": {
-                        "volume": smartEval(replaceNumberShorthands(row[6])),
-                        "liquidity": smartEval(replaceNumberShorthands(row[11])),
-                        "fdv": smartEval(replaceNumberShorthands(row[12]))
-                    },
-                    "network": {
-                        "network": networkName,
-                        "txCount": smartEval(row[5]),
-                    },
-                    "dex": {
-                        "dex": dexDetails,
-                    },
-                    "primaryToken": {
-                        "name": row[3],
-                        "symbol": primaryTokenSymbol
-                    },
-                    "secondaryToken": {
-                        "symbol": row[2],
-                    },
-                    "pair": {
-                        "name": f"{row[1]}/{row[2]}",
-                        "address": pairAddress
-                    }
-                }
-
-                # Check if primary token already exists
-                primaryTokenDetails = getTokenByNetworkIdAndSymbol(
-                    networkDbId=dexDetails["db"]["networkId"],
-                    tokenSymbol=primaryTokenSymbol
+                # Get the pair address for each token in the list
+                pairAddresses = getAllRowsMetadata(
+                    page=page,
+                    networkName=networkName
                 )
 
-                # If it doesn't - add it
-                if not primaryTokenDetails:
-                    # Add primary token to database
-                    primaryTokenDbId = addTokenToDB(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenName=tokenDetails["primaryToken"]["name"],
-                        tokenSymbol=tokenDetails["primaryToken"]["symbol"]
-                    )
+                # Filter the inner text we got back by only items which start with #
+                rows = [i for i in dexTabItems if i.startswith('#')]
 
-                    primaryTokenDetails = getTokenByNetworkIdAndTokenId(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenDbId=primaryTokenDbId
-                    )
-                else:
-                    primaryTokenDbId = primaryTokenDetails["token_id"]
+                # Split them by the \n character
+                rowsSplit = [l.split("\n") for l in rows]
 
-                tokenDetails["primaryToken"] = primaryTokenDetails
+                # Remove "#" "$" "%" or "/"
+                cleanRows = [removeIllegalCharactersFromElements(item) for item in rowsSplit]
 
-                # Check if secondary token already exists
-                secondaryTokenDetails = getTokenByNetworkIdAndSymbol(
-                    networkDbId=dexDetails["db"]["networkId"],
-                    tokenSymbol=secondaryTokenSymbol
-                )
+                # Remove any blank lines
+                finalRows = [list(filter(None, item)) for item in cleanRows]
 
-                if not secondaryTokenDetails:
-                    # Add secondary token to database
-                    secondaryTokenDbId = addTokenToDB(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenName=None,
-                        tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
-                    )
+                # List for keeping track of added ranks
+                addedRanks = []
 
-                    secondaryTokenDetails = getTokenByNetworkIdAndTokenId(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenDbId=secondaryTokenDbId
-                    )
-                else:
-                    secondaryTokenDbId = secondaryTokenDetails["token_id"]
+                # Iterate through the list of raw tokens we collected
+                for row in finalRows:
 
-                tokenDetails["primaryToken"] = primaryTokenDetails
+                    # Check if the row has info on its uniswap version
+                    hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
+                    uniswapVersion = "NULL"
 
-                tokenDetails["network"]["db"] = {}
-                tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
-
-                tokenDetails["dex"]["db"] = {}
-                tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
-
-                tokenDetails["secondaryToken"] = secondaryTokenDetails
-
-                if tokenRank not in addedRanks:
-
-                    addedRanks.append(tokenRank)
-
-                    pairDbId = addTokenPairToDB(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        dexDbId=dexDetails["db"]["dexId"],
-                        primaryTokenDbId=primaryTokenDbId,
-                        secondaryTokenDbId=secondaryTokenDbId,
-                        pairName=tokenDetails["pair"]["name"],
-                        pairAddress=tokenDetails["pair"]["address"],
-                        pairRanking=tokenRank,
-                        pairLiquidity=tokenDetails["market"]["liquidity"],
-                        pairVolume=tokenDetails["market"]["volume"],
-                        pairFdv=tokenDetails["market"]["fdv"]
-                    )
-
-                    if not pairDbId:
-                        tokenDetails["pair"] = getPairForAddressAndNetworkId(
-                            pairAddress=tokenDetails["pair"]["address"],
-                            networkDbId=dexDetails["db"]["networkId"]
-                        )
-                    else:
-                        tokenDetails["pair"] = getPairForNetworkIdAndPairDbId(
-                            pairDbId=pairDbId,
-                            networkDbId=dexDetails["db"]["networkId"]
-                        )
-
-                    # Add the uniswap version back in if we have it
+                    # If it does, remove it - we can add it back later if it exists
                     if hasUniswapBadge:
-                        tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+                        uniswapVersion = row.pop(1)
 
-                    # Finally, append the token to the final list
-                    collectedPairs.append(tokenDetails)
+                    # Fix some rows coming back with missing data
+                    # Sometimes data is missing so we just fill the list with blanks
+                    # or cut it short
+                    expectedListSize = 13
+                    rowLength = len(row)
+                    if rowLength != 13:
+                        if rowLength > expectedListSize:
+                            row = row[0:13]
+                        else:
+                            slotsToFill = abs(13 - len(row))
+                            for _ in range(slotsToFill):
+                                row.append("NULL")
 
-        # Close the page and browser as we are done
-        page.close()
-        browser.close()
+                    tokenRank = smartEval(row[0])
 
-        # Count how many tokens we collected and log it
-        printLog(f"{dexName.title()} On {networkName.title()} ✅")
+                    # Get the token rank
+                    if pageNumber <= 1:
+                        tokenIndex = smartEval(row[0])
+                    else:
+                        tokenIndex = (tokenRank - ((pageNumber - 1) * 100))
 
-        # Return our collected tokens
-        return collectedPairs
+                    # Get the pair address for this row
+                    pairAddress = pairAddresses[tokenIndex - 1]
 
-# @retry(attempts=retryAttempts, delay=retryDelay)
+                    # Primary Token
+                    primaryTokenSymbol = row[1]
+
+                    # Secondary Token
+                    secondaryTokenSymbol = row[2]
+
+                    # Create a token object from all the properties we scraped
+                    tokenDetails = {
+                        "rank": tokenRank,
+                        "market": {
+                            "volume": smartEval(replaceNumberShorthands(row[6])),
+                            "liquidity": smartEval(replaceNumberShorthands(row[11])),
+                            "fdv": smartEval(replaceNumberShorthands(row[12]))
+                        },
+                        "network": {
+                            "network": networkName,
+                            "txCount": smartEval(row[5]),
+                        },
+                        "dex": {
+                            "dex": dexDetails,
+                        },
+                        "primaryToken": {
+                            "name": row[3],
+                            "symbol": primaryTokenSymbol
+                        },
+                        "secondaryToken": {
+                            "symbol": row[2],
+                        },
+                        "pair": {
+                            "name": f"{row[1]}/{row[2]}",
+                            "address": pairAddress
+                        }
+                    }
+
+                    # Check if primary token already exists
+                    primaryTokenDetails = getTokenByNetworkIdAndSymbol(
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenSymbol=primaryTokenSymbol
+                    )
+
+                    # If it doesn't - add it
+                    if not primaryTokenDetails:
+                        # Add primary token to database
+                        primaryTokenDbId = addTokenToDB(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenName=tokenDetails["primaryToken"]["name"],
+                            tokenSymbol=tokenDetails["primaryToken"]["symbol"]
+                        )
+
+                        primaryTokenDetails = getTokenByNetworkIdAndTokenId(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenDbId=primaryTokenDbId
+                        )
+                    else:
+                        primaryTokenDbId = primaryTokenDetails["token_id"]
+
+                    tokenDetails["primaryToken"] = primaryTokenDetails
+
+                    # Check if secondary token already exists
+                    secondaryTokenDetails = getTokenByNetworkIdAndSymbol(
+                        networkDbId=dexDetails["db"]["networkId"],
+                        tokenSymbol=secondaryTokenSymbol
+                    )
+
+                    if not secondaryTokenDetails:
+                        # Add secondary token to database
+                        secondaryTokenDbId = addTokenToDB(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenName=None,
+                            tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+                        )
+
+                        secondaryTokenDetails = getTokenByNetworkIdAndTokenId(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenDbId=secondaryTokenDbId
+                        )
+                    else:
+                        secondaryTokenDbId = secondaryTokenDetails["token_id"]
+
+                    tokenDetails["primaryToken"] = primaryTokenDetails
+
+                    tokenDetails["network"]["db"] = {}
+                    tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
+
+                    tokenDetails["dex"]["db"] = {}
+                    tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
+
+                    tokenDetails["secondaryToken"] = secondaryTokenDetails
+
+                    if tokenRank not in addedRanks:
+
+                        addedRanks.append(tokenRank)
+
+                        pairDbId = addTokenPairToDB(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            dexDbId=dexDetails["db"]["dexId"],
+                            primaryTokenDbId=primaryTokenDbId,
+                            secondaryTokenDbId=secondaryTokenDbId,
+                            pairName=tokenDetails["pair"]["name"],
+                            pairAddress=tokenDetails["pair"]["address"],
+                            pairRanking=tokenRank,
+                            pairLiquidity=tokenDetails["market"]["liquidity"],
+                            pairVolume=tokenDetails["market"]["volume"],
+                            pairFdv=tokenDetails["market"]["fdv"]
+                        )
+
+                        if not pairDbId:
+                            tokenDetails["pair"] = getPairForAddressAndNetworkId(
+                                pairAddress=tokenDetails["pair"]["address"],
+                                networkDbId=dexDetails["db"]["networkId"]
+                            )
+                        else:
+                            tokenDetails["pair"] = getPairForNetworkIdAndPairDbId(
+                                pairDbId=pairDbId,
+                                networkDbId=dexDetails["db"]["networkId"]
+                            )
+
+                        # Add the uniswap version back in if we have it
+                        if hasUniswapBadge:
+                            tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+
+                        # Finally, append the token to the final list
+                        collectedPairs.append(tokenDetails)
+
+            # Close the page and browser as we are done
+            page.close()
+            browser.close()
+
+            # Count how many tokens we collected and log it
+            printLog(f"{dexName.title()} On {networkName.title()} ✅")
+
+            # Return our collected tokens
+            return collectedPairs
+
+        except:
+
+            try:
+                page.close()
+                browser.close()
+            except:
+                pass
+
+            return None
+
 def gatherMetadataForPair(pairToAnalyse):
 
     routerAddress, routerAbi = getDexRouterDetailsByDbId(
@@ -549,105 +572,119 @@ def gatherMetadataForPair(pairToAnalyse):
                 user_agent=fakeUserAgent
             )
 
-            # Open a new tab
-            page = newPage(browser=browser)
+            try:
 
-            # Get row data
-            pairNetwork = pairToAnalyse["network"]["network"]
-            pairAddress = pairToAnalyse["pair"]["address"]
-            primaryTokenDbId = pairToAnalyse["primaryToken"]["db"]["dbId"]
+                # Open a new tab
+                page = newPage(browser=browser)
 
-            # Calculate our pair url
-            dexScreenerHome = getDexscreenerRoot()
-            pairUrl = f"{dexScreenerHome}/{pairNetwork}/{pairAddress}"
+                # Get row data
+                pairNetwork = pairToAnalyse["network"]["network"]
+                pairAddress = pairToAnalyse["pair"]["address"]
+                primaryTokenDbId = pairToAnalyse["primaryToken"]["db"]["dbId"]
 
-            # Go the pair graph page
-            safePageLoad(
-                page=page,
-                url=pairUrl
-            )
+                # Calculate our pair url
+                dexScreenerHome = getDexscreenerRoot()
+                pairUrl = f"{dexScreenerHome}/{pairNetwork}/{pairAddress}"
 
-            # Get all elements with the external link label
-            allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
+                # Go the pair graph page
+                safePageLoad(
+                    page=page,
+                    url=pairUrl
+                )
 
-            # Get the second element on the page which is the address of the primary token
-            tokenExplorerLink = allBlockExplorerLinks.nth(1).get_attribute("href")
-            primaryTokenAddress = tokenExplorerLink.split("/")[-1]
+                # Get all elements with the external link label
+                allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
 
-            # Update Token Address In DB
-            updateTokenByDbId(
-                tokenDbId=primaryTokenDbId,
-                fieldToUpdate="address",
-                fieldNewValue=primaryTokenAddress
-            )
+                # Get the second element on the page which is the address of the primary token
+                tokenExplorerLink = allBlockExplorerLinks.nth(1).get_attribute("href")
+                primaryTokenAddress = tokenExplorerLink.split("/")[-1]
 
-            # Get Pair Routes
-            collectedLinks = []
-            loopCount = 0
-            loopLimit = int(os.getenv("TRANSACTION_LOOP_LIMIT"))
-            amountOfLinksToCollect = int(os.getenv("TRANSACTION_AMOUNT_OF_LINKS_TO_COLLECT"))
-            while len(collectedLinks) < amountOfLinksToCollect:
-                txTab = page.locator("text=TXN")
-                txTab.first.hover()
-                linksOnPage = page.eval_on_selector_all("a[href^='https']",
-                                                        "elements => elements.map(element => element.href)")
-                txsOnPage = [link for link in linksOnPage if "0x" in link]
-                collectedLinks.extend(txsOnPage)
-                page.mouse.wheel(0, 700)
-                collectedLinks = list(set(collectedLinks))
-                collectedLinks = ["0x" + address for address in list(map(lambda x: x.split('0x')[1], collectedLinks))]
-                loopCount = loopCount + 1
-                if loopCount >= loopLimit:
-                    # printLog(
-                    #     msg=f'Loop Limit Reached For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
-                    # )
-                    break
+                # Update Token Address In DB
+                updateTokenByDbId(
+                    tokenDbId=primaryTokenDbId,
+                    fieldToUpdate="address",
+                    fieldNewValue=primaryTokenAddress
+                )
 
-            page.close()
+                # Get Pair Routes
+                collectedLinks = []
+                loopCount = 0
+                loopLimit = int(os.getenv("TRANSACTION_LOOP_LIMIT"))
+                amountOfLinksToCollect = int(os.getenv("TRANSACTION_AMOUNT_OF_LINKS_TO_COLLECT"))
+                while len(collectedLinks) < amountOfLinksToCollect:
+                    txTab = page.locator("text=TXN")
+                    txTab.first.hover()
+                    linksOnPage = page.eval_on_selector_all("a[href^='https']",
+                                                            "elements => elements.map(element => element.href)")
+                    txsOnPage = [link for link in linksOnPage if "0x" in link]
+                    collectedLinks.extend(txsOnPage)
+                    page.mouse.wheel(0, 700)
+                    collectedLinks = list(set(collectedLinks))
+                    collectedLinks = ["0x" + address for address in
+                                      list(map(lambda x: x.split('0x')[1], collectedLinks))]
+                    loopCount = loopCount + 1
+                    if loopCount >= loopLimit:
+                        # printLog(
+                        #     msg=f'Loop Limit Reached For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                        # )
+                        break
 
-            browser.close()
+                page.close()
 
-            validTransactions = [x for x in collectedLinks if len(x) == 66]
+                browser.close()
 
-            if validTransactions:
+                validTransactions = [x for x in collectedLinks if len(x) == 66]
 
-                decodedTransactions = []
-                for validTransaction in validTransactions:
+                if validTransactions:
 
-                    transactionDict = {
-                        "pairDetails": pairToAnalyse,
-                        "contractAddress": routerAddress,
-                        "rpcUrl": rpcUrl,
-                        "transactionHash": validTransaction,
-                        "abi": routerAbi
-                    }
+                    decodedTransactions = []
+                    for validTransaction in validTransactions:
 
-                    decodedTx = decodeTx(
-                        transactionDetails=transactionDict
-                    )
+                        transactionDict = {
+                            "pairDetails": pairToAnalyse,
+                            "contractAddress": routerAddress,
+                            "rpcUrl": rpcUrl,
+                            "transactionHash": validTransaction,
+                            "abi": routerAbi
+                        }
 
-                    if decodedTx:
-                        decodedTransactions.append(decodedTx)
+                        decodedTx = decodeTx(
+                            transactionDetails=transactionDict
+                        )
 
-                if decodedTransactions:
+                        if decodedTx:
+                            decodedTransactions.append(decodedTx)
 
-                    printLog(
-                        msg=f'Decoded {len(decodedTransactions)} Transactions For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
-                    )
+                    if decodedTransactions:
 
-                    return decodedTransactions
+                        printLog(
+                            msg=f'Decoded {len(decodedTransactions)} Transactions For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                        )
+
+                        return decodedTransactions
+
+                    else:
+
+                        return None
 
                 else:
 
+                    printLog(
+                        msg=f'No Transactions Decoded For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
+                    )
+
                     return None
 
-            else:
+            except:
 
-                printLog(
-                    msg=f'No Transactions Decoded For {pairToAnalyse["pair"]["name"]} On {(pairToAnalyse["dex"]["dex"]["name"]).title()} | {(pairToAnalyse["network"]["network"]).title()}'
-                )
+                try:
+                    page.close()
+                    browser.close()
+                except:
+                    pass
 
                 return None
+
     else:
 
         printLog(
