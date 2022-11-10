@@ -1,6 +1,6 @@
 import os
 
-from playwright.async_api import BrowserContext
+from playwright.sync_api import BrowserContext
 
 from src.utils.logging.logging_Setup import getProjectLogger
 

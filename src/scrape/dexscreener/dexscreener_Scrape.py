@@ -1,9 +1,8 @@
 import os
 from pathlib import Path
 
-import nest_asyncio
 from faker import Faker
-from playwright.async_api import BrowserContext
+from playwright.sync_api import BrowserContext
 from playwright.sync_api import sync_playwright
 
 from src.chain.decode.decode_Tx import decodeTx
@@ -26,8 +25,6 @@ from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger, printLog
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
-
-nest_asyncio.apply()
 
 # Gather all the available networks from the Dexscreener sidebar
 def gatherNetworkList(page):
