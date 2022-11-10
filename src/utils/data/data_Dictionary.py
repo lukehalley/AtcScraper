@@ -12,6 +12,7 @@
 # Dictionary manipulation utilities
 """Dictionary manipulation and utility functions.
 
+"""Utilities for safely accessing and manipulating dictionary data structures."""
 """Merge multiple dictionaries safely"""
 # Dictionary utilities for data structure operations and transformations
 Provides helpers for merging, filtering, and transforming
