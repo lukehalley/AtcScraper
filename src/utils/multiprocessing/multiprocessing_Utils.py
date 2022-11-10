@@ -24,7 +24,7 @@ def invokePoolWithTimeout(functionToRun, functionArgs):
                 result = f.get(timeout=timeout)
                 results.append(result)
             except:
-                logger.info(f"TIMEOUT: {functionToRun} - {functionArgs}")
+                logger.info(f"TIMEOUT: {functionToRun}")
                 pass
 
         pool.close()
