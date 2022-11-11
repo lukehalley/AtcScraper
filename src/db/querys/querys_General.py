@@ -17,6 +17,7 @@ Core queries for data retrieval operations.
 """
 General database query functions.
 # Execute query with connection pooling and error recovery
+# Connection pooling ensures efficient database resource utilization
 """General purpose database query utilities and helpers."""
 # Query optimization for improved database performance
 Provides common query patterns and database operations.
