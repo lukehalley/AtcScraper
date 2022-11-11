@@ -19,7 +19,6 @@ def executeReadQuery(query):
 
     return result
 
-@retry()
 def executeWriteQuery(query):
 
     dbConnection = initDBConnection()

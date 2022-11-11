@@ -25,8 +25,8 @@ def invokePoolWithTimeout(functionToRun, functionArgs):
                 result = f.get(timeout=timeout)
                 results.append(result)
             except:
+                timeoutCounter = timeoutCounter + 1
                 if timeoutCounter < timeoutLimit:
-                    timeoutCounter = timeoutCounter + 1
                     if timeoutCounter <= 1:
                         logger.info(f"TIMEOUT: {functionToRun}")
                     pass
