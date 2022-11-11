@@ -8,8 +8,8 @@ logger = getProjectLogger()
 
 def invokePoolWithTimeout(functionToRun, functionArgs):
 
-    timeout = int(os.getenv("MULTIPROCESSING_TIMEOUT"))
-
+    timeout = int(os.getenv("MULTIPROCESSING_TIMEOUT_SECS"))
+    timeoutLimit = int(os.getenv("MULTIPROCESSING_TIMEOUT_LIMIT"))
     with closing(MyPool(None)) as pool:
 
         functionList = []
@@ -19,13 +19,20 @@ def invokePoolWithTimeout(functionToRun, functionArgs):
             functionList.append(f)
 
         results = []
+        timeoutCounter = 0
         for f in functionList:
             try:
                 result = f.get(timeout=timeout)
                 results.append(result)
             except:
-                logger.info(f"TIMEOUT: {functionToRun}")
-                pass
+                if timeoutCounter < timeoutLimit:
+                    timeoutCounter = timeoutCounter + 1
+                    if timeoutCounter <= 1:
+                        logger.info(f"TIMEOUT: {functionToRun}")
+                    pass
+                else:
+                    logger.info(f"TIMEOUT LIMIT REACHED FOR: {functionToRun}")
+                    break
 
         pool.close()
         pool.terminate()

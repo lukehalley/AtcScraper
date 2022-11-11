@@ -1,7 +1,9 @@
 from mysql.connector import OperationalError
 
 from src.db.actions.actions_Setup import initDBConnection, getCursor
+from src.utils.logging.logging_Setup import getProjectLogger
 
+logger = getProjectLogger()
 
 def executeScriptsFromFile(filename):
 
@@ -22,7 +24,7 @@ def executeScriptsFromFile(filename):
         dbConnection.close()
         return result
     except OperationalError as msg:
-        print("Command skipped: ", msg)
+        logger.warn("Command skipped: ", msg)
         dbConnection.close()
         return None
 
