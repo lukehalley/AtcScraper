@@ -22,7 +22,7 @@ def getListItems(page, listElement):
             allLists = listElement.locator(selector='li')
             return allLists.all_text_contents()
         except:
-            logger.warn(f"Trying get li {listElement} again...")
+            logger.warning(f"Trying get li {listElement} again...")
             listLocated = False
             page.reload()
 
@@ -34,7 +34,7 @@ def getAItems(page, listElement):
             allLists = listElement.locator(selector='a')
             return allLists.all_inner_texts()
         except:
-            logger.warn(f"Trying get ai {listElement} again...")
+            logger.warning(f"Trying get ai {listElement} again...")
             itemsLocated = False
             page.reload()
 

@@ -24,7 +24,7 @@ def executeScriptsFromFile(filename):
         dbConnection.close()
         return result
     except OperationalError as msg:
-        logger.warn("Command skipped: ", msg)
+        logger.warning("Command skipped: ", msg)
         dbConnection.close()
         return None
 

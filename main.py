@@ -20,7 +20,7 @@ from src.utils.time.time_Calculations import getNicePerfTime
 from src.db.querys.querys_Pairs import getPairsWithNullTokenAddresses, fillPairAddresses
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
-from src.chain.decode.decode_Tx import decodeTx
+from src.chain.decode.decode_Tx import decodeTx, uploadTx
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
 from src.db.querys.querys_Tokens import fillTokenDecimals, getTokensWithMissingDecimals
 from src.scrape.dexscreener.dexscreener_Transactions import gatherTransactionsForPair
@@ -309,11 +309,51 @@ def collectPairs():
                         logger.info(f"Took {gatherPairTransactionsTimerStr}")
                         printSeparator(newLine=True)
 
-                        #################################################################################
-                        # Decode Transactions
-                        #################################################################################
-
                         if allTransactions:
+
+                            #################################################################################
+                            # Add Transactions To DB
+                            #################################################################################
+
+                            printSeparator()
+                            logger.info(f"Adding {len(allTransactions)} Transactions To DB")
+                            printSeparator()
+
+                            # Start Timer
+                            uploadTransactionsStart = time.perf_counter()
+
+                            uploadTx(allTransactions[0])
+
+                            # Add Transactions To DB
+                            uploadedTxs = invokePoolWithTimeout(
+                                functionToRun=uploadTx,
+                                functionArgs=allTransactions,
+                            )
+
+                            validUploadedTxs = [uploadedTx for uploadedTx in uploadedTxs if uploadedTx]
+
+                            # Stop Timer
+                            uploadTransactionsEnd = time.perf_counter()
+
+                            # Build Timer Str
+                            uploadTransactionsTimerStr = getNicePerfTime(
+                                timeDiff=uploadTransactionsEnd - uploadTransactionsStart)
+
+                            if validUploadedTxs:
+
+                                # Print Outcome
+                                printSeparator()
+                                logger.info(f"Added {len(validUploadedTxs)} Transactions To DB")
+                                logger.info(f"Took {uploadTransactionsTimerStr}")
+                                printSeparator(newLine=True)
+
+                            else:
+
+                                logger.warning("No Transactions Were Added To DB!")
+
+                            #################################################################################
+                            # Decode Transactions
+                            #################################################################################
 
                             printSeparator()
                             logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
@@ -346,11 +386,11 @@ def collectPairs():
 
                             else:
 
-                                logger.warn("No Routes Were Collected!")
+                                logger.warning("No Routes Were Collected!")
 
                         else:
 
-                            logger.warn("No Pairs Were Collected!")
+                            logger.warning("No Pairs Were Collected!")
 
                 #################################################################################
                 # Set Unavailable Tokens To Null
@@ -411,7 +451,7 @@ def collectPairs():
 
                     else:
 
-                        logger.warn("No Decimals Were Updated!")
+                        logger.warning("No Decimals Were Updated!")
 
                 else:
 
@@ -461,7 +501,7 @@ def collectPairs():
 
                     else:
 
-                        logger.warn("No Pairs Were Updated!")
+                        logger.warning("No Pairs Were Updated!")
 
                 else:
 
@@ -487,13 +527,15 @@ def collectPairs():
 
             else:
 
-                logger.warn("No Dexs Were Collected!")
+                logger.warning("No Dexs Were Collected!")
 
         else:
 
-            logger.warn("No Networks Were Collected!")
+            logger.warning("No Networks Were Collected!")
 
     else:
+
+        logger.warning("No Dexs Collected!")
 
         return None
 
