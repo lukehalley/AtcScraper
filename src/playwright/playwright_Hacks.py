@@ -9,7 +9,7 @@ def safeClick(page, selector):
             page.locator(selector).first.click()
             elementClicked = True
         except:
-            logger.warn(f"Trying to click {selector} again...")
+            logger.warning(f"Trying to click {selector} again...")
             elementClicked = False
             page.reload()
 
@@ -20,6 +20,6 @@ def safePageLoad(page, url):
             page.goto(url)
             pageLoaded = True
         except:
-            # logger.warn(f"Trying to load {url} again...")
+            # logger.warning(f"Trying to load {url} again...")
             pageLoaded = False
             page.reload()

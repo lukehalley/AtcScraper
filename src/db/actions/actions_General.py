@@ -1,5 +1,9 @@
+import sys
+from random import randint
+from time import sleep
+
+import mysql
 from mysql.connector import OperationalError
-from retry import retry
 
 from src.db.actions.actions_Setup import initDBConnection, getCursor
 from src.utils.logging.logging_Setup import getProjectLogger
@@ -24,8 +28,23 @@ def executeWriteQuery(query):
     dbConnection = initDBConnection()
     cursor = getCursor(dbConnection=dbConnection)
 
-    cursor.execute(query)
-    dbConnection.commit()
+    try:
+        cursor.execute(query)
+        dbConnection.commit()
+    except mysql.connector.errors.InternalError as error:
+        deadlockDetected = "Deadlock" in error.msg
+        if deadlockDetected:
+            deadlockResolved = False
+            while not deadlockResolved:
+                sleep(randint(1, 5))
+                try:
+                    cursor.execute(query)
+                    dbConnection.commit()
+                    deadlockResolved = True
+                except mysql.connector.errors.InternalError:
+                    pass
+        else:
+            sys.exit(f"Write DB Error: {error}")
 
     lastRowID = cursor.lastrowid
 
@@ -54,4 +73,4 @@ def executeScriptsFromFile(dbConnection, filename):
         try:
             cursor.execute(command)
         except OperationalError as msg:
-            logger.warn("Command skipped: ", msg)
+            logger.warning("Command skipped: ", msg)

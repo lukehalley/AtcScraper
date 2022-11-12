@@ -24,9 +24,9 @@ def initDBConnection():
         )
     except mysql.connector.Error as err:
       if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        logger.warn("Something is wrong with your user name or password")
+        logger.warning("Something is wrong with your user name or password")
       elif err.errno == errorcode.ER_BAD_DB_ERROR:
-        logger.warn("Database does not exist")
+        logger.warning("Database does not exist")
       else:
         logger.error(err)
     else:

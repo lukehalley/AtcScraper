@@ -7,8 +7,59 @@ from src.chain.abi.abi_Contract import getContract
 from src.chain.convert.convert_Hex import convertToHex
 from src.db.actions.actions_Routes import addRouteToDB
 from src.db.actions.actions_Tokens import updatePairAnalysisByDbId
+from src.db.actions.actions_Transactions import addTransactionToDB
 from src.utils.logging.logging_Setup import printLog
 
+def uploadTx(transactionDetails):
+
+    ###############################################
+    # Pair Details
+    ###############################################
+    pairDetails = transactionDetails["pairDetails"]
+
+    # Metadata ####################################
+    # Pair
+    pairDbId = pairDetails["pair"]["pair_id"]
+
+    # Block
+    blockNumber = transactionDetails["blockNumber"]
+    blockTimestamp = transactionDetails["blockTimestamp"]
+
+    # Token
+    tokenInDbId = pairDetails["primaryToken"]["token_id"]
+    tokenOutDbId = pairDetails["secondaryToken"]["token_id"]
+
+    # Network
+    networkDbId = pairDetails["network"]["db"]["dbId"]
+
+    # Dex
+    dexDbId = pairDetails["dex"]["db"]["dbId"]
+
+    ###############################################
+    # Tx Details
+    ###############################################
+    transactionHash = transactionDetails["txnHash"]
+
+    transactionDbId = addTransactionToDB(
+        networkDbId=networkDbId,
+        dexDbId=dexDbId,
+        pairDbId=pairDbId,
+        tokenInDbId=tokenInDbId,
+        tokenOutDbId=tokenOutDbId,
+        transactionHash=transactionHash,
+        blockNumber=blockNumber,
+        blockTimestamp=blockTimestamp
+    )
+
+    if transactionDbId:
+
+        printLog(f"Added {transactionHash} To DB")
+
+        return transactionDbId
+
+    else:
+
+        return None
 
 def decodeTx(transactionDetails):
 
