@@ -5,14 +5,13 @@ from faker import Faker
 from playwright.sync_api import BrowserContext
 from playwright.sync_api import sync_playwright
 
-from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Dexs import addDexToDB
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.actions.actions_Pairs import addTokenPairToDB
-from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
-from src.db.db.querys.querys_Dexs import getDexRouterDetailsByDbId, getDexByNameAndNetworkId
+from src.db.actions.actions_Tokens import addTokenToDB
+from src.db.db.querys.querys_Dexs import getDexByNameAndNetworkId
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
-from src.db.querys.querys_Networks import getAllNetworks, getNetworkRPCByDbId, getNetworkByName
+from src.db.querys.querys_Networks import getAllNetworks, getNetworkByName
 from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId, getPairForNetworkIdAndPairDbId
 from src.db.querys.querys_Tokens import getTokenByNetworkIdAndSymbol, \
     getTokenByNetworkIdAndTokenId
@@ -25,6 +24,8 @@ from src.utils.data.data_Booleans import strToBool
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger, printLog
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
+
+logger = getProjectLogger()
 
 # Gather all the available networks from the Dexscreener sidebar
 def gatherNetworkList(page):

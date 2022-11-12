@@ -9,8 +9,9 @@ from src.playwright.playwright_Hacks import safePageLoad
 from src.playwright.playwright_Utils import newPage
 from src.utils.data.data_ABI import loadLocalABI
 from src.utils.env.env_Environment import checkHeadless
-from src.utils.logging.logging_Setup import printLog
+from src.utils.logging.logging_Setup import getProjectLogger, printLog
 
+logger = getProjectLogger()
 
 def gatherTransactionsForPair(pair):
 
