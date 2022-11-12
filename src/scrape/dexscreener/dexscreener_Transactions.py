@@ -15,6 +15,8 @@ logger = getProjectLogger()
 
 def gatherTransactionsForPair(pair):
 
+    transactionUrl = pair["pair"]["transactions_url"]
+
     try:
 
         # Create fake user agent
@@ -42,8 +44,6 @@ def gatherTransactionsForPair(pair):
 
                 # Open a new tab
                 page = newPage(browser=browser)
-
-                transactionUrl = pair["pair"]["transactions_url"]
 
                 # Navigate to the dexs url
                 safePageLoad(
