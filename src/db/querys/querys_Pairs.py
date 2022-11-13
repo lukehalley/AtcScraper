@@ -77,59 +77,6 @@ def getPairsWithNullTokenAddresses():
     return dbPairs
 
 @lru_cache()
-def fillPairAddresses(pairDetails):
-
-    IUniswapV2Pair_abi = json.loads(open('src/abis/IUniswapV2Pair.json', "r").read())["abi"]
-
-    networkRPC = pairDetails["chain_rpc"]
-
-    tokenAddress = pairDetails["pair_address"]
-
-    web3 = Web3(Web3.HTTPProvider(networkRPC))
-
-    try:
-
-        pairContract = web3.eth.contract(web3.toChecksumAddress(tokenAddress), abi=IUniswapV2Pair_abi)
-
-        primaryTokenAddress = pairContract.functions.token0().call()
-        secondaryTokenAddress = pairContract.functions.token1().call()
-
-        if primaryTokenAddress:
-            updateTokenByDbId(
-                tokenDbId=pairDetails["primary_token_db_id"],
-                fieldToUpdate="address",
-                fieldNewValue=primaryTokenAddress
-            )
-
-            printLog(
-                msg=f'Pair: {primaryTokenAddress} Primary Token Updated ✅'
-            )
-
-        if secondaryTokenAddress:
-            updateTokenByDbId(
-                tokenDbId=pairDetails["secondary_token_db_id"],
-                fieldToUpdate="address",
-                fieldNewValue=secondaryTokenAddress
-            )
-
-            printLog(
-                msg=f'Pair: {secondaryTokenAddress} Secondary Token Updated ✅'
-            )
-
-        if primaryTokenAddress or secondaryTokenAddress:
-            tokenFilled = True
-        else:
-            tokenFilled = False
-    except:
-        tokenFilled = False
-        pass
-
-    if tokenFilled:
-        return True
-    else:
-        return None
-
-@lru_cache()
 def getAnalysedPairs():
 
     query = f"SELECT pairs.pair_id FROM pairs WHERE pairs.analysed"
