@@ -40,7 +40,7 @@ def invokePoolWithTimeout(functionToRun, functionArgs, timeoutOverride=None):
                     break
             except Exception:
                 pass
-
+                break
 
         pool.close()
         pool.terminate()
