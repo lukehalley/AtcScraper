@@ -4,7 +4,7 @@ from functools import lru_cache
 from web3 import Web3
 from web3.auto import w3
 
-@lru_cache(maxsize=None)
+@lru_cache()
 def getContract(address, abi):
     if isinstance(abi, str):
         abi = json.loads(abi)

@@ -1,4 +1,5 @@
 import json
+from functools import lru_cache
 
 from web3 import Web3
 
@@ -10,6 +11,7 @@ from src.utils.sql.sql_Files import executeScriptsFromFile
 
 logger = getProjectLogger()
 
+@lru_cache()
 def getTokenByNetworkIdAndTokenId(networkDbId, tokenDbId):
 
     query = "" \
@@ -28,6 +30,7 @@ def getTokenByNetworkIdAndTokenId(networkDbId, tokenDbId):
     else:
         return sorted(result, key=lambda d: d['token_id'])[0]
 
+@lru_cache()
 def getTokenByNetworkIdAndAddress(networkDbId, tokenAddress):
 
     query = "" \
@@ -46,6 +49,7 @@ def getTokenByNetworkIdAndAddress(networkDbId, tokenAddress):
     else:
         logger.error("More Than One Token Matches!")
 
+@lru_cache()
 def getTokenByNetworkIdAndSymbol(networkDbId, tokenSymbol):
 
     query = "" \
@@ -64,6 +68,7 @@ def getTokenByNetworkIdAndSymbol(networkDbId, tokenSymbol):
     else:
         logger.error("More Than One Token Matches!")
 
+@lru_cache()
 def getTokensWithMissingDecimals():
 
     tokensWithNoDecimal = executeScriptsFromFile(
@@ -71,38 +76,3 @@ def getTokensWithMissingDecimals():
     )
 
     return tokensWithNoDecimal
-
-def fillTokenDecimals(token):
-
-    # Reading from file
-    ERC20_abi = json.loads(open('src/abis/ERC20.json', "r").read())
-
-    networkRPC = token["chain_rpc"]
-
-    tokenDbId = token["token_id"]
-    tokenAddress = token["address"]
-
-    web3 = Web3(Web3.HTTPProvider(networkRPC))
-
-    tokenDecimals = None
-
-    try:
-        token_info = web3.eth.contract(web3.toChecksumAddress(tokenAddress), abi=ERC20_abi)
-        tokenDecimals = int(token_info.functions.decimals().call())
-    except:
-        pass
-
-    if tokenDecimals:
-        updateTokenByDbId(
-            tokenDbId=tokenDbId,
-            fieldToUpdate="decimals",
-            fieldNewValue=tokenDecimals
-        )
-
-        printLog(
-            msg=f'Token: {tokenAddress} Decimals Added ✅'
-        )
-
-        return True
-    else:
-        return None

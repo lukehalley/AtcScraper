@@ -1,5 +1,11 @@
 from dotenv import load_dotenv
 
+from src.chain.token.token_Decimals import fillTokenDecimals
+from src.db.querys.querys_Dexs import getDexByDbId
+from src.db.querys.querys_Networks import getNetworkByDbId
+from src.db.querys.querys_Transactions import getTransactionsFromDB
+from src.utils.data.data_ABI import loadLocalABI
+
 load_dotenv()
 
 import os
@@ -17,12 +23,12 @@ from src.utils.aws.aws_S3 import downloadAbisFromS3
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.misc.misc_Lazy import checkIsLazyMode
 from src.utils.time.time_Calculations import getNicePerfTime
-from src.db.querys.querys_Pairs import getPairsWithNullTokenAddresses, fillPairAddresses
+from src.db.querys.querys_Pairs import getPairsWithNullTokenAddresses, fillPairAddresses, getPairByDbId
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
 from src.chain.decode.decode_Tx import decodeTx, uploadTx
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
-from src.db.querys.querys_Tokens import fillTokenDecimals, getTokensWithMissingDecimals
+from src.db.querys.querys_Tokens import getTokensWithMissingDecimals
 from src.scrape.dexscreener.dexscreener_Transactions import gatherTransactionsForPair
 from src.utils.multiprocessing.multiprocessing_Utils import invokePoolWithTimeout
 
@@ -355,6 +361,9 @@ def collectPairs():
                             # Decode Transactions
                             #################################################################################
 
+                            # Get Transactions From DB + Decode
+                            transactions = getTransactionsFromDB()
+
                             printSeparator()
                             logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
                             printSeparator()
@@ -362,10 +371,9 @@ def collectPairs():
                             # Start Timer
                             decodeTransactionsStart = time.perf_counter()
 
-                            # Collect all dex pairs
                             obtainedRoutes = invokePoolWithTimeout(
                                 functionToRun=decodeTx,
-                                functionArgs=allTransactions
+                                functionArgs=transactions
                             )
 
                             if obtainedRoutes:

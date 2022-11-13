@@ -38,3 +38,14 @@ def addTransactionToDB(networkDbId, dexDbId, pairDbId, tokenInDbId, tokenOutDbId
     )
 
     return lastRowID
+
+def deleteTransactionToDB(transactionDbId):
+
+     query = f"DELETE FROM transactions " \
+             f"WHERE transactions.transaction_id={transactionDbId}"
+
+     deletedRow = executeWriteQuery(
+         query=query
+     )
+
+     return deletedRow

@@ -1,5 +1,6 @@
 import json
 import sys
+from functools import lru_cache
 
 from web3 import Web3
 
@@ -10,6 +11,25 @@ from src.utils.sql.sql_Files import executeScriptsFromFile
 
 logger = getProjectLogger()
 
+@lru_cache()
+def getPairByDbId(pairDbId):
+
+    query = f"SELECT pairs.* " \
+            f"FROM pairs " \
+            f"WHERE pairs.pair_id = '{pairDbId}'"
+
+    result = executeReadQuery(
+        query=query
+    )
+
+    if len(result) < 1:
+        return None
+    if len(result) == 1:
+        return result[0]
+    else:
+        logger.error("More Than One Pair Matches!")
+
+@lru_cache()
 def getPairForNetworkIdAndPairDbId(networkDbId, pairDbId):
     compareStatement = f"pairs.pair_id = '{pairDbId}' AND pairs.network_id = {networkDbId}"
 
@@ -28,6 +48,7 @@ def getPairForNetworkIdAndPairDbId(networkDbId, pairDbId):
     else:
         return None
 
+@lru_cache()
 def getPairForAddressAndNetworkId(pairAddress, networkDbId):
     compareStatement = f"pairs.address = '{pairAddress}' AND pairs.network_id = {networkDbId}"
 
@@ -46,6 +67,7 @@ def getPairForAddressAndNetworkId(pairAddress, networkDbId):
     else:
         return None
 
+@lru_cache()
 def getPairsWithNullTokenAddresses():
 
     dbPairs = executeScriptsFromFile(
@@ -54,6 +76,7 @@ def getPairsWithNullTokenAddresses():
 
     return dbPairs
 
+@lru_cache()
 def fillPairAddresses(pairDetails):
 
     IUniswapV2Pair_abi = json.loads(open('src/abis/IUniswapV2Pair.json', "r").read())["abi"]
@@ -106,6 +129,7 @@ def fillPairAddresses(pairDetails):
     else:
         return None
 
+@lru_cache()
 def getAnalysedPairs():
 
     query = f"SELECT pairs.pair_id FROM pairs WHERE pairs.analysed"

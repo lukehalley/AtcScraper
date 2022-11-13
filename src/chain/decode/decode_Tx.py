@@ -7,7 +7,11 @@ from src.chain.abi.abi_Contract import getContract
 from src.chain.convert.convert_Hex import convertToHex
 from src.db.actions.actions_Routes import addRouteToDB
 from src.db.actions.actions_Tokens import updatePairAnalysisByDbId
-from src.db.actions.actions_Transactions import addTransactionToDB
+from src.db.actions.actions_Transactions import addTransactionToDB, deleteTransactionToDB
+from src.db.querys.querys_Dexs import getDexByDbId
+from src.db.querys.querys_Networks import getNetworkByDbId
+from src.db.querys.querys_Pairs import getPairByDbId
+from src.utils.data.data_ABI import loadLocalABI
 from src.utils.logging.logging_Setup import printLog
 
 def uploadTx(transactionDetails):
@@ -63,38 +67,49 @@ def uploadTx(transactionDetails):
 
 def decodeTx(transactionDetails):
 
+    pairDetails = getPairByDbId(
+        pairDbId=transactionDetails["pair_id"]
+    )
+
+    networkDetails = getNetworkByDbId(
+        networkDbId=transactionDetails["network_id"]
+    )
+
+    dexDetails = getDexByDbId(
+        dexDbId=transactionDetails["dex_id"]
+    )
+
+    routerAbi = loadLocalABI(
+        path=dexDetails["router_s3_path"]
+    )
+
     ###############################################
     # Pair Details
     ###############################################
-    pairDetails = transactionDetails["pairDetails"]
-
-    # Metadata ####################################
     # Pair
-    pairDbId = pairDetails["pair"]["pair_id"]
-    pairName = pairDetails["pair"]["name"]
+    pairDbId = pairDetails["pair_id"]
+    pairName = pairDetails["name"]
 
     # Token
-    tokenInDbId = pairDetails["primaryToken"]["token_id"]
-    tokenOutDbId = pairDetails["secondaryToken"]["token_id"]
+    tokenInDbId = pairDetails["primary_token_id"]
+    tokenOutDbId = pairDetails["secondary_token_id"]
 
     # Network
-    networkDbId = pairDetails["network"]["db"]["dbId"]
-    networkName = pairDetails["network"]["network"]
-    rpcUrl = pairDetails["network"]["rpcUrl"]
+    networkDbId = networkDetails["network_id"]
+    rpcUrl = networkDetails["chain_rpc"]
 
     # Dex
-    dexName = pairDetails["dex"]["dex"]["name"]
-    dexDbId = pairDetails["dex"]["db"]["dbId"]
+    dexDbId = dexDetails["dex_id"]
 
     # Router
-    routerAddress = pairDetails["dex"]["dex"]["abi"]["router"]
-    routerAbi = pairDetails["dex"]["dex"]["abi"]["router_abi"]
+    routerAddress = dexDetails["router"]
 
     ###############################################
     # Tx Details
     ###############################################
-    transactionHash = transactionDetails["txnHash"]
+    transactionHash = transactionDetails["transaction_hash"]
 
+    routeId = None
     try:
 
         web3 = Web3(Web3.HTTPProvider(rpcUrl))
@@ -164,23 +179,21 @@ def decodeTx(transactionDetails):
                     amountOut=routeObject["amountOutMin"]
                 )
 
-                toReturn = None
-
-                if routeId:
-                    toReturn = routeObject
+                if routeId is not None:
 
                     printLog(
                         msg=f"Added Route For {pairName} ✅"
                     )
 
-                updatePairAnalysisByDbId(
-                    pairDbId=pairDbId,
-                    analysisStatus=True
-                )
-
-                return toReturn
-
-        else:
-            return None
+                    updatePairAnalysisByDbId(
+                        pairDbId=pairDbId,
+                        analysisStatus=True
+                    )
     except:
-        return None
+        pass
+
+    deleteTransactionToDB(
+        transactionDbId=transactionDetails["transaction_id"]
+    )
+
+    return routeId

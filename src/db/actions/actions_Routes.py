@@ -59,4 +59,7 @@ def addRouteToDB(networkDbId, dexDbId, pairDbId, tokenInDbId, tokenInAddress, to
         query=query
     )
 
-    return lastRowID
+    if lastRowID == 0:
+        return None
+    else:
+        return lastRowID
