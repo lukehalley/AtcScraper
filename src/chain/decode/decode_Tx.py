@@ -1,4 +1,5 @@
 import json
+import logging
 
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
@@ -12,7 +13,9 @@ from src.db.querys.querys_Dexs import getDexByDbId
 from src.db.querys.querys_Networks import getNetworkByDbId
 from src.db.querys.querys_Pairs import getPairByDbId
 from src.utils.data.data_ABI import loadLocalABI
-from src.utils.logging.logging_Setup import printLog
+from src.utils.logging.logging_Setup import printLog, getProjectLogger
+
+logger = getProjectLogger()
 
 def uploadTx(transactionDetails):
 
@@ -189,7 +192,8 @@ def decodeTx(transactionDetails):
                         pairDbId=pairDbId,
                         analysisStatus=True
                     )
-    except:
+    except Exception as e:
+        logging.warning("Route Decode Error: " + e)
         pass
 
     deleteTransactionToDB(
