@@ -443,80 +443,87 @@ def gatherPairsForDex(dexDetails):
                         tokenSymbol=tokenDetails["primaryToken"]["symbol"]
                     )
 
-                    primaryTokenDetails = getTokenByNetworkIdAndTokenId(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenDbId=primaryTokenDbId
-                    )
+                    if primaryTokenDbId > 0:
+
+                        primaryTokenDetails = getTokenByNetworkIdAndTokenId(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenDbId=primaryTokenDbId
+                        )
+
                 else:
                     primaryTokenDbId = primaryTokenDetails["token_id"]
 
-                tokenDetails["primaryToken"] = primaryTokenDetails
+                if primaryTokenDetails:
 
-                # Check if secondary token already exists
-                secondaryTokenDetails = getTokenByNetworkIdAndSymbol(
-                    networkDbId=dexDetails["db"]["networkId"],
-                    tokenSymbol=secondaryTokenSymbol
-                )
+                    tokenDetails["primaryToken"] = primaryTokenDetails
 
-                if not secondaryTokenDetails:
-                    # Add secondary token to database
-                    secondaryTokenDbId = addTokenToDB(
+                    # Check if secondary token already exists
+                    secondaryTokenDetails = getTokenByNetworkIdAndSymbol(
                         networkDbId=dexDetails["db"]["networkId"],
-                        tokenName=None,
-                        tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+                        tokenSymbol=secondaryTokenSymbol
                     )
 
-                    secondaryTokenDetails = getTokenByNetworkIdAndTokenId(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        tokenDbId=secondaryTokenDbId
-                    )
-                else:
-                    secondaryTokenDbId = secondaryTokenDetails["token_id"]
+                    if not secondaryTokenDetails:
+                        # Add secondary token to database
+                        secondaryTokenDbId = addTokenToDB(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenName=None,
+                            tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
+                        )
 
-                tokenDetails["primaryToken"] = primaryTokenDetails
-
-                tokenDetails["network"]["db"] = {}
-                tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
-
-                tokenDetails["dex"]["db"] = {}
-                tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
-
-                tokenDetails["secondaryToken"] = secondaryTokenDetails
-
-                if tokenRank not in addedRanks:
-
-                    addedRanks.append(tokenRank)
-
-                    pairDbId = addTokenPairToDB(
-                        networkDbId=dexDetails["db"]["networkId"],
-                        dexDbId=dexDetails["db"]["dexId"],
-                        primaryTokenDbId=primaryTokenDbId,
-                        secondaryTokenDbId=secondaryTokenDbId,
-                        pairName=tokenDetails["pair"]["name"],
-                        pairAddress=tokenDetails["pair"]["address"],
-                        pairRanking=tokenRank,
-                        pairLiquidity=tokenDetails["market"]["liquidity"],
-                        pairVolume=tokenDetails["market"]["volume"],
-                        pairFdv=tokenDetails["market"]["fdv"]
-                    )
-
-                    if not pairDbId:
-                        tokenDetails["pair"] = getPairForAddressAndNetworkId(
-                            pairAddress=tokenDetails["pair"]["address"],
-                            networkDbId=dexDetails["db"]["networkId"]
+                        secondaryTokenDetails = getTokenByNetworkIdAndTokenId(
+                            networkDbId=dexDetails["db"]["networkId"],
+                            tokenDbId=secondaryTokenDbId
                         )
                     else:
-                        tokenDetails["pair"] = getPairForNetworkIdAndPairDbId(
-                            pairDbId=pairDbId,
-                            networkDbId=dexDetails["db"]["networkId"]
-                        )
+                        secondaryTokenDbId = secondaryTokenDetails["token_id"]
 
-                    # Add the uniswap version back in if we have it
-                    if hasUniswapBadge:
-                        tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+                    tokenDetails["primaryToken"] = primaryTokenDetails
 
-                    # Finally, append the token to the final list
-                    collectedPairs.append(tokenDetails)
+                    tokenDetails["network"]["db"] = {}
+                    tokenDetails["network"]["db"]["dbId"] = dexDetails["db"]["networkId"]
+
+                    tokenDetails["dex"]["db"] = {}
+                    tokenDetails["dex"]["db"]["dbId"] = dexDetails["db"]["dexId"]
+
+                    tokenDetails["secondaryToken"] = secondaryTokenDetails
+
+                    if tokenRank not in addedRanks:
+
+                        addedRanks.append(tokenRank)
+
+                        if primaryTokenDbId > 0 and secondaryTokenDbId > 0:
+
+                            pairDbId = addTokenPairToDB(
+                                networkDbId=dexDetails["db"]["networkId"],
+                                dexDbId=dexDetails["db"]["dexId"],
+                                primaryTokenDbId=primaryTokenDbId,
+                                secondaryTokenDbId=secondaryTokenDbId,
+                                pairName=tokenDetails["pair"]["name"],
+                                pairAddress=tokenDetails["pair"]["address"],
+                                pairRanking=tokenRank,
+                                pairLiquidity=tokenDetails["market"]["liquidity"],
+                                pairVolume=tokenDetails["market"]["volume"],
+                                pairFdv=tokenDetails["market"]["fdv"]
+                            )
+
+                            if not pairDbId:
+                                tokenDetails["pair"] = getPairForAddressAndNetworkId(
+                                    pairAddress=tokenDetails["pair"]["address"],
+                                    networkDbId=dexDetails["db"]["networkId"]
+                                )
+                            else:
+                                tokenDetails["pair"] = getPairForNetworkIdAndPairDbId(
+                                    pairDbId=pairDbId,
+                                    networkDbId=dexDetails["db"]["networkId"]
+                                )
+
+                            # Add the uniswap version back in if we have it
+                            if hasUniswapBadge:
+                                tokenDetails["dex"]["uniswapVersion"] = uniswapVersion
+
+                            # Finally, append the token to the final list
+                            collectedPairs.append(tokenDetails)
 
         # Close the page and browser as we are done
         page.close()
