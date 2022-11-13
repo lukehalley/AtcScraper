@@ -45,6 +45,8 @@ def executeWriteQuery(query):
                     pass
         else:
             sys.exit(f"Write DB Error: {error}")
+    except Exception:
+        pass
 
     lastRowID = cursor.lastrowid
 

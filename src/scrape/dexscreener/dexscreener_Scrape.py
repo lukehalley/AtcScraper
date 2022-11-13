@@ -471,11 +471,15 @@ def gatherPairsForDex(dexDetails):
                             tokenSymbol=tokenDetails["secondaryToken"]["symbol"]
                         )
 
-                        secondaryTokenDetails = getTokenByNetworkIdAndTokenId(
-                            networkDbId=dexDetails["db"]["networkId"],
-                            tokenDbId=secondaryTokenDbId
-                        )
+                        if secondaryTokenDbId and secondaryTokenDbId > 0:
+
+                            secondaryTokenDetails = getTokenByNetworkIdAndTokenId(
+                                networkDbId=dexDetails["db"]["networkId"],
+                                tokenDbId=secondaryTokenDbId
+                            )
+
                     else:
+
                         secondaryTokenDbId = secondaryTokenDetails["token_id"]
 
                     tokenDetails["primaryToken"] = primaryTokenDetails

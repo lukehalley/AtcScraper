@@ -55,7 +55,7 @@ def uploadTx(transactionDetails):
         blockTimestamp=blockTimestamp
     )
 
-    if transactionDbId:
+    if transactionDbId and transactionDbId > 0:
 
         printLog(f"Added {transactionHash} To DB")
 
@@ -179,7 +179,7 @@ def decodeTx(transactionDetails):
                     amountOut=routeObject["amountOutMin"]
                 )
 
-                if routeId is not None:
+                if routeId is not None and routeId > 0:
 
                     printLog(
                         msg=f"Added Route For {pairName} ✅"

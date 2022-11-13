@@ -66,15 +66,17 @@ def addTokenPairToDB(networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId,
 
         pairDbId = existingPairDetails["pair_id"]
 
-    addPairRankToDB(
-        pairDbId=pairDbId,
-        networkDbId=networkDbId,
-        dexDbId=dexDbId,
-        pairRanking=pairRanking,
-        pairLiquidity=pairLiquidity,
-        pairVolume=pairVolume,
-        pairFdv=pairFdv,
-    )
+    if pairDbId > 0 or pairDbId is not None:
+
+        addPairRankToDB(
+            pairDbId=pairDbId,
+            networkDbId=networkDbId,
+            dexDbId=dexDbId,
+            pairRanking=pairRanking,
+            pairLiquidity=pairLiquidity,
+            pairVolume=pairVolume,
+            pairFdv=pairFdv,
+        )
 
     return pairDbId
 
