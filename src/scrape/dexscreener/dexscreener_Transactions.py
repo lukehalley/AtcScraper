@@ -102,6 +102,7 @@ def gatherTransactionsForPair(pair):
                 return None
 
     except:
+
         printLog(
             msg=f"Couldn't Load Any Transactions From {transactionUrl} ⛔️"
         )

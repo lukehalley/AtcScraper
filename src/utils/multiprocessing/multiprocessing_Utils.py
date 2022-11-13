@@ -38,6 +38,8 @@ def invokePoolWithTimeout(functionToRun, functionArgs, timeoutOverride=None):
                 else:
                     printLog(f"TIMEOUT LIMIT [{timeoutLimit}] REACHED FOR: {functionToRun.__name__}")
                     break
+            except Exception:
+                pass
 
 
         pool.close()
