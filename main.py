@@ -319,6 +319,8 @@ def collectPairs():
                             # Decode Transactions
                             #################################################################################
 
+                            random.shuffle(allTransactions)
+
                             printSeparator()
                             logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
                             printSeparator()
