@@ -5,6 +5,7 @@
 """
 Initialization module for DEXScreener scraper.
 Sets up connections and configures scraper instances.
+"""Initialize DEX screener with required API endpoints and authentication."""
 """
 """Initialize DexScreener scraper components and connections."""
 """Initialize dexscreener module."""
