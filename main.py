@@ -24,13 +24,13 @@ from src.utils.time.time_Calculations import getNicePerfTime
 from src.db.querys.querys_Pairs import getPairsWithNullTokenAddresses
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
-from src.chain.decode.decode_Tx import decodeTx, uploadTx
+from src.chain.decode.decode_Tx import decodeTx
 from src.db.actions.actions_Tokens import updateUnavailableTokensToNull
 from src.db.querys.querys_Tokens import getTokensWithMissingDecimals
 from src.scrape.dexscreener.dexscreener_Transactions import gatherTransactionsForPair
 from src.utils.multiprocessing.multiprocessing_Utils import invokePoolWithTimeout
 from src.chain.token.token_Decimals import fillTokenDecimals
-from src.db.querys.querys_Transactions import getTransactionsFromDB
+
 
 def collectPairs():
     masterStartTime = time.perf_counter()
@@ -318,8 +318,6 @@ def collectPairs():
                             #################################################################################
                             # Decode Transactions
                             #################################################################################
-
-                            random.shuffle(allTransactions)
 
                             printSeparator()
                             logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
