@@ -1,5 +1,5 @@
 from src.db.actions.actions_General import executeWriteQuery
-from src.utils.logging.logging_Setup import getProjectLogger
+from src.utils.logging.logging_Setup import getProjectLogger, printLog
 
 logger = getProjectLogger()
 

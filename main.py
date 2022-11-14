@@ -30,8 +30,6 @@ from src.utils.multiprocessing.multiprocessing_Utils import invokePoolWithTimeou
 from src.chain.token.token_Decimals import fillTokenDecimals
 from src.db.querys.querys_Transactions import getTransactionsFromDB
 
-THREAD_NUMBER = int(os.getenv("THREAD_NUMBER"))
-
 def collectPairs():
     masterStartTime = time.perf_counter()
 
@@ -58,6 +56,18 @@ def collectPairs():
     syncAbisTimerStr = getNicePerfTime(timeDiff=syncAbisEnd - syncAbisStart)
     logger.info(f"Took {syncAbisTimerStr}")
     printSeparator(newLine=True)
+
+    # Get Transactions From DB + Decode
+    transactions = getTransactionsFromDB()
+
+    printSeparator()
+    logger.info(f"Decoding {len(transactions)} Transactions")
+    printSeparator()
+
+    obtainedRoutes = invokePoolWithTimeout(
+        functionToRun=decodeTx,
+        functionArgs=transactions
+    )
 
     # Log setup message
     printSeparator()
@@ -363,7 +373,7 @@ def collectPairs():
                             transactions = getTransactionsFromDB()
 
                             printSeparator()
-                            logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
+                            logger.info(f"Decoding {len(transactions)} Transactions For {len(combinedDexPairs)} Pairs")
                             printSeparator()
 
                             # Start Timer
@@ -371,7 +381,8 @@ def collectPairs():
 
                             obtainedRoutes = invokePoolWithTimeout(
                                 functionToRun=decodeTx,
-                                functionArgs=transactions
+                                functionArgs=transactions,
+                                numberOfThreads=1
                             )
 
                             if obtainedRoutes:

@@ -7,7 +7,7 @@ from src.utils.multiprocessing.multiprocessing_Classes import MyPool
 
 logger = getProjectLogger()
 
-def invokePoolWithTimeout(functionToRun, functionArgs, timeoutOverride=None):
+def invokePoolWithTimeout(functionToRun, functionArgs, numberOfThreads=None, timeoutOverride=None):
 
     if timeoutOverride:
         timeout = timeoutOverride
@@ -15,7 +15,7 @@ def invokePoolWithTimeout(functionToRun, functionArgs, timeoutOverride=None):
         timeout = int(os.getenv("MULTIPROCESSING_TIMEOUT_SECS"))
 
     timeoutLimit = int(os.getenv("MULTIPROCESSING_TIMEOUT_LIMIT"))
-    with closing(MyPool(None)) as pool:
+    with closing(MyPool(numberOfThreads)) as pool:
 
         functionList = []
 
@@ -38,9 +38,9 @@ def invokePoolWithTimeout(functionToRun, functionArgs, timeoutOverride=None):
                 else:
                     printLog(f"TIMEOUT LIMIT [{timeoutLimit}] REACHED FOR: {functionToRun.__name__}")
                     break
-            except Exception:
+            except Exception as e:
+                printLog(f"POOL ERROR CAUGHT: {e}")
                 pass
-                break
 
         pool.close()
         pool.terminate()

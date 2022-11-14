@@ -6,7 +6,7 @@ import mysql
 from mysql.connector import OperationalError
 
 from src.db.actions.actions_Setup import initDBConnection, getCursor
-from src.utils.logging.logging_Setup import getProjectLogger
+from src.utils.logging.logging_Setup import getProjectLogger, printLog
 
 logger = getProjectLogger()
 
@@ -45,7 +45,11 @@ def executeWriteQuery(query):
                     pass
         else:
             sys.exit(f"Write DB Error: {error}")
-    except Exception:
+    except Exception as e:
+        msg = f"Execute Write Query Error: {e}"
+        logger.warning(msg)
+        printLog(msg)
+        print(msg)
         pass
 
     lastRowID = cursor.lastrowid
