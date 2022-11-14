@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/python:v1.25.2-focal
+FROM mcr.microsoft.com/playwright/python:v1.27.1-focal
 
 # Create a home directory.
 ARG HOME_DIR="home/atc-scraper"
