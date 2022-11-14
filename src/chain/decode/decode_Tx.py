@@ -78,7 +78,7 @@ def decodeTx(transactionDetails):
             pairDbId=transactionDetails["pair_id"]
         )
 
-        printLog(f"2. PAIR DETAILS: {pairDetails}")
+        #printLog(f"2. PAIR DETAILS: {pairDetails}")
 
         networkDetails = getNetworkByDbId(
             networkDbId=transactionDetails["network_id"]
