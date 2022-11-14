@@ -59,19 +59,6 @@ def collectPairs():
     logger.info(f"Took {syncAbisTimerStr}")
     printSeparator(newLine=True)
 
-    # Get Transactions From DB + Decode
-    transactions = getTransactionsFromDB()
-    random.shuffle(transactions)
-
-    printSeparator()
-    logger.info(f"Decoding {len(transactions)} Transactions")
-    printSeparator()
-
-    obtainedRoutes = invokePoolWithTimeout(
-        functionToRun=decodeTx,
-        functionArgs=transactions
-    )
-
     # Log setup message
     printSeparator()
     logger.info(f"Dex Screener Setup")
@@ -329,54 +316,13 @@ def collectPairs():
                         if allTransactions:
 
                             #################################################################################
-                            # Add Transactions To DB
-                            #################################################################################
-
-                            printSeparator()
-                            logger.info(f"Adding {len(allTransactions)} Transactions To DB")
-                            printSeparator()
-
-                            # Start Timer
-                            uploadTransactionsStart = time.perf_counter()
-
-                            uploadTx(allTransactions[0])
-
-                            # Add Transactions To DB
-                            uploadedTxs = invokePoolWithTimeout(
-                                functionToRun=uploadTx,
-                                functionArgs=allTransactions,
-                            )
-
-                            validUploadedTxs = [uploadedTx for uploadedTx in uploadedTxs if uploadedTx]
-
-                            # Stop Timer
-                            uploadTransactionsEnd = time.perf_counter()
-
-                            # Build Timer Str
-                            uploadTransactionsTimerStr = getNicePerfTime(
-                                timeDiff=uploadTransactionsEnd - uploadTransactionsStart)
-
-                            if validUploadedTxs:
-
-                                # Print Outcome
-                                printSeparator()
-                                logger.info(f"Added {len(validUploadedTxs)} Transactions To DB")
-                                logger.info(f"Took {uploadTransactionsTimerStr}")
-                                printSeparator(newLine=True)
-
-                            else:
-
-                                logger.warning("No Transactions Were Added To DB!")
-
-                            #################################################################################
                             # Decode Transactions
                             #################################################################################
 
-                            # Get Transactions From DB + Decode
-                            transactions = getTransactionsFromDB()
+                            random.shuffle(allTransactions)
 
                             printSeparator()
-                            logger.info(f"Decoding {len(transactions)} Transactions For {len(combinedDexPairs)} Pairs")
+                            logger.info(f"Decoding {len(allTransactions)} Transactions For {len(combinedDexPairs)} Pairs")
                             printSeparator()
 
                             # Start Timer
@@ -384,7 +330,7 @@ def collectPairs():
 
                             obtainedRoutes = invokePoolWithTimeout(
                                 functionToRun=decodeTx,
-                                functionArgs=transactions,
+                                functionArgs=allTransactions,
                                 numberOfThreads=1
                             )
 
