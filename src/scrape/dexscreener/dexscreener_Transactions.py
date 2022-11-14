@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 from faker import Faker
@@ -59,12 +60,15 @@ def gatherTransactionsForPair(pair):
                 browser.close()
 
                 # Try And Load It
+                transactionsToCollect = int(os.getenv("TRANSACTION_AMOUNT_OF_LINKS_TO_COLLECT"))
                 try:
                     resultJson = json.loads(innerText)
                     if resultJson['tradingHistory']:
                         transactions = resultJson['tradingHistory']
+                        if len(transactions) > transactionsToCollect:
+                            transactions = transactions[0:transactionsToCollect]
                         printLog(
-                            msg=f"Got {len(resultJson['tradingHistory'])} Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} ✅"
+                            msg=f"Got {len(transactions)} Transactions For {resultJson['baseTokenSymbol']}/{resultJson['quoteTokenSymbol']} ✅"
                         )
                     else:
                         printLog(
