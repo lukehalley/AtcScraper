@@ -233,6 +233,7 @@ def decodeTx(transactionDetails):
         return routeId
 
     except Exception as e:
+        printLog(f"Route Error: {e}")
         pass
         return None
 
