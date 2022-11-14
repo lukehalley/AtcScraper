@@ -1,3 +1,5 @@
+import random
+
 from dotenv import load_dotenv
 
 from src.chain.token.token_Pairs import fillPairAddresses
@@ -59,6 +61,7 @@ def collectPairs():
 
     # Get Transactions From DB + Decode
     transactions = getTransactionsFromDB()
+    random.shuffle(transactions)
 
     printSeparator()
     logger.info(f"Decoding {len(transactions)} Transactions")
