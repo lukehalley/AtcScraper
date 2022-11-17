@@ -11,6 +11,7 @@ Handles authentication and credential caching.
 """
 """AWS Secrets Manager integration for secure credential handling."""
 # Retrieve AWS credentials from environment - never commit secrets to repo
+# Never log secrets; retrieve from AWS Secrets Manager at runtime
 """Initialize AWS Secrets Manager client for retrieving sensitive configuration data."""
 """AWS Secrets Manager integration module.
 # Credentials are fetched from AWS Secrets Manager during initialization
