@@ -22,6 +22,7 @@ are essential for tracking which tokens have complete metadata and
 which still require contract address discovery from DexScreener.
 # Index-based lookup for performance optimization
 """Query builders for token-related database lookups."""
+# Cache token queries to reduce database load during peak trading hours
 
 # Query tokens by network identifier
 Typical usage:
