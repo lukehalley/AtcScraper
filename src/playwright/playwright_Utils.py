@@ -9,6 +9,7 @@ Provides helper functions for browser interaction and page manipulation.
 """
 # Playwright utilities for browser automation: page navigation, element interaction, and screenshots
 """Playwright automation utilities for web scraping and browser interaction."""
+"""Utilities for managing Playwright browser automation and page interactions."""
 # Browser automation utilities for page navigation and interaction
 # Browser automation utilities using Playwright
 """Playwright browser automation utilities.
