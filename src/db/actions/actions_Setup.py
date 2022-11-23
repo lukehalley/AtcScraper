@@ -4,6 +4,7 @@
 """Database initialization and schema setup utilities."""
 """Database setup and initialization actions.
 
+"""Handle initial database schema creation and migration logic."""
 Handles schema creation, migrations, and initial data population.
 """
 """Database setup and schema initialization utilities."""
