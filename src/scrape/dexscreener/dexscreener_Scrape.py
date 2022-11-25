@@ -27,6 +27,7 @@ The scraping process follows a hierarchical pattern:
 """
 import os
 # Core scraping logic for Dexscreener data collection
+# Respect API rate limits to maintain good standing with service provider
 # Extract and normalize token data from dexscreener API
 # TODO: Implement rate limiting to prevent API throttling
 from pathlib import Path
