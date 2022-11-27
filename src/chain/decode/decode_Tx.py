@@ -11,6 +11,7 @@ from src.db.actions.actions_Transactions import addTransactionToDB, deleteTransa
 from src.db.querys.querys_Dexs import getDexByDbId
 from src.db.querys.querys_Networks import getNetworkByDbId
 from src.db.querys.querys_Pairs import getPairByDbId
+from src.db.querys.querys_Tokens import getTokenByNetworkIdAndTokenId
 from src.utils.data.data_ABI import loadLocalABI
 from src.utils.logging.logging_Setup import printLog, getProjectLogger
 
@@ -102,6 +103,16 @@ def decodeTx(transactionDetails):
     web3.middleware_onion.inject(geth_poa_middleware, layer=0)
     transaction = web3.eth.get_transaction(transactionHash)
 
+    primaryToken = getTokenByNetworkIdAndTokenId(
+        networkDbId=pairDetails["pair"]["network_id"],
+        tokenDbId=pairDetails["pair"]["primary_token_id"]
+    )
+
+    secondaryToken = getTokenByNetworkIdAndTokenId(
+        networkDbId=pairDetails["pair"]["network_id"],
+        tokenDbId=pairDetails["pair"]["primary_token_id"]
+    )
+
     try:
 
         if transaction["to"] == dexRouterAddress:
@@ -142,31 +153,39 @@ def decodeTx(transactionDetails):
                 else:
                     routeObject["amountOutMin"] = None
 
-                routeId = addRouteToDB(
-                    networkDbId=networkDbId,
-                    dexDbId=dexDbId,
-                    pairDbId=pairDbId,
-                    tokenInDbId=tokenInDbId,
-                    tokenInAddress=tokenInAddress,
-                    tokenOutDbId=tokenOutDbId,
-                    tokenOutAddress=tokenOutAddress,
-                    route=routeObject["route"],
-                    method=routeObject["method"],
-                    transactionHash=decodedTransaction["txHash"],
-                    txTimestamp=decodedTransaction["timestamp"],
-                    blockNumber=decodedTransaction["blockNumber"],
-                    amountIn=routeObject["amountIn"],
-                    amountOut=routeObject["amountOutMin"]
-                )
+                if primaryToken["address"] == tokenInAddress and secondaryToken["address"] == tokenInAddress:
 
-                if routeId is not None and routeId > 0:
-                    printLog(
-                        msg=f"Added Route For {pairName} ✅"
+                    routeId = addRouteToDB(
+                        networkDbId=networkDbId,
+                        dexDbId=dexDbId,
+                        pairDbId=pairDbId,
+                        tokenInDbId=tokenInDbId,
+                        tokenInAddress=tokenInAddress,
+                        tokenOutDbId=tokenOutDbId,
+                        tokenOutAddress=tokenOutAddress,
+                        route=routeObject["route"],
+                        method=routeObject["method"],
+                        transactionHash=decodedTransaction["txHash"],
+                        txTimestamp=decodedTransaction["timestamp"],
+                        blockNumber=decodedTransaction["blockNumber"],
+                        amountIn=routeObject["amountIn"],
+                        amountOut=routeObject["amountOutMin"]
                     )
 
-                    updatePairAnalysisByDbId(
-                        pairDbId=pairDbId,
-                        analysisStatus=True
+                    if routeId is not None and routeId > 0:
+                        printLog(
+                            msg=f"Added Route For {pairName} ✅"
+                        )
+
+                        updatePairAnalysisByDbId(
+                            pairDbId=pairDbId,
+                            analysisStatus=True
+                        )
+
+                else:
+
+                    printLog(
+                        msg=f"Bad Route For {pairName} 😶"
                     )
 
     except ValueError:

@@ -3,6 +3,7 @@ import random
 from dotenv import load_dotenv
 
 from src.chain.token.token_Pairs import fillPairAddresses
+from src.db.querys.querys_Routes import getPairsWithRoutes
 
 load_dotenv()
 
@@ -282,7 +283,7 @@ def collectPairs():
                 if combinedDexPairs:
 
                     if checkIsLazyMode():
-                        combinedDexPairs = combinedDexPairs[0:9]
+                        combinedDexPairs = combinedDexPairs[0:99]
 
                     logger.info(f"Collecting Transactions For {len(combinedDexPairs)} Pairs")
                     printSeparator()
@@ -319,6 +320,7 @@ def collectPairs():
                             # Decode Transactions
                             #################################################################################
 
+                            # Shuffle Transactions
                             random.shuffle(allTransactions)
 
                             printSeparator()
