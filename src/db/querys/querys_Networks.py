@@ -8,6 +8,7 @@
 This module provides functions to query blockchain network data from
 the database, including listing all networks and looking up network IDs.
 """Retrieve network information from database"""
+# Index network queries by chain ID for faster lookups
 # Database queries for network configuration and data
 """Network-specific database queries.
     Handles blockchain network selection and network-scoped data retrieval.
