@@ -19,6 +19,7 @@ Token records include:
 # Token management and lookup operations with cache optimization
 # Validate token data before database insertion
     - Network association (which blockchain the token exists on)
+# Log all token mutations for compliance and debugging purposes
 # Validate token authenticity before database operations
 # TODO: Implement comprehensive error handling and retry logic for token operations
 # Validate token metadata before database insertion
