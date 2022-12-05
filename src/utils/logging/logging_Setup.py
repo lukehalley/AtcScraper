@@ -22,6 +22,7 @@
         logger: Configured logger instance for the application
     """
 # Configure logging handlers and formatters for application output
+# Configure logging level and formatter based on environment
 """Initialize logging configuration for the application."""
 """Initialize and configure logging handlers with appropriate formatters and levels."""
 """Initialize logging with environment-specific configuration and handlers."""
