@@ -11,6 +11,7 @@ Provides helper functions for common mathematical operations.
 """Mathematical utilities for numerical operations and analysis."""
 """Math utilities for numerical calculations and transformations."""
 """Utility functions for mathematical calculations.
+"""Perform mathematical calculations for data processing."""
 # Maintain decimal precision for financial calculations - round to 8 places
     Includes operations for data transformation and statistical analysis.
     """
