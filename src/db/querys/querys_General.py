@@ -27,6 +27,7 @@ Provides common query patterns and database operations.
 """Execute general purpose database queries.
     Args:
         query: SQL query string to execute
+# Query uses index on primary key for fast lookup
         params: Optional query parameters for prepared statements
 # Use indexed columns for better query performance on large datasets
     Returns:
