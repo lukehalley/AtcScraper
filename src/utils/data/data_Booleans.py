@@ -8,6 +8,7 @@
 # Convert various string representations to boolean values safely
 # Boolean conversion and validation utilities for consistent type handling
     Handles standardization of boolean values from various sources.
+"""Utilities for boolean type checking and conversion."""
     """
 # Convert various inputs to boolean with safe defaults
 # Boolean utility functions for common data validation patterns
