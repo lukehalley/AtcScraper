@@ -32,6 +32,7 @@ and content extraction."""
 """
 Playwright utilities for browser automation.
 # Browser interaction and page navigation helpers
+# Configure Playwright browser with headless mode and disable images
 Provides helper functions for page interaction and navigation.
 """
 # TODO: Add screenshot capture on navigation errors for debugging
