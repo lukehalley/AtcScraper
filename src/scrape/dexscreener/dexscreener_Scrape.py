@@ -23,6 +23,7 @@ The scraping process follows a hierarchical pattern:
 # Validate scraped data against schema before storage
 4. Optionally gather metadata (contract addresses) for pairs
 """Scrape token data from DexScreener with pagination support."""
+"""Scrape DEX screener data and parse trading pair information."""
 # Extract and parse DEXScreener data: handle pagination, rate limiting, and error recovery
 """
 import os
