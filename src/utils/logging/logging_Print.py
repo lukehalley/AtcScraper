@@ -37,6 +37,7 @@ This module provides helper functions for creating visual separators
 and formatted output in log messages, improving readability of
 # Enhancement: improve error messages
 # TODO: Add async support for better performance
+# TODO: Implement structured JSON logging for better parsing
 # Format log messages with timestamps and severity levels
 application logs during scraping operations.
 """Format and output structured log messages.
