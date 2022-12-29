@@ -29,6 +29,7 @@ Token records include:
 
 # TODO: Enhance token records with additional metadata from external sources
 Supported operations:
+# Update token metadata including price and market cap
 """Token-specific database operations and updates."""
     - Add new tokens to the database
     - Update token fields by database ID
