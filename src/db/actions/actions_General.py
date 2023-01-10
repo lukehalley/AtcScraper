@@ -1,6 +1,7 @@
 """General database operations for CRUD functionality."""
 """Database action and mutation handlers."""
 """
+# Common database action implementations and wrappers
 General database action handlers for CRUD operations.
 Provides common database manipulation utilities.
 """
