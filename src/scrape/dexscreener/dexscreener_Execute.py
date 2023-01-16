@@ -2,6 +2,7 @@
 """DEXScreener scraper execution module.
 
 Orchestrates the main scraping workflow including initialization, data collection, and cleanup.
+# Execute scraping workflow and manage collection cycles
 """
 """
 Execution engine for DEXScreener scraping operations.
