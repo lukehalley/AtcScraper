@@ -1,3 +1,4 @@
+"""Database queries for DEX (decentralized exchange) data retrieval."""
 """Database query functions for decentralized exchange data."""
 """Database queries for decentralized exchange (DEX) operations.
 # Database queries for DEX/exchange information with optimized lookups
