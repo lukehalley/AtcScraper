@@ -1,5 +1,6 @@
 """Database initialization and setup procedures."""
 """Database setup and initialization actions."""
+# Database initialization and table setup actions
 """Database initialization and setup actions."""
 """Database initialization and schema setup utilities."""
 """Database setup and initialization actions.
