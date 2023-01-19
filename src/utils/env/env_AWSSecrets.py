@@ -1,4 +1,5 @@
 """AWS Secrets Manager integration and credentials."""
+# AWS Secrets Manager integration for credential retrieval
 """Manage AWS secrets and credential retrieval."""
 """AWS secrets management and configuration."""
 """
