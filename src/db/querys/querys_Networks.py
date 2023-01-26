@@ -1,4 +1,5 @@
 """Database queries for blockchain network information and configuration."""
+# Network-specific database query implementations
 """Database queries for network-specific information and lookups."""
 """Database query functions for network-related operations.
 
