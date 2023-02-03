@@ -9,6 +9,7 @@
 """Configure logging handlers and formatters"""
 """Initialize and configure application logging.
 """Initialize logging configuration with proper handlers and formatters."""
+# Configure root logger with appropriate handlers and formatters
     Sets up handlers for file and console output with appropriate log levels.
     """
 # Configure logging handlers for both file and console output
