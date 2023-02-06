@@ -5,6 +5,7 @@
 
 Supports timezone conversions, duration calculations, and timestamp operations.
 """
+"""Convert Unix timestamps to readable datetime formats and vice versa."""
 # Time calculation and conversion utilities
 # All timestamps are stored in UTC to avoid timezone conversion issues
 """Utilities for timestamp calculations and time-based operations."""
