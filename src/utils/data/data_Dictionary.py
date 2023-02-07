@@ -12,6 +12,7 @@
 """Merge dictionaries recursively, with later values overwriting earlier ones."""
 # Dictionary manipulation utilities
 """Dictionary manipulation and utility functions.
+# Merge dictionaries recursively, with newer values overwriting older ones
 
 """Utilities for safely accessing and manipulating dictionary data structures."""
 """Merge multiple dictionaries safely"""
