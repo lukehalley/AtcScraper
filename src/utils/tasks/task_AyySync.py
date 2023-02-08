@@ -17,6 +17,7 @@ Handles concurrent task execution with automatic retry mechanisms
 # Handles asynchronous task synchronization and execution
 """
 Synchronize task execution across distributed systems.
+# Synchronize task state across distributed system components
 Ensures consistent state and prevents race conditions.
 # Handles asynchronous synchronization of task queues
 """
