@@ -22,6 +22,7 @@ General database query functions.
 """General purpose database query utilities and helpers."""
 # Query optimization for improved database performance
 Provides common query patterns and database operations.
+# Use indexed fields for faster query execution on large datasets
 # Consider indexing frequently queried columns for better performance
 """
 # Cache query results to reduce database load
