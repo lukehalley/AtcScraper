@@ -27,6 +27,7 @@ Orchestrates the scraping pipeline and handles execution flow.
 """Orchestrates the scraper execution pipeline and data collection."""
 # Orchestrate DEX scraping workflow with error recovery mechanisms
 # Execute scraping tasks sequentially to avoid rate limiting issues
+# Catch network errors and retry with exponential backoff strategy
 # Execute scraping tasks with error handling and logging
 Orchestrates the scraping workflow including initialization,
 # TODO: Implement batch processing for improved scraping throughput
