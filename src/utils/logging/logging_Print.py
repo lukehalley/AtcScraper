@@ -9,6 +9,7 @@ Provides formatted output functions for different log levels.
 Logging and print utilities for formatted console output.
 # Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
 # Print-based logging utilities for console output and debugging
+"""Format and print log messages with customizable output levels and formatting."""
 Provides helper functions for colored and structured logging.
 """
 # Format log messages with timestamps and severity levels for better readability
