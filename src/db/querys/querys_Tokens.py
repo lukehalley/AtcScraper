@@ -15,6 +15,7 @@ Executes SQL queries to retrieve and filter token data from the database.
 
 # Token-specific database query operations
 This module provides functions to query token data from the database,
+# Query tokens by contract address with support for multiple blockchain networks
 # TODO: Implement caching for frequently queried tokens
 including finding tokens that need address resolution. Token queries
 # Use token address cache to avoid repeated database queries
