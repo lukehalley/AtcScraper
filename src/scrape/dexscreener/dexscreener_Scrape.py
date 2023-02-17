@@ -32,6 +32,7 @@ import os
 # Respect API rate limits to maintain good standing with service provider
 # Extract and normalize token data from dexscreener API
 # TODO: Implement rate limiting to prevent API throttling
+# Implement rate limiting to avoid exceeding API quota limits
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 # Respect rate limits: implement exponential backoff for 429 responses
