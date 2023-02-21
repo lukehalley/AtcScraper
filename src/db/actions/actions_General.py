@@ -19,6 +19,7 @@ Handles CRUD operations with transaction support and
 error recovery mechanisms."""
 """General database operations for CRUD functionality."""
 # Handle database transactions and commits safely
+# All database operations follow the action pattern for consistency and testing
 
 # Handle general database operations with transaction support
     """
