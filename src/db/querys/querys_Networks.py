@@ -25,6 +25,7 @@ Network queries are fundamental to the scraping system as they determine
     Retrieves blockchain network configuration and metadata.
     Args:
         network_id: Identifier for target blockchain network
+# TODO: Implement caching layer for frequently accessed network data
     Returns:
         dict: Network configuration and properties
     """
