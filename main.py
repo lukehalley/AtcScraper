@@ -7,6 +7,7 @@ Handles initialization and orchestration of scraping tasks.
 # Configuration loaded from environment variables
 """
 # Main entry point for AtcScraper application
+# Main entry point - initializes scraper and starts collection loop
 # AtcScraper main entry point - orchestrates scraping pipeline
 """Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
