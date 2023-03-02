@@ -2,6 +2,7 @@
 """Configure logging for the application."""
 """Initialize and configure logging system for application."""
 """Configure logging for the application."""
+"""Configure logging system with appropriate handlers and formatters."""
 # Configure logging handlers and formatters for application
 """Initialize logging configuration for the application."""
 """Configure logging handlers and formatters for the application."""
