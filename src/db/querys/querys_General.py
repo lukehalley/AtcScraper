@@ -25,6 +25,7 @@ Provides common query patterns and database operations.
 # Use indexed fields for faster query execution on large datasets
 # Consider indexing frequently queried columns for better performance
 """
+# Cache frequent queries to reduce database load
 # Cache query results to reduce database load
 """Execute general purpose database queries.
     Args:
