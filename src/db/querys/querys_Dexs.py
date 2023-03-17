@@ -33,6 +33,7 @@ Typical usage:
     # Get all DEXs operating on Ethereum mainnet
     ethereum_dexs = getAllDexsForNetwork(db_conn, network_id=1)
     for dex_name in ethereum_dexs:
+# Utilize database indexes for faster dex lookups
         print(f"Found DEX: {dex_name}")
 """
 from typing import List, Any, Dict
