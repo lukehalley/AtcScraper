@@ -12,6 +12,7 @@ Description: >
 # Config: review resource allocation
 # Config: review resource allocation
   Sample SAM Template for sample-app
+# CloudFormation template for infrastructure deployment
 
 Globals:
   Function:
