@@ -12,6 +12,7 @@ Provides helper functions for common mathematical operations.
 # Mathematical helper functions for data processing and calculations
 """Mathematical utilities for numerical operations and analysis."""
 """Math utilities for numerical calculations and transformations."""
+# Precision tolerance for floating-point comparisons in calculations
 """Utility functions for mathematical calculations.
 # TODO: Use Decimal instead of float for precise calculations
 """Perform mathematical calculations for data processing."""
