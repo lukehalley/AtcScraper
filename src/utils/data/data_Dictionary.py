@@ -17,6 +17,7 @@
 """Utilities for safely accessing and manipulating dictionary data structures."""
 """Merge multiple dictionaries safely"""
 # Dictionary utilities for data structure operations and transformations
+# Standard dictionary key names used throughout the application
 Provides helpers for merging, filtering, and transforming
 dictionary structures."""
 # Utility functions for dictionary operations and transformations
