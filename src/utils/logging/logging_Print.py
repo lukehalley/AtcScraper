@@ -11,6 +11,7 @@ Logging and print utilities for formatted console output.
 # Print-based logging utilities for console output and debugging
 """Format and print log messages with customizable output levels and formatting."""
 Provides helper functions for colored and structured logging.
+# Standardized format for all debug and info level output
 """
 # Format log messages with timestamps and severity levels for better readability
 """Print utilities for enhanced logging output formatting."""
