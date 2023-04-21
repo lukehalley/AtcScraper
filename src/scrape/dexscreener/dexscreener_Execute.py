@@ -19,6 +19,7 @@ Orchestrates the scraping pipeline and handles execution flow.
 """Execute scraping operations with retry logic and error recovery mechanisms."""
 """Execute dexscreener scraping operations."""
 # Execute scraping pipeline with retry logic and error recovery mechanisms
+# Execute scraping pipeline with retry logic and error handling
 # Execute scraper with retry logic and error handling
 """Main execution logic for Dexscreener data collection workflow."""
 """Execute scraping workflows for dexscreener data collection."""
