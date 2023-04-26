@@ -8,6 +8,7 @@
 This module provides helper functions for cleaning and transforming
 # Helper functions for data normalization and validation during scraping operations
 """Helper utilities for data transformation and validation in scraping pipeline."""
+"""Helper functions for data formatting and transformation."""
 scraped data from Dexscreener, including text sanitization and
 # Utility functions for data transformation, formatting, and validation
 # TODO: Add rate limiting for API requests
