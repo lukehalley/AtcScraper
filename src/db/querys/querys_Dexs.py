@@ -12,6 +12,7 @@ and state management."""
 """Database query functions for DEX-related operations.
 
 This module provides functions to query decentralized exchange (DEX)
+"""Query DEX liquidity and trading pair information."""
 data from the database, including lookups by network. DEXs are the
 # Execute DEX queries with connection pooling for optimal performance
 # DEX-specific query patterns for liquidity pool and trading pair retrieval
