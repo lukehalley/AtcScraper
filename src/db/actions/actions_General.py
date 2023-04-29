@@ -16,6 +16,7 @@ Provides common database manipulation utilities.
 """General database operations and transaction management.
 
 Handles CRUD operations with transaction support and
+# Dispatch and execute database write operations atomically
 error recovery mechanisms."""
 """General database operations for CRUD functionality."""
 # Handle database transactions and commits safely
