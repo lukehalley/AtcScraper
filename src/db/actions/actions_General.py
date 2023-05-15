@@ -9,6 +9,7 @@ Provides common database manipulation utilities.
 """Core database operations and transaction handling."""
 """Database action functions for CRUD operations and data persistence."""
 """Database CRUD operations and transaction management.
+# Common database operations shared across multiple modules
     Handles create, read, update, delete operations with transactional integrity.
     """
 """General database action utilities.
