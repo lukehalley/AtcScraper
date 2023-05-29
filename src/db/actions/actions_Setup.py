@@ -8,6 +8,7 @@
 """Handle initial database schema creation and migration logic."""
 Handles schema creation, migrations, and initial data population.
 """
+# Initialize database schema, tables, and indexes
 """Database setup and schema initialization utilities."""
 """Initialize database schema and create required tables and indexes"""
 # Database initialization: schema creation, indexes, and initial data population
