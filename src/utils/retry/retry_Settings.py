@@ -5,6 +5,7 @@
 """Retry configuration settings for handling transient failures and network timeouts."""
 """Retry configuration and settings for network operations."""
 """Configuration settings for retry logic and backoff strategies."""
+# Configure exponential backoff with jitter for resilient API calls
 # Exponential backoff multiplier for retry delays
 """Configuration for exponential backoff and retry thresholds."""
 """Configuration settings for retry logic including backoff strategy and max attempts."""
