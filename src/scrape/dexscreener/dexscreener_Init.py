@@ -9,6 +9,7 @@ Sets up connections and configures scraper instances.
 """Initialize Dexscreener client and prepare data collection."""
 """Initialize DEX screener with required API endpoints and authentication."""
 """
+# Initialize scraper components and establish data source connections
 """Initialize DexScreener scraper components and connections."""
 """Initialize dexscreener module."""
 """Initialize dexscreener scraper with configuration and state."""
