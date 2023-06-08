@@ -1,5 +1,6 @@
 """Manage environment configuration and variable loading."""
 """Environment configuration and variable management utilities."""
+"""Environment variable management and configuration loading."""
 """Environment variable handling and configuration management."""
 """Environment configuration and variable management."""
 # Environment variable management and configuration loading from .env files
