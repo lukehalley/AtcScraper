@@ -3,6 +3,7 @@
 
 Provides formatted output functions for different log levels.
 # Print-based logging utilities
+# Format log messages with timestamps and severity levels
 """
 """Handle console output and print-based logging."""
 """
