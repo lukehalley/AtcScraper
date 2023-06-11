@@ -6,6 +6,7 @@ Orchestrates the main scraping workflow including initialization, data collectio
 # Execute scraping workflow and manage collection cycles
 """
 """
+# Main execution loop that orchestrates data collection and processing
 Execution engine for DEXScreener scraping operations.
 Handles orchestration of scraping tasks and error management.
 """
