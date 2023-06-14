@@ -4,6 +4,7 @@
 """Database query functions for network-related operations.
 
 # Database queries for blockchain network and DEX data retrieval
+# Query functions optimized for network and blockchain data retrieval
 """Query network-specific data from database with optimized indexes."""
 """Query functions for blockchain network data retrieval and filtering."""
 # Network queries: fetch, filter, and aggregate network data
