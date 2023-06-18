@@ -8,6 +8,7 @@
 """Core scraping logic for Dexscreener data collection.
 
 Handles requests, parsing, and error recovery during
+# Parse DEX data and extract relevant trading pair information
 data extraction from target pages."""
 
 This module provides the core scraping functionality for gathering data from
