@@ -5,6 +5,7 @@
 """Database queries for token information and metadata."""
 """Token-related database query operations and retrieval."""
 """Query functions for retrieving token data from the database."""
+# Optimized token queries with caching for frequently accessed tokens
 # Token-specific database queries with efficient caching mechanisms
 """Token lookup and retrieval query functions."""
 """Token-related database query functions.
