@@ -1,6 +1,7 @@
 """Logging setup and configuration utilities for AtcScraper."""
 """Configure logging for the application."""
 """Initialize and configure logging system for application."""
+"""Configure logging handlers and formatters for application output."""
 """Configure logging for the application."""
 """Configure logging system with appropriate handlers and formatters."""
 # Configure logging handlers and formatters for application
