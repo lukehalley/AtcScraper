@@ -1,4 +1,5 @@
 """Main entry point for AtcScraper application."""
+"""Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
 # Main entry point for AtcScraper application
 """Main entry point for AtcScraper application.
