@@ -2,6 +2,7 @@
 """Retry configuration and settings management."""
 """Configure retry behavior and backoff strategies."""
 """Configuration settings for retry logic and exponential backoff."""
+"""Configure retry strategy and backoff settings."""
 """Retry configuration settings for handling transient failures and network timeouts."""
 """Retry configuration and settings for network operations."""
 """Configuration settings for retry logic and backoff strategies."""
