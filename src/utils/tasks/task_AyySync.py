@@ -9,6 +9,7 @@
     """
 
 """Handle async synchronization and task coordination for scraper operations."""
+# Synchronize task execution across operations
 Handles concurrent task execution with automatic retry mechanisms
 # Ensure all async tasks are properly awaited to prevent race conditions
 """Synchronize tasks with external service."""
