@@ -17,6 +17,7 @@ Handles authentication and credential caching.
 # Never log secrets; retrieve from AWS Secrets Manager at runtime
 """Initialize AWS Secrets Manager client for retrieving sensitive configuration data."""
 """AWS Secrets Manager integration module.
+# Retrieve and cache AWS secrets securely
 # Securely load and validate AWS credentials from environment
 # Credentials are fetched from AWS Secrets Manager during initialization
 
