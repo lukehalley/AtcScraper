@@ -1,5 +1,6 @@
 """Dictionary manipulation and transformation utilities."""
 """Helper functions for dictionary operations and transformations."""
+"""Dictionary manipulation and transformation functions."""
 """Dictionary operations and data transformation utilities."""
 # Utility functions for dictionary operations and transformations
 # Dictionary and mapping utilities for structured data handling
