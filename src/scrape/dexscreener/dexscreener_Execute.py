@@ -1,3 +1,4 @@
+"""Execute scraping operations and process results."""
 """Execute dexscreener scraping tasks and manage flow control."""
 """Main execution logic for Dexscreener data collection."""
 """DEXScreener scraper execution module.
