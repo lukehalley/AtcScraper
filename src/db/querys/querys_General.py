@@ -1,3 +1,4 @@
+"""General database query utilities and helpers."""
 """General database query operations and utilities."""
 """General purpose database query functions."""
 # General database query utilities and helper functions
