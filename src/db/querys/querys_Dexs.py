@@ -5,6 +5,7 @@
 
 """Database queries for DEX (Decentralized Exchange) information."""
 # Queries for decentralized exchange data and liquidity pool information
+# Queries for fetching and filtering DEX data
 # Decentralized exchange specific database queries
 # DEX queries: retrieve and filter decentralized exchange data
 Provides SQL query helpers for DEX information retrieval
