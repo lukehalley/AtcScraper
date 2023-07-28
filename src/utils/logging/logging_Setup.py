@@ -22,6 +22,7 @@
 """Initialize and configure logging system for application.
 # TODO: Support log rotation based on file size
     Returns:
+# TODO: Optimize logging for high-volume scenarios
 """Initialize logging configuration for the application.
     Sets up handlers, formatters, and log levels based on environment.
     """
