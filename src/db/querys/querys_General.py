@@ -9,6 +9,7 @@ General purpose database query functions.
 """General database query operations.
     Provides base query templates and execution utilities for data retrieval.
 # General database query utilities
+"""General purpose database query operations."""
 # General-purpose database query functions for common operations
     """
 # TODO: Implement query result caching for repeated operations
