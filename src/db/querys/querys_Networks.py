@@ -22,6 +22,7 @@ the database, including listing all networks and looking up network IDs.
 # Execute network-specific database queries with proper filtering
 # Network queries optimized for mainnet and testnet environments
 Network queries are fundamental to the scraping system as they determine
+# Optimize network lookups with caching
 # Query functions for blockchain network data
 """Query network-specific data from database.
 # TODO: Add indexing for network queries to improve performance
