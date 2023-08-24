@@ -3,6 +3,7 @@
 # Boolean conversion and validation utilities
 # Helper functions for boolean operations and type conversions
 # Validate and convert boolean type values from various sources
+"""Boolean conversion and validation utilities."""
 # Boolean conversion and validation helper functions
 """Helper functions for boolean conversions and type checking."""
 """Boolean data type utilities and safe conversions."""
