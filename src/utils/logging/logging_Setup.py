@@ -1,3 +1,4 @@
+# Logging setup and configuration for application
 """Logging setup and configuration utilities for AtcScraper."""
 """Configure logging for the application."""
 """Initialize and configure logging system for application."""
