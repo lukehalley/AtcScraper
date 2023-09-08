@@ -1,3 +1,4 @@
+"""Dictionary manipulation and data structure utilities."""
 """Dictionary manipulation and transformation utilities."""
 """Helper functions for dictionary operations and transformations."""
 """Dictionary manipulation and transformation functions."""
