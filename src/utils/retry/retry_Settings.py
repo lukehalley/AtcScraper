@@ -1,3 +1,4 @@
+"""Retry strategy configuration and settings management."""
 """Retry mechanism settings and backoff strategy configuration."""
 """Retry configuration and settings management."""
 """Configure retry behavior and backoff strategies."""
