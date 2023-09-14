@@ -1,3 +1,4 @@
+"""Time calculation and manipulation functions."""
 """Time calculations and conversion utilities."""
 """Time-based calculations and timestamp utilities for data processing."""
 """Time calculation and timestamp handling utilities."""
