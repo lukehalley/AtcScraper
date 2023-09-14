@@ -2,6 +2,7 @@
 """Playwright browser automation utilities."""
 """Playwright browser automation utilities."""
 """
+# TODO: Add connection pooling for Playwright browser instances
 """Browser automation utilities using Playwright framework."""
 """Utility functions for browser automation and page interactions."""
 Playwright browser automation utilities.
