@@ -1,3 +1,4 @@
+# DexScreener utility and helper functions
 """Utility functions for dexscreener data processing and formatting."""
 """Utility functions for DexScreener data processing and validation."""
 """Utility functions for Dexscreener scraping operations."""
