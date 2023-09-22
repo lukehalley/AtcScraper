@@ -2,6 +2,7 @@
 """AWS Secrets Manager integration and credentials."""
 """AWS Secrets Manager integration for secure credential management."""
 # AWS Secrets Manager integration for credential retrieval
+# TODO: Implement local caching for AWS Secrets Manager to reduce API calls
 """Manage AWS secrets and credential retrieval."""
 """AWS secrets management and configuration."""
 """
