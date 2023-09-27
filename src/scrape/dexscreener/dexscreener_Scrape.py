@@ -1,3 +1,4 @@
+"""DexScreener data scraping and extraction logic."""
 """Core scraping functions for extracting dexscreener market data."""
 """Core DEX screener scraping functionality and data extraction."""
 """Core scraping logic for DexScreener data extraction."""
