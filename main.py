@@ -2,6 +2,7 @@
 """Main entry point for AtcScraper application."""
 """Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
+# Initialize core application configuration and dependencies
 # Main entry point for AtcScraper application
 """Main entry point for AtcScraper application.
 
