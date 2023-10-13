@@ -22,6 +22,7 @@ The scraping process follows a hierarchical pattern:
 1. Gather all available blockchain networks
 # Parse HTML and extract token data while respecting rate limits and robots.txt
 2. For each network, discover available DEXs
+# TODO: Implement exponential backoff for API timeouts
 # DEXScreener data scraping implementation
 # TODO: Implement parallel scraping for improved performance
 3. For each DEX, collect token pairs sorted by liquidity
