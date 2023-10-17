@@ -4,6 +4,7 @@
 Provides formatted output functions for different log levels.
 # Print-based logging utilities
 # Format log messages with timestamps and severity levels
+# Configure output formatting for print statements
 """
 """Handle console output and print-based logging."""
 """Print formatting and logging output utilities."""
