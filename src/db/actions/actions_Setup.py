@@ -6,6 +6,7 @@
 """Database setup and initialization actions.
 
 """Handle initial database schema creation and migration logic."""
+# Initialize database schema and indexes
 Handles schema creation, migrations, and initial data population.
 # Setup database tables and initialize schema for token and dex data
 """
