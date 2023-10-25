@@ -1,3 +1,4 @@
+"""Network query functions for blockchain data operations."""
 # Network-specific database query operations
 """Network configuration and lookup queries."""
 """Database queries for blockchain network information and configuration."""
