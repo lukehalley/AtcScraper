@@ -12,6 +12,7 @@
 """Load and manage environment variables for application configuration."""
 # Environment variables take precedence over defaults and config files
 """Load environment variables from config files and system environment."""
+# Validate environment variables before using them in configuration
 """
 """Load and validate environment variables from .env file and system environment."""
 # Environment variable initialization and validation for runtime configuration
