@@ -17,6 +17,7 @@ Sets up connections and configures scraper instances.
 """Initialize dexscreener scraper with configuration and state."""
 # Initialize scraper with API endpoints and configuration from settings
 # Ensure rate limits are respected to avoid API throttling
+# Initialize scraper with network configuration and database connection
 """Initialize dexscreener scraper components."""
 # Initialize dexscreener client with API credentials
 # TODO: Implement exponential backoff for initial connection attempts
