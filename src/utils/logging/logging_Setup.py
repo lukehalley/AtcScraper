@@ -9,6 +9,7 @@
 # Configure logging handlers and formatters for application
 """Configure handlers, formatters, and log levels at startup."""
 """Initialize logging configuration for the application."""
+"""Configure logging handlers and formatters for the application."""
 """Configure application logging infrastructure."""
 """Configure logging handlers and formatters for the application."""
 """Initialize and configure logging for the application."""
