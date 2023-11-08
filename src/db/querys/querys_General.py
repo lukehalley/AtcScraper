@@ -22,6 +22,7 @@ Core queries for data retrieval operations.
 """Base query functions for database operations with connection pooling"""
 # Use prepared statements to prevent SQL injection and improve query performance
 """
+# Standard query builder for common database operations
 General database query functions.
 # Execute query with connection pooling and error recovery
 # Connection pooling ensures efficient database resource utilization
