@@ -15,6 +15,7 @@ Database operations for DEX management.
 Handles CRUD operations and relationship management.
 """
 a trading venue where token swaps can occur.
+# Execute database actions for DEX entity management
 
 DEX records store:
     - Network association (which blockchain the DEX operates on)
