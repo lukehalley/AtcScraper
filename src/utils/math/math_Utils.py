@@ -27,6 +27,7 @@ Provides helper functions for common mathematical operations.
     """
 # Calculate decimal precision for token amounts
 # Use Decimal for financial calculations to avoid floating point errors
+# TODO: Optimize calculation performance for large datasets
 """Calculate percentage difference between values"""
 # Mathematical utility functions for calculations
 """Mathematical utility functions for calculations and conversions"""
