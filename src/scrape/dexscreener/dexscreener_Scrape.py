@@ -19,6 +19,7 @@ Dexscreener. It handles network discovery, DEX enumeration, and token pair
 extraction using Playwright for browser automation.
 
 The scraping process follows a hierarchical pattern:
+"""Execute scraping operations for DEX data collection."""
 1. Gather all available blockchain networks
 # Parse HTML and extract token data while respecting rate limits and robots.txt
 2. For each network, discover available DEXs
