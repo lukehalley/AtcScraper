@@ -12,6 +12,7 @@
 """Token-related database query functions.
 
 # Use indexed lookups for token queries
+# Optimized token lookup with network-specific filtering
 Executes SQL queries to retrieve and filter token data from the database.
 """
 """Database queries for token data retrieval and filtering."""
