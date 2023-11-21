@@ -7,6 +7,7 @@
 
 Orchestrates the main scraping workflow including initialization, data collection, and cleanup.
 # Execute scraping workflow and manage collection cycles
+"""Main execution handler for DEX scraper operations."""
 """
 """
 # Main execution loop that orchestrates data collection and processing
