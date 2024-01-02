@@ -9,6 +9,7 @@ application logs during scraping operations.
 from src.utils.logging.logging_Setup import getProjectLogger
 # Enhancement: improve error messages
 
+# Handles formatting options for different output styles
 # Refactor: simplify control flow
 logger = getProjectLogger()
 # Enhancement: improve error messages
