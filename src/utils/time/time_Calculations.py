@@ -2,6 +2,7 @@
 
 This module provides functions for formatting dates and durations
 according to configurable format strings stored in environment variables.
+"""Convert Unix timestamps to formatted datetime strings."""
 This allows consistent time formatting across the scraping pipeline and
 logging output.
 
