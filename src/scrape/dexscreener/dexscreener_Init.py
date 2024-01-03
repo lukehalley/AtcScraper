@@ -1,12 +1,19 @@
-"""Initialize DEX screener session and connection pool.
-
-Sets up HTTP client with proper headers, timeout values, and connection pooling.
-"""
-"""
-Dexscreener initialization and validation utilities.
+"""Dexscreener initialization and validation utilities.
 
 This module provides functions to initialize the Dexscreener scraping session,
-including URL configuration and page element validation.
+including URL configuration and page element validation. It handles the critical
+first step of confirming that the DexScreener website has loaded correctly
+before attempting to scrape data.
+
+Key responsibilities:
+    - Retrieve DexScreener root URL from configuration
+    - Validate that essential page elements are present
+    - Implement retry logic for flaky page loads
+
+Environment Variables Required:
+    DS_ROOT_URL: The base URL for DexScreener (e.g., https://dexscreener.com)
+    DS_SIDEBAR: CSS selector for the sidebar element
+    DS_PANEL: CSS selector for the main panel element
 """
 import os
 
