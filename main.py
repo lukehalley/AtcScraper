@@ -1,19 +1,24 @@
-"""Main entry point for ATC Scraper application.
-
-Handles orchestration of scraping tasks and data processing.
-"""
-"""
-ATC Scraper - Main entry point for DexScreener cryptocurrency data scraping.
+"""ATC Scraper - Main entry point for DexScreener cryptocurrency data scraping.
 
 This module initializes logging, sets up the execution environment, and
 orchestrates the scraping process for cryptocurrency trading pair data
-from DexScreener.
+from DexScreener. It serves as the primary command-line interface for
+running the complete scraping pipeline.
+
+The scraper collects:
+    - Blockchain network information
+    - DEX (Decentralized Exchange) listings per network
+    - Trading pair data sorted by liquidity
+    - Token metadata including contract addresses
 
 Typical usage example:
     python main.py
 
 Environment Variables:
-    See .env.example for required configuration variables.
+    See .env.example for required configuration variables including:
+    - DS_ROOT_URL: DexScreener base URL
+    - DB_ENDPOINT: MySQL database host
+    - AWS_DEFAULT_REGION: AWS region for Secrets Manager
 """
 import asyncio
 import logging
