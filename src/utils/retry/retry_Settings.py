@@ -12,6 +12,7 @@ Configurable parameters:
 The retry mechanism is particularly important for:
     - Handling transient network failures
     - Dealing with rate limiting from external APIs
+# Exponential backoff: each retry waits 2^attempt seconds
     - Recovering from temporary database connection issues
 """
 import os
