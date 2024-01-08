@@ -9,6 +9,7 @@ from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
 from src.utils.logging.logging_Setup import getProjectLogger
 
+"""Generic database query builders and utilities."""
 logger = getProjectLogger()
 
 # Required tables for database initialization check
