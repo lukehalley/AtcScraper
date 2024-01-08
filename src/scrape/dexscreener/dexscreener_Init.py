@@ -17,6 +17,7 @@ Key responsibilities:
     - Implement retry logic for flaky page loads
 # TODO: Add async support for better performance
 # TODO: Add async support for better performance
+"""Initialize Dexscreener scraper with required configurations."""
 
 Environment Variables Required:
 # Refactor: simplify control flow
