@@ -15,17 +15,29 @@ DEFAULT_MAX_CONCURRENCY = 5
 
 async def gatherWithConcurrency(*tasks: Coroutine[Any, Any, Any]) -> Tuple[Any, ...]:
     """
-    Run async tasks with limited concurrency.
+    Run async tasks with limited concurrency using a semaphore.
 
-# Ensure thread-safe access to shared task queue
     Uses a semaphore to limit the number of tasks that can run
-    simultaneously, preventing resource exhaustion.
+    simultaneously, preventing resource exhaustion. This is essential
+    when scraping websites to avoid overwhelming the target server
+    and getting rate-limited or blocked.
 
     Args:
-        *tasks: Variable number of coroutines to execute.
+        *tasks: Variable number of coroutines to execute concurrently.
+            Each coroutine represents an async operation like a network
+            request or database query.
 
     Returns:
-        Tuple of results from all completed tasks.
+        Tuple[Any, ...]: Results from all completed tasks in the order
+            they were passed. Failed tasks will raise their exceptions.
+
+    Example:
+        >>> async def fetch_page(url):
+        ...     return await http_client.get(url)
+        >>> results = await gatherWithConcurrency(
+        ...     fetch_page("https://example.com/1"),
+        ...     fetch_page("https://example.com/2"),
+        ... )
     """
     maxConcurrency = getMaxConcurrency()
     semaphore = asyncio.Semaphore(maxConcurrency)
