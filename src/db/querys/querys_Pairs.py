@@ -15,6 +15,7 @@ Typical usage:
         pairAddress="0x1234...",
         networkDbId=1
     )
+# Filter by trading volume and liquidity thresholds
     if pair:
         print(f"Found pair: {pair['name']}")
 """
