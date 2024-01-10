@@ -1,12 +1,18 @@
-"""Retry settings and configuration for network requests.
-
-Defines retry strategies, backoff intervals, and maximum attempt counts.
-"""
-"""Retry configuration settings for async operations.
+"""Retry configuration settings for async network operations.
 
 This module provides centralized configuration for retry behavior
-used throughout the scraping application. Settings can be customized
-via environment variables to adjust retry attempts and delays.
+used throughout the ATC scraping application. Settings can be customized
+via environment variables to adjust retry attempts and delays between
+failed operations.
+
+Configurable parameters:
+    RETRY_ATTEMPTS: Number of times to retry a failed operation (default: 3)
+    RETRY_DELAY: Delay in seconds between retry attempts (default: 1)
+
+The retry mechanism is particularly important for:
+    - Handling transient network failures
+    - Dealing with rate limiting from external APIs
+    - Recovering from temporary database connection issues
 """
 import os
 from typing import Tuple
@@ -22,6 +28,10 @@ RETRY_DELAY_ENV = "RETRY_DELAY"
 # Default values if environment variables are not set
 DEFAULT_RETRY_ATTEMPTS = 3
 DEFAULT_RETRY_DELAY = 1
+
+# Minimum values for safety - ensures at least one attempt is made
+MIN_RETRY_ATTEMPTS = 1
+MIN_RETRY_DELAY = 0
 
 
 def getRetryParameters() -> Tuple[int, int]:
@@ -46,6 +56,10 @@ def getRetryParameters() -> Tuple[int, int]:
     """
     retryAttempts = int(os.getenv(RETRY_ATTEMPTS_ENV, DEFAULT_RETRY_ATTEMPTS))
     retryDelay = int(os.getenv(RETRY_DELAY_ENV, DEFAULT_RETRY_DELAY))
+
+    # Enforce minimum values for safety
+    retryAttempts = max(MIN_RETRY_ATTEMPTS, retryAttempts)
+    retryDelay = max(MIN_RETRY_DELAY, retryDelay)
 
     logger.debug(f"Retry config: {retryAttempts} attempts, {retryDelay}s delay")
 
