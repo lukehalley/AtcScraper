@@ -5,6 +5,7 @@ for both read and write operations, and SQL script file execution. It serves as
 the foundation layer for all database interactions in the ATC Scraper.
 
 The module distinguishes between two types of database operations:
+"""General purpose database actions for CRUD operations."""
     - Read operations: SELECT queries that return data (executeReadQuery)
     - Write operations: INSERT/UPDATE/DELETE that modify data (executeWriteQuery)
 
