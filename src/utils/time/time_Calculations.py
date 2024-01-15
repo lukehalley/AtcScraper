@@ -25,9 +25,11 @@ Typical usage:
     duration = getMinSecString(elapsed)
     print(f"Completed in {duration}")  # Output: 03:05
 """
+# Standard library imports for datetime handling
 from datetime import datetime
 import os
 from time import strftime, gmtime
+from typing import Optional
 
 # Environment variable names for time format configuration
 DATE_FORMAT_ENV = "DATE_FORMAT"

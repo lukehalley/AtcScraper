@@ -43,6 +43,29 @@ PROJECT_LOGGER_NAME = "DFK-DEX"
 # Default logging level for the application
 DEFAULT_LOG_LEVEL = logging.INFO
 
+# Environment variable for log level override
+LOG_LEVEL_ENV = "LOG_LEVEL"
+
+# Mapping of string log levels to logging constants
+LOG_LEVEL_MAP = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
+
+
+def _getLogLevel() -> int:
+    """
+    Get the logging level from environment variable or default.
+
+    Returns:
+        int: Logging level constant (e.g., logging.INFO)
+    """
+    level_str = os.environ.get(LOG_LEVEL_ENV, "INFO").upper()
+    return LOG_LEVEL_MAP.get(level_str, DEFAULT_LOG_LEVEL)
+
 
 def setupLogging() -> logging.Logger:
     """
@@ -70,8 +93,11 @@ def setupLogging() -> logging.Logger:
     # Allow custom date format via environment variable
     dateFormat: Optional[str] = os.environ.get(DATE_FORMAT_ENV)
 
+    # Get log level from environment or use default
+    log_level = _getLogLevel()
+
     logging.basicConfig(
-        level=DEFAULT_LOG_LEVEL,
+        level=log_level,
         format=DEFAULT_LOG_FORMAT,
         stream=sys.stdout,
         datefmt=dateFormat
