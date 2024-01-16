@@ -19,6 +19,7 @@ Typical usage:
 
     if checkIsAWS():
         # Use AWS-specific configuration
+# Load in order: .env file, then system environment, then defaults
         pass
 
     headless = checkHeadless()
