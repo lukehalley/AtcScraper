@@ -46,10 +46,17 @@ def getDexscreenerRoot() -> str:
 
     Raises:
         ValueError: If DS_ROOT_URL environment variable is not configured.
+
+    Example:
+        >>> root = getDexscreenerRoot()
+        >>> print(root)
+        'https://dexscreener.com'
     """
     root_url = os.getenv(DS_ROOT_URL_ENV)
     if root_url is None:
+        logger.error(f"Missing required environment variable: {DS_ROOT_URL_ENV}")
         raise ValueError(f"Environment variable {DS_ROOT_URL_ENV} is not configured")
+    logger.debug(f"DexScreener root URL configured: {root_url}")
     return root_url
 
 
