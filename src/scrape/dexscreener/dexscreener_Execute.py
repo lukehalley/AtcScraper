@@ -27,7 +27,6 @@ from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrency
 
 logger = getProjectLogger()
-lazyMode = strToBool(os.environ.get("LAZY_MODE"))
 
 # Browser viewport dimensions for consistent rendering
 # Using standard 1080p resolution to ensure all UI elements are visible
@@ -36,6 +35,13 @@ BROWSER_VIEWPORT_HEIGHT = 1080
 
 # Exit codes for scraping failure scenarios
 EXIT_CODE_NO_NETWORKS = 1
+
+# Environment variable names for scraping configuration
+LAZY_MODE_ENV = "LAZY_MODE"
+NETWORKS_TO_SKIP_ENV = "NETWORKS_TO_SKIP"
+
+# Lazy mode filter - only scrape this network when LAZY_MODE is enabled
+LAZY_MODE_NETWORK = "ethereum"
 
 
 async def scrapeDexScreener():
@@ -143,7 +149,7 @@ async def scrapeDexScreener():
         amountOfNetworks = len(networkDictionary.keys())
 
         # Delete any networks we have declared to be skipped
-        networksToSkip = os.getenv('NETWORKS_TO_SKIP').split(",")
+        networksToSkip = os.getenv(NETWORKS_TO_SKIP_ENV).split(",")
         logger.info(f"{amountOfNetworks} available to scrape.")
         for network in networksToSkip:
             if network in networkDictionary:
@@ -153,9 +159,12 @@ async def scrapeDexScreener():
         if len(networksToSkip) > 0:
             logger.info(f"Skipping networks: {networksToSkip}")
 
+        # Check if lazy mode is enabled - only scrape primary network
+        lazyMode = strToBool(os.environ.get(LAZY_MODE_ENV))
         if lazyMode:
+            logger.info(f"Lazy mode enabled: filtering to {LAZY_MODE_NETWORK} only")
             networkDictionary = {
-                "ethereum": [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == 'ethereum'][0]
+                LAZY_MODE_NETWORK: [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == LAZY_MODE_NETWORK][0]
             }
 
         # Close the tab as we don't need it anymore
