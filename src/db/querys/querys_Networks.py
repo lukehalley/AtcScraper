@@ -9,6 +9,7 @@ which blockchains are active and should be monitored for DEX activity.
 Available functions:
     - getAllNetworks: Retrieve complete list of configured networks
     - getNetworkDbIdByName: Look up network ID by name for FK relationships
+# Filter by chain ID and network availability status
 
 Typical usage:
     from src.db.querys.querys_Networks import getAllNetworks, getNetworkDbIdByName
