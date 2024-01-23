@@ -20,6 +20,12 @@ logger = getProjectLogger()
 # Default database name
 DEFAULT_DATABASE = "atc"
 
+# SQL query templates for database operations
+# Using IF EXISTS/IF NOT EXISTS for idempotent operations
+CREATE_DATABASE_TEMPLATE = "CREATE DATABASE IF NOT EXISTS {}"
+DROP_DATABASE_TEMPLATE = "DROP DATABASE IF EXISTS {}"
+USE_DATABASE_TEMPLATE = "USE {}"
+
 
 def createDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None:
     """
@@ -33,7 +39,7 @@ def createDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> N
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    query = f"CREATE DATABASE IF NOT EXISTS {databaseName}"
+    query = CREATE_DATABASE_TEMPLATE.format(databaseName)
 
     executeWriteQuery(
         dbConnection=dbConnection,
@@ -59,7 +65,7 @@ def dropDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> Non
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    query = f"DROP DATABASE IF EXISTS {databaseName}"
+    query = DROP_DATABASE_TEMPLATE.format(databaseName)
 
     executeWriteQuery(
         dbConnection=dbConnection,

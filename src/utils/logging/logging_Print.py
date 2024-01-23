@@ -18,17 +18,25 @@ NEWLINE_CHAR = "\n"
 # TODO: Implement ANSI color codes for enhanced terminal output
 
 
-def printSeparator(newLine: bool = False) -> None:
+def printSeparator(
+    newLine: bool = False,
+    char: str = SEPARATOR_CHAR,
+    length: int = SEPARATOR_LENGTH
+) -> None:
     """
     Print a visual separator line to the log output.
 
     Creates a consistent visual break in log output using repeated
-    dash characters. Useful for delineating different phases of
+    characters. Useful for delineating different phases of
     the scraping process.
 
     Args:
         newLine: If True, appends a newline character after the separator
-                 for additional visual spacing in logs.
+                 for additional visual spacing in logs. Default: False.
+        char: The character to use for the separator line.
+              Default: '-' (SEPARATOR_CHAR constant).
+        length: The number of times to repeat the separator character.
+                Default: 32 (SEPARATOR_LENGTH constant).
 
     Returns:
         None
@@ -39,8 +47,10 @@ def printSeparator(newLine: bool = False) -> None:
         >>> printSeparator(newLine=True)
         INFO: --------------------------------
         INFO:
+        >>> printSeparator(char='=', length=20)
+        INFO: ====================
     """
-    separator = SEPARATOR_CHAR * SEPARATOR_LENGTH
+    separator = char * length
     if newLine:
         separator += NEWLINE_CHAR
 
