@@ -31,6 +31,9 @@ from typing import Any, Dict, Optional, Tuple
 KeyValuePair = Tuple[Any, Any]
 ReplacementMap = Dict[str, str]
 
+# Default return values
+EMPTY_DICT_LENGTH = 0
+
 
 def prependToOrderedDict(
     dictOriginal: Dict[Any, Any],
@@ -76,11 +79,15 @@ def getDictLength(dictionary: Optional[Dict[Any, Any]]) -> int:
     """
     Get the number of key-value pairs in a dictionary.
 
+    Provides a safe way to get dictionary length with None handling,
+    avoiding AttributeError when the input is None.
+
     Args:
-        dictionary: The dictionary to measure
+        dictionary: The dictionary to measure. Can be None for safe handling.
 
     Returns:
-        Number of items in the dictionary, or 0 if None is passed
+        Number of items in the dictionary, or EMPTY_DICT_LENGTH (0) if None
+        or empty dictionary is passed.
 
     Examples:
         >>> getDictLength({'a': 1, 'b': 2})
@@ -91,7 +98,7 @@ def getDictLength(dictionary: Optional[Dict[Any, Any]]) -> int:
         0
     """
     if dictionary is None:
-        return 0
+        return EMPTY_DICT_LENGTH
     return len(dictionary)
 
 
