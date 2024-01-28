@@ -32,6 +32,9 @@ NETWORK_ID_COLUMN = "network_id"
 # when the contract address is scraped from the token detail page
 ADDRESS_PLACEHOLDER = "None"
 
+# Index for accessing first element in result lists
+FIRST_ELEMENT_INDEX = 0
+
 
 def getTokensForChainWithNoAddress(
     dbConnection: Any,

@@ -105,6 +105,14 @@ TIMESPAN_LABELS = {
 }
 DEFAULT_TIMESPAN = "Last 24 hours"
 
+# JavaScript expression for extracting href attributes from elements
+# Used in eval_on_selector_all to map anchor elements to their URLs
+JS_EXTRACT_HREF = "elements => elements.map(element => element.href)"
+
+# URL path separator for parsing contract addresses from hrefs
+URL_PATH_SEPARATOR = "/"
+ADDRESS_INDEX_FROM_END = -1
+
 
 async def openTimespan(page, timeToSelect: str) -> None:
     """
