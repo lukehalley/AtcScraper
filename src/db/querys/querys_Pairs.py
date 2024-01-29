@@ -44,6 +44,9 @@ MIN_ADDRESS_LENGTH = 10
 # Standard Ethereum address length (42 chars: '0x' + 40 hex chars)
 STANDARD_ADDRESS_LENGTH = 42
 
+# Expected address prefix for Ethereum-style addresses
+ADDRESS_PREFIX = "0x"
+
 
 def getPairForAddressAndNetworkId(
     dbConnection: Any,
