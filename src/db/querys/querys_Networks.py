@@ -31,6 +31,9 @@ NETWORKS_TABLE = "networks"
 NETWORK_NAME_COLUMN = "name"
 NETWORK_ID_COLUMN = "network_id"
 
+# Result index constants
+FIRST_RESULT_INDEX = 0
+
 
 def getAllNetworks(dbConnection: Any) -> List[str]:
     """
@@ -130,7 +133,7 @@ def getNetworkDbIdByName(dbConnection: Any, networkName: str) -> Optional[int]:
     )
 
     if results:
-        network_id = results[0][NETWORK_ID_COLUMN]
+        network_id = results[FIRST_RESULT_INDEX][NETWORK_ID_COLUMN]
         logger.debug(f"Found network '{networkName}' with ID {network_id}")
         return network_id
     logger.debug(f"Network '{networkName}' not found in database")
