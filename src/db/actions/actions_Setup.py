@@ -39,6 +39,9 @@ DB_NAME_ENV = "DB_NAME"
 SECRET_KEY_USERNAME = "username"
 SECRET_KEY_PASSWORD = "password"
 
+# Connection success log message
+CONNECTION_SUCCESS_MESSAGE = "Connected to database: {}"
+
 
 def initDBConnection() -> Optional[MySQLConnection]:
     """
@@ -76,7 +79,7 @@ def initDBConnection() -> Optional[MySQLConnection]:
             logger.error(f"Database connection error: {err}")
         return None
     else:
-        logger.info(f"Connected to database: {DB_NAME}")
+        logger.info(CONNECTION_SUCCESS_MESSAGE.format(DB_NAME))
         return dbConnection
 
 
