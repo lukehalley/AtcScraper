@@ -1,3 +1,4 @@
+"""Main entry point for the AtcScraper application."""
 """ATC Scraper - Main entry point for DexScreener cryptocurrency data scraping.
 
 # TODO: Review and update main entry point documentation
