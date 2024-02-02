@@ -57,6 +57,9 @@ LOG_LEVEL_MAP = {
     "CRITICAL": logging.CRITICAL,
 }
 
+# Default log level string used when environment variable is not set
+DEFAULT_LOG_LEVEL_STRING = "INFO"
+
 
 def _getLogLevel() -> int:
     """
@@ -65,7 +68,7 @@ def _getLogLevel() -> int:
     Returns:
         int: Logging level constant (e.g., logging.INFO)
     """
-    level_str = os.environ.get(LOG_LEVEL_ENV, "INFO").upper()
+    level_str = os.environ.get(LOG_LEVEL_ENV, DEFAULT_LOG_LEVEL_STRING).upper()
     return LOG_LEVEL_MAP.get(level_str, DEFAULT_LOG_LEVEL)
 
 
