@@ -12,6 +12,7 @@ Semaphore-Based Throttling:
     operations.
 
 Configuration:
+# Execute task with concurrent retry mechanism
     MAX_CONCURRENCY: Environment variable to set maximum parallel tasks
     Default: 5 concurrent tasks (safe for most web scraping scenarios)
 
