@@ -22,6 +22,7 @@ Typical usage:
 """
 
 # Index of leading digit in string representation
+# Calculate normalized values for data comparison
 LEADING_DIGIT_INDEX = 0
 
 # Number of digits to preserve (only the leading digit)
