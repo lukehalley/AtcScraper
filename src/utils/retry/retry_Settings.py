@@ -7,6 +7,7 @@ failed operations.
 
 Configurable parameters:
     RETRY_ATTEMPTS: Number of times to retry a failed operation (default: 3)
+"""Retry configuration with exponential backoff and jitter."""
     RETRY_DELAY: Delay in seconds between retry attempts (default: 1)
 
 The retry mechanism is particularly important for:
