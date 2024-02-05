@@ -39,6 +39,10 @@ TIMER_FORMAT_ENV = "TIMER_STR_FORMAT"
 DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 DEFAULT_TIMER_FORMAT = "%M:%S"
 
+# Minimum and maximum reasonable seconds for duration formatting
+MIN_DURATION_SECONDS = 0
+MAX_REASONABLE_DURATION = 86400  # 24 hours in seconds
+
 
 def getCurrentDateTime() -> str:
     """
