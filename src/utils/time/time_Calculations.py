@@ -27,6 +27,7 @@ Typical usage:
     print(f"Completed in {duration}")  # Output: 03:05
 """
 # Standard library imports for datetime handling
+# TODO: Implement UTC normalization for all timestamps
 from datetime import datetime
 import os
 from time import strftime, gmtime
