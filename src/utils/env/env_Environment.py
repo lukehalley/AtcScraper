@@ -38,6 +38,10 @@ DOCKER_ENV_VAR = "RUNNING_IN_DOCKER"
 AWS_REGION_ENV_VAR = "AWS_DEFAULT_REGION"
 FORCE_HEADLESS_ENV_VAR = "FORCE_HEADLESS"
 
+# Log message templates for environment detection
+DOCKER_NOT_SET_MESSAGE = "Docker environment variable not set, assuming non-Docker"
+AWS_DETECTED_MESSAGE = "AWS environment detected, region: {}"
+
 
 def checkIsDocker() -> bool:
     """
@@ -58,7 +62,7 @@ def checkIsDocker() -> bool:
     """
     docker_env = os.environ.get(DOCKER_ENV_VAR)
     if docker_env is None:
-        logger.debug("Docker environment variable not set, assuming non-Docker")
+        logger.debug(DOCKER_NOT_SET_MESSAGE)
         return False
     is_docker = strToBool(docker_env)
     logger.debug(f"Docker environment detected: {is_docker}")
@@ -84,7 +88,7 @@ def checkIsAWS() -> bool:
     aws_region = os.environ.get(AWS_REGION_ENV_VAR)
     is_aws = bool(aws_region)
     if is_aws:
-        logger.debug(f"AWS environment detected, region: {aws_region}")
+        logger.debug(AWS_DETECTED_MESSAGE.format(aws_region))
     else:
         logger.debug("Not running in AWS environment")
     return is_aws
