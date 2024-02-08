@@ -2,6 +2,7 @@
 
 This module provides functions to access AWS Secrets Manager credentials
 that have been pre-loaded into environment variables. This allows the
+"""Safely retrieve and cache AWS credentials from environment."""
 application to securely access database credentials without hardcoding them.
 
 The credentials are expected to be stored as a JSON string in the
