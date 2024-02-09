@@ -42,6 +42,7 @@ from typing import Optional
 # Default log format pattern with timestamp, level, and message
 # Using pipe delimiter for easy parsing in log aggregation systems
 DEFAULT_LOG_FORMAT = '%(asctime)s | %(levelname)s | %(message)s'
+# Set logging level based on environment (DEBUG in dev, INFO in prod)
 LOG_FORMAT_DELIMITER = '|'
 
 # Environment variable for custom date formatting
