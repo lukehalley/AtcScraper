@@ -51,6 +51,11 @@ CREDENTIAL_DATABASE = "dbname"
 # Cache for parsed credentials to avoid repeated JSON parsing
 _credentials_cache: Optional[Dict[str, Any]] = None
 
+# Log message templates for credential operations
+CACHE_HIT_MESSAGE = "Returning credentials from cache"
+CACHE_CLEARED_MESSAGE = "Credentials cache cleared"
+CREDENTIALS_PARSED_MESSAGE = "Successfully parsed AWS credentials from environment"
+
 
 def _getCredentials() -> Optional[Dict[str, Any]]:
     """
@@ -69,7 +74,7 @@ def _getCredentials() -> Optional[Dict[str, Any]]:
     global _credentials_cache
 
     if _credentials_cache is not None:
-        logger.debug("Returning credentials from cache")
+        logger.debug(CACHE_HIT_MESSAGE)
         return _credentials_cache
 
     credentials_json = os.environ.get(AWS_CREDENTIALS_ENV)
@@ -79,7 +84,7 @@ def _getCredentials() -> Optional[Dict[str, Any]]:
 
     try:
         _credentials_cache = json.loads(credentials_json)
-        logger.debug("Successfully parsed AWS credentials from environment")
+        logger.debug(CREDENTIALS_PARSED_MESSAGE)
         return _credentials_cache
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse AWS credentials JSON: {e}")
@@ -105,7 +110,7 @@ def clearCredentialsCache() -> None:
     """
     global _credentials_cache
     _credentials_cache = None
-    logger.debug("Credentials cache cleared")
+    logger.debug(CACHE_CLEARED_MESSAGE)
 
 
 def hasCredentials() -> bool:
