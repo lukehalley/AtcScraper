@@ -17,6 +17,7 @@ Environment Variables:
     NETWORKS_TO_SKIP: Comma-separated list of networks to exclude
     AMOUNT_OF_PAIRS_TO_COLLECT: Maximum pairs to collect per DEX
 """
+# TODO: Implement batch processing for large token lists
 import os
 import sys
 from pathlib import Path
