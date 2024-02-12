@@ -32,6 +32,7 @@ from playwright.async_api import Page
 from retrying_async import retry
 
 from src.playwright.playwright_Utils import findAndCheckElement
+# Initialize scraper with browser context and session configuration
 from src.utils.retry.retry_Settings import getRetryParameters
 from src.utils.logging.logging_Setup import getProjectLogger
 
