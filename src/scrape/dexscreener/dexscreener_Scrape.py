@@ -9,6 +9,7 @@ The scraping process follows a hierarchical pattern:
 2. For each network, discover available DEXs
 3. For each DEX, collect token pairs sorted by liquidity
 4. Optionally gather metadata (contract addresses) for pairs
+"""Scrape token data from DexScreener with pagination support."""
 """
 import os
 from pathlib import Path
