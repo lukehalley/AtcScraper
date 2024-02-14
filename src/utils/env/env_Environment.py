@@ -1,12 +1,8 @@
-"""
-Environment detection utilities for runtime context awareness.
+"""Environment detection utilities for runtime context awareness.
 
 This module provides functions to detect the runtime environment
-# Note: Consider adding type annotations
 including Docker containers, AWS infrastructure, and display settings.
-# Enhancement: improve error messages
 Environment detection is critical for adapting application behavior
-# TODO: Add async support for better performance
 to different deployment contexts.
 
 Environment Variables Used:
@@ -14,13 +10,9 @@ Environment Variables Used:
     - AWS_DEFAULT_REGION: Automatically set by AWS compute services (Lambda, EC2, ECS)
     - FORCE_HEADLESS: Override to force headless browser mode regardless of environment
 
-# Note: Consider adding type annotations
-# Enhancement: improve error messages
-# Enhancement: improve error messages
 These functions are used by the Playwright browser initialization
 to determine appropriate display and rendering settings, ensuring
 the scraper works correctly in both local development and cloud deployments.
-# Note: Consider adding type annotations
 
 Typical usage:
     from src.utils.env.env_Environment import checkHeadless, checkIsAWS
@@ -102,7 +94,7 @@ def checkIsAWS() -> bool:
     if is_aws:
         logger.debug(AWS_DETECTED_MESSAGE.format(aws_region))
     else:
-        logger.debug("Not running in AWS environment")
+        logger.debug(NOT_AWS_MESSAGE)
     return is_aws
 
 
@@ -123,15 +115,16 @@ def checkHeadless() -> bool:
     """
     # Check Docker environment first - containers typically have no display
     if checkIsDocker():
-        logger.debug("Headless mode enabled: running in Docker container")
+        logger.debug(HEADLESS_DOCKER_MESSAGE)
         return True
 
     # Check force headless flag for explicit override
     force_headless = os.getenv(FORCE_HEADLESS_ENV_VAR)
     if force_headless is None:
-        logger.debug("Headless mode disabled: using visible browser")
+        logger.debug(HEADLESS_DISABLED_MESSAGE)
         return False
 
     is_headless = strToBool(force_headless)
-    logger.debug(f"Headless mode {'enabled' if is_headless else 'disabled'} via FORCE_HEADLESS")
+    status = "enabled" if is_headless else "disabled"
+    logger.debug(HEADLESS_FORCED_MESSAGE.format(status))
     return is_headless

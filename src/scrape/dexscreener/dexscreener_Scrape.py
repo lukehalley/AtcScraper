@@ -146,7 +146,7 @@ async def gatherNetworkList(dbConnection, page) -> Dict[str, Dict[str, Any]]:
 
         networkRow = getRowByValue(
             dbConnection=dbConnection,
-            table="networks",
+            table=NETWORKS_TABLE,
             conditions=[
                 {
                     "name": networkName
@@ -253,7 +253,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails: Dict[str, Any], pa
     """
     try:
         # Get the sidebar list element
-        dexTabs = os.getenv('DS_DEX_TABS')
+        dexTabs = os.getenv(DS_DEX_TABS_ENV)
         dexTabElement = await findAndCheckElement(
             page=page,
             selector=dexTabs
@@ -300,7 +300,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails: Dict[str, Any], pa
 
         dexRow = getRowByValue(
             dbConnection=dbConnection,
-            table="dexs",
+            table=DEXS_TABLE,
             conditions=[
                 {
                     "name": dexName
@@ -390,7 +390,7 @@ async def gatherPairsForDex(dbConnection, networkName: str, dexDetails: Dict[str
         pairCountText = await pairCountElement.all_inner_texts()
 
         # Amount of pairs to get
-        pairsToCollect = int(os.getenv("AMOUNT_OF_PAIRS_TO_COLLECT"))
+        pairsToCollect = int(os.getenv(PAIRS_TO_COLLECT_ENV))
 
         if pairCountText:
 
@@ -421,7 +421,7 @@ async def gatherPairsForDex(dbConnection, networkName: str, dexDetails: Dict[str
                 await page.locator('text=Liquidity').first.click()
 
             # Get the sidebar list element
-            dexTable = os.getenv('DS_DEX_TABLE')
+            dexTable = os.getenv(DS_DEX_TABLE_ENV)
             dexTableElement = await findAndCheckElement(
                 page=page,
                 selector=dexTable
@@ -515,7 +515,7 @@ async def gatherPairsForDex(dbConnection, networkName: str, dexDetails: Dict[str
                 # Check if primary token already exists
                 primaryTokenDetails = getRowByValue(
                     dbConnection=dbConnection,
-                    table="tokens",
+                    table=TOKENS_TABLE,
                     conditions=[
                         {
                             "symbol": tokenDetails["primaryToken"]["symbol"]
@@ -541,7 +541,7 @@ async def gatherPairsForDex(dbConnection, networkName: str, dexDetails: Dict[str
                 # Check if primary token already exists
                 secondaryTokenDetails = getRowByValue(
                     dbConnection=dbConnection,
-                    table="tokens",
+                    table=TOKENS_TABLE,
                     conditions=[
                         {
                             "symbol": tokenDetails["secondaryToken"]["symbol"]
