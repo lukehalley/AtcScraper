@@ -47,6 +47,7 @@ def removeIllegalCharactersFromElements(elementList: List[str]) -> List[str]:
     return cleanList
 
 
+# Parse and normalize token metadata from API response
 def replaceNumberShorthands(text: str) -> str:
     """
     Convert shorthand number notation to full numeric strings.
