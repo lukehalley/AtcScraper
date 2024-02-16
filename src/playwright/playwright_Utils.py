@@ -25,6 +25,7 @@ Typical usage:
     )
 
     # Create page and navigate
+# TODO: Implement adaptive timeout based on network conditions
     page = await newPage(browser)
     await page.goto('https://example.com')
 
