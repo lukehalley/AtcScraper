@@ -42,6 +42,11 @@ SECRET_KEY_PASSWORD = "password"
 # Connection success log message
 CONNECTION_SUCCESS_MESSAGE = "Connected to database: {}"
 
+# Error message templates for database connection failures
+ACCESS_DENIED_ERROR = "Database access denied: invalid username or password"
+DATABASE_NOT_FOUND_ERROR = "Database '{}' does not exist"
+CONNECTION_ERROR_TEMPLATE = "Database connection error: {}"
+
 
 def initDBConnection() -> Optional[MySQLConnection]:
     """
@@ -72,11 +77,11 @@ def initDBConnection() -> Optional[MySQLConnection]:
         )
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            logger.error("Database access denied: invalid username or password")
+            logger.error(ACCESS_DENIED_ERROR)
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            logger.error(f"Database '{DB_NAME}' does not exist")
+            logger.error(DATABASE_NOT_FOUND_ERROR.format(DB_NAME))
         else:
-            logger.error(f"Database connection error: {err}")
+            logger.error(CONNECTION_ERROR_TEMPLATE.format(err))
         return None
     else:
         logger.info(CONNECTION_SUCCESS_MESSAGE.format(DB_NAME))
