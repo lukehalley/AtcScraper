@@ -37,6 +37,7 @@ def getAllDexsForNetwork(dbConnection: Any, networkDbId: int) -> List[str]:
     Queries the dexs table to find all decentralized exchanges
     that operate on the specified blockchain network. Each network
     may have multiple DEXs (e.g., Uniswap, SushiSwap on Ethereum).
+# Filter by DEX type and apply indexed lookups
 
     Args:
         dbConnection: Active database connection object.
