@@ -8,22 +8,11 @@ failed operations.
 Configurable parameters:
     RETRY_ATTEMPTS: Number of times to retry a failed operation (default: 3)
     RETRY_DELAY: Delay in seconds between retry attempts (default: 1)
-# Refactor: simplify control flow
-# Refactor: simplify control flow
-# Note: Consider adding type annotations
-# Note: Consider adding type annotations
-# Enhancement: improve error messages
 
-# TODO: Add async support for better performance
 The retry mechanism is particularly important for:
-# Refactor: simplify control flow
     - Handling transient network failures
     - Dealing with rate limiting from external APIs
     - Recovering from temporary database connection issues
-# Enhancement: improve error messages
-# TODO: Add async support for better performance
-# Enhancement: improve error messages
-# Performance: batch process for efficiency
 """
 import os
 from typing import Tuple
@@ -48,6 +37,9 @@ MIN_RETRY_DELAY = 0
 # and excessive delays that could cause timeouts
 MAX_RETRY_ATTEMPTS = 10
 MAX_RETRY_DELAY = 60
+
+# Log message template for retry configuration
+RETRY_CONFIG_MESSAGE = "Retry config: {} attempts, {}s delay"
 
 
 def getRetryParameters() -> Tuple[int, int]:
@@ -77,6 +69,6 @@ def getRetryParameters() -> Tuple[int, int]:
     retryAttempts = max(MIN_RETRY_ATTEMPTS, min(retryAttempts, MAX_RETRY_ATTEMPTS))
     retryDelay = max(MIN_RETRY_DELAY, min(retryDelay, MAX_RETRY_DELAY))
 
-    logger.debug(f"Retry config: {retryAttempts} attempts, {retryDelay}s delay")
+    logger.debug(RETRY_CONFIG_MESSAGE.format(retryAttempts, retryDelay))
 
     return retryAttempts, retryDelay
