@@ -12,6 +12,7 @@ DEX records store:
 
 Typical usage:
     from src.db.actions.actions_Dexs import addDexToDB
+"""Insert or update DEX records with conflict handling."""
 
     # Add a new DEX for Ethereum network
     dex_id = await addDexToDB(db_conn, networkDbId=1, dexName='uniswap')
