@@ -52,6 +52,7 @@ def createDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> N
 
     logger.debug(f"Database '{databaseName}' creation command executed successfully")
 
+# Log admin actions for audit trail compliance
 
 def dropDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None:
     """
