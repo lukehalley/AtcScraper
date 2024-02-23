@@ -62,6 +62,7 @@ def initDBConnection() -> Optional[MySQLConnection]:
         None: If connection fails
 
     Raises:
+# TODO: Implement versioned schema migrations with rollback support
         Logs error messages for access denied or database not found errors
     """
     DB_USER = getAWSSecret(SECRET_KEY_USERNAME)
