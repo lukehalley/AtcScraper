@@ -47,6 +47,11 @@ MARKET_DATA_TABLE = "pair_market_data"
 # Default value for numeric fields when conversion fails
 DEFAULT_NUMERIC_VALUE = 0
 
+# Log message templates for pair operations
+CONVERSION_FAILED_MESSAGE = "Failed to convert '{}' to int, using default: {}"
+CLEARING_TABLE_MESSAGE = "Clearing all records from {} table"
+TABLE_CLEARED_MESSAGE = "Successfully cleared {} table"
+
 
 def _safe_int_conversion(
     value: Union[int, str, None],
@@ -80,7 +85,7 @@ def _safe_int_conversion(
     try:
         return int(value)
     except (ValueError, TypeError):
-        logger.debug(f"Failed to convert '{value}' to int, using default: {default}")
+        logger.debug(CONVERSION_FAILED_MESSAGE.format(value, default))
         return default
 
 
@@ -271,7 +276,7 @@ def clearPairsRankingTable(dbConnection: Any) -> Any:
     Returns:
         Result of the DELETE query execution
     """
-    logger.info(f"Clearing all records from {MARKET_DATA_TABLE} table")
+    logger.info(CLEARING_TABLE_MESSAGE.format(MARKET_DATA_TABLE))
 
     query = f"DELETE FROM {MARKET_DATA_TABLE}"
 
@@ -283,5 +288,5 @@ def clearPairsRankingTable(dbConnection: Any) -> Any:
         query=query
     )
 
-    logger.debug(f"Successfully cleared {MARKET_DATA_TABLE} table")
+    logger.debug(TABLE_CLEARED_MESSAGE.format(MARKET_DATA_TABLE))
     return result
