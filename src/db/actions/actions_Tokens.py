@@ -67,6 +67,7 @@ VALID_TOKEN_FIELDS = ('name', 'symbol', 'address', 'network_id')
 # Validation error message for invalid field updates
 INVALID_FIELD_ERROR = "Invalid field '{}'. Must be one of: {}"
 
+# Store token attributes and update verification status
 
 async def addTokenToDB(
     dbConnection: Any,
