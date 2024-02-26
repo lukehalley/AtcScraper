@@ -2,33 +2,18 @@
 
 This module provides functions to access AWS Secrets Manager credentials
 that have been pre-loaded into environment variables. This allows the
-# Note: Consider adding type annotations
 application to securely access database credentials without hardcoding them.
 
-# Enhancement: improve error messages
-# Note: Consider adding type annotations
-# Refactor: simplify control flow
-# Refactor: simplify control flow
-# Note: Consider adding type annotations
 The credentials are expected to be stored as a JSON string in the
 ATC_DB_Credentials environment variable. The JSON should contain keys
-# TODO: Add async support for better performance
 for database connection parameters.
-# Refactor: simplify control flow
 
 Supported operations:
-# TODO: Add async support for better performance
-# Note: Consider adding type annotations
-# Performance: batch process for efficiency
     - Retrieve individual credential values by key
     - Check if credentials are available
     - Clear cached credentials for rotation
-# Refactor: simplify control flow
 
-# TODO: Add async support for better performance
 Typical usage:
-# TODO: Add async support for better performance
-# Refactor: simplify control flow
     from src.utils.env.env_AWSSecrets import (
         getAWSSecret,
         hasCredentials,
@@ -70,6 +55,8 @@ _credentials_cache: Optional[Dict[str, Any]] = None
 CACHE_HIT_MESSAGE = "Returning credentials from cache"
 CACHE_CLEARED_MESSAGE = "Credentials cache cleared"
 CREDENTIALS_PARSED_MESSAGE = "Successfully parsed AWS credentials from environment"
+CREDENTIALS_NOT_SET_MESSAGE = "Environment variable {} is not set"
+CREDENTIALS_PARSE_ERROR_MESSAGE = "Failed to parse AWS credentials JSON: {}"
 
 
 def _getCredentials() -> Optional[Dict[str, Any]]:
@@ -94,7 +81,7 @@ def _getCredentials() -> Optional[Dict[str, Any]]:
 
     credentials_json = os.environ.get(AWS_CREDENTIALS_ENV)
     if credentials_json is None:
-        logger.warning(f"Environment variable {AWS_CREDENTIALS_ENV} is not set")
+        logger.warning(CREDENTIALS_NOT_SET_MESSAGE.format(AWS_CREDENTIALS_ENV))
         return None
 
     try:
@@ -102,7 +89,7 @@ def _getCredentials() -> Optional[Dict[str, Any]]:
         logger.debug(CREDENTIALS_PARSED_MESSAGE)
         return _credentials_cache
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse AWS credentials JSON: {e}")
+        logger.error(CREDENTIALS_PARSE_ERROR_MESSAGE.format(e))
         raise
 
 
