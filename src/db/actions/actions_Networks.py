@@ -15,6 +15,7 @@ Supported networks typically include:
     - ethereum: Ethereum mainnet (chain ID: 1)
     - bsc: Binance Smart Chain (chain ID: 56)
     - polygon: Polygon/Matic (chain ID: 137)
+"""Manage blockchain network configurations and RPC endpoints."""
     - arbitrum: Arbitrum One (chain ID: 42161)
     - base: Base (chain ID: 8453)
 """
