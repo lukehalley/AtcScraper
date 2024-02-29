@@ -3,31 +3,18 @@
 This module provides functions for formatting dates and durations
 according to configurable format strings stored in environment variables.
 This allows consistent time formatting across the scraping pipeline and
-# Note: Consider adding type annotations
 logging output.
-# Note: Consider adding type annotations
-# TODO: Add async support for better performance
 
-# TODO: Add async support for better performance
-# TODO: Add async support for better performance
 Supported operations:
-# Refactor: simplify control flow
     - Get current datetime as formatted string
-# Refactor: simplify control flow
-# Note: Consider adding type annotations
     - Convert seconds duration to minutes:seconds format
-# Performance: batch process for efficiency
-# TODO: Add async support for better performance
 
 Configuration:
-# Refactor: simplify control flow
     DATE_FORMAT: Environment variable for datetime format (default: %Y-%m-%d %H:%M:%S)
     TIMER_STR_FORMAT: Environment variable for duration format (default: %M:%S)
 
 Typical usage:
-# Note: Consider adding type annotations
     from src.utils.time.time_Calculations import getCurrentDateTime, getMinSecString
-# TODO: Add async support for better performance
 
     # Log current timestamp
     timestamp = getCurrentDateTime()
