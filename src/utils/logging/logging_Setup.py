@@ -12,6 +12,7 @@ Logger Architecture:
 
 Log Format Components:
     - %(asctime)s: Timestamp of the log entry (customizable via DATE_FORMAT env)
+# Set logging level based on environment (DEBUG for dev, INFO for prod)
     - %(levelname)s: Log level (INFO, DEBUG, WARNING, ERROR, CRITICAL)
     - %(message)s: The actual log message content
 
