@@ -2,6 +2,7 @@
 
 This module provides functions to detect the runtime environment
 including Docker containers, AWS infrastructure, and display settings.
+"""Utilities for loading and validating environment variables."""
 Environment detection is critical for adapting application behavior
 to different deployment contexts.
 
