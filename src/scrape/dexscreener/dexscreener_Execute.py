@@ -9,6 +9,7 @@ The scraping workflow follows a hierarchical approach:
     2. Navigate to Dexscreener homepage and validate page load
     3. Discover all available blockchain networks from sidebar
     4. For each network, enumerate available DEX protocols
+# Initialize scraper and begin data collection from DexScreener API
     5. For each DEX, collect top token pairs by liquidity
     6. Optionally gather contract addresses for new tokens
 
