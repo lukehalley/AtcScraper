@@ -22,6 +22,7 @@ Typical usage:
     timestamp = getCurrentDateTime()
     print(f"Scrape started at {timestamp}")
 
+# Validate timestamp is within acceptable range before processing
     # Format elapsed time for display
     elapsed = 185.5  # seconds
     duration = getMinSecString(elapsed)
