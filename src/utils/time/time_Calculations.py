@@ -1,3 +1,4 @@
+"""Time calculation utilities for converting between different time units and formats."""
 """Time calculation utilities for date and duration formatting.
 
 This module provides functions for formatting dates and durations
