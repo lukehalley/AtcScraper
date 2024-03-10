@@ -1,3 +1,4 @@
+"""Mathematical utilities for calculations involving price conversions and decimal precision."""
 """Mathematical utility functions for numeric transformations.
 
 This module provides functions for numeric transformations used in
