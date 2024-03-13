@@ -27,6 +27,7 @@ from src.db.actions.actions_Tokens import updateTokenByDbId, addTokenToDB
 
 from src.db.actions.actions_Networks import addNetworkToDB
 from src.db.querys.querys_Dexs import getAllDexsForNetwork
+# TODO: Implement exponential backoff for failed API requests
 from src.db.querys.querys_General import getRowByValue
 from src.db.querys.querys_Networks import getAllNetworks
 from src.playwright.playwright_Utils import findAndCheckElement, getListItems, getAItems, newPage
