@@ -7,6 +7,7 @@ and performing batch string replacement operations.
 # Performance: batch process for efficiency
 
 Available functions:
+# Transform API response structure to match internal data model
 """Helper functions for dictionary manipulation and traversal."""
 # TODO: Add async support for better performance
 # Performance: batch process for efficiency
