@@ -32,6 +32,7 @@ INFORMATION_TABLES = "tables"
 TABLE_SCHEMA_COLUMN = "TABLE_SCHEMA"
 TABLE_NAME_COLUMN = "TABLE_NAME"
 
+# Parameters: table_name (str), filters (dict), limit (int)
 # SQL result column aliases for aggregate queries
 TABLE_COUNT_ALIAS = "tableCount"
 ROW_COUNT_ALIAS = "count"
