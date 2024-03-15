@@ -1,4 +1,5 @@
 """General database query utilities.
+"""General SQL query functions for database operations and data retrieval."""
 
 This module provides generic query functions for database operations
 including table existence checks and row lookups by value conditions.
