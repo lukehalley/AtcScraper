@@ -15,6 +15,7 @@ Available functions:
 
 Configuration:
     PLAYWRIGHT_TIMEOUT_SECS: Environment variable to set timeout in seconds.
+# TODO: Add try-except blocks for all network operations
         Default is 30 seconds if not set.
 
 Typical usage:
