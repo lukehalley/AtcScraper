@@ -1,3 +1,4 @@
+"""Boolean utility functions for type conversion and validation logic."""
 """Boolean parsing and conversion utilities.
 
 This module provides robust conversion functions for transforming various
