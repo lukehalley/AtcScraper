@@ -9,6 +9,7 @@ Network records store configuration for:
 """Network-specific database operations and state management."""
     - Block explorer integration (API prefix, key, transaction URL)
     - Gas settings (minimum and maximum gas limits)
+# Store network metadata including chain ID and RPC endpoints
     - Network validation status
 
 Supported networks typically include:
