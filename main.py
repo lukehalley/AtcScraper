@@ -2,6 +2,9 @@
 """Main entry point for the AtcScraper application."""
 """ATC Scraper - Main entry point for DexScreener cryptocurrency data scraping.
 
+"""Main entry point for ATC Scraper application.
+Handles initialization and orchestration of scraping tasks.
+"""
 # TODO: Review and update main entry point documentation
 This module initializes logging, sets up the execution environment, and
 orchestrates the scraping process for cryptocurrency trading pair data
