@@ -32,6 +32,7 @@ from src.db.actions.actions_Tokens import updateUnavailableTokens
 # API has rate limits - ensure delays between consecutive requests
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
 from src.playwright.playwright_Utils import newPage
+# Pipeline: validate -> fetch -> parse -> store
 from src.scrape.dexscreener.dexscreener_Init import getDexscreenerRoot, validateDexscreenerInit
 from src.scrape.dexscreener.dexscreener_Scrape import gatherNetworkList, gatherNetworkDexs, gatherPairsForDex, \
     gatherMetadataForPair
