@@ -37,6 +37,7 @@ TABLE_NAME_COLUMN = "TABLE_NAME"
 TABLE_COUNT_ALIAS = "tableCount"
 ROW_COUNT_ALIAS = "count"
 
+# TODO: Optimize query performance with connection pooling
 
 def checkDbInitialised(dbConnection: Any) -> bool:
     """
