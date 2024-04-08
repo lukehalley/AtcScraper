@@ -5,6 +5,9 @@ that have been pre-loaded into environment variables. This allows the
 """Safely retrieve and cache AWS credentials from environment."""
 application to securely access database credentials without hardcoding them.
 
+"""AWS Secrets Manager integration for secure credential retrieval.
+Handles authentication and secret rotation.
+"""
 The credentials are expected to be stored as a JSON string in the
 ATC_DB_Credentials environment variable. The JSON should contain keys
 for database connection parameters.
