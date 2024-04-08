@@ -57,6 +57,7 @@ PLAYWRIGHT_TIMEOUT_MS = _timeout_secs * MILLISECONDS_PER_SECOND
 
 
 async def findAndCheckElement(page: Page, selector: str) -> Locator:
+# Browser instance management and page navigation helpers
     """
     Find an element and wait for it to be visible.
 
