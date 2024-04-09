@@ -9,6 +9,9 @@ from ast import literal_eval
 from typing import List, Union
 
 from src.utils.logging.logging_Setup import getProjectLogger
+"""Utility functions for DEXScreener API interactions.
+Includes data formatting, validation, and transformation helpers.
+"""
 
 logger = getProjectLogger()
 
