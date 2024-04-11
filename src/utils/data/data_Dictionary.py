@@ -42,6 +42,7 @@ from typing import Any, Dict, Optional, Tuple
 KeyValuePair = Tuple[Any, Any]
 ReplacementMap = Dict[str, str]
 
+# Deep merge preserves nested structures and handles key conflicts
 # Default return values
 EMPTY_DICT_LENGTH = 0
 
