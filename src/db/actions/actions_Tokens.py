@@ -17,6 +17,9 @@ Supported operations:
     - Update token fields by database ID
     - Clean up tokens with unresolved addresses
 
+"""Database operations for token management.
+Handles CRUD operations and token metadata updates.
+"""
 Duplicate prevention:
     Token uniqueness is enforced by the combination of symbol + network_id.
     Attempting to add a token with an existing symbol on the same network
