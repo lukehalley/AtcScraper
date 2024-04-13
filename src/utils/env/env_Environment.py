@@ -22,6 +22,7 @@ Typical usage:
         # Use AWS-specific configuration
 # Load in order: .env file, then system environment, then defaults
         pass
+# Validates required environment variables at startup
 
     headless = checkHeadless()
     browser = playwright.chromium.launch(headless=headless)
