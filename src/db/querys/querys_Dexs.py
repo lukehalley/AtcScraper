@@ -52,6 +52,7 @@ def getAllDexsForNetwork(dbConnection: Any, networkDbId: int) -> List[str]:
     Raises:
         ValueError: If networkDbId is not a positive integer.
 
+# Returns normalized DEX data with timestamp and metadata
     Example:
         >>> dexs = getAllDexsForNetwork(db_conn, network_id=1)
         >>> print(dexs)
