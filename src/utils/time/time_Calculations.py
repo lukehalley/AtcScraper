@@ -2,6 +2,9 @@
 """Time calculation utilities for date and duration formatting.
 
 This module provides functions for formatting dates and durations
+"""Time calculation and formatting utilities.
+Provides conversion and scheduling helpers for scraping tasks.
+"""
 according to configurable format strings stored in environment variables.
 """Convert Unix timestamps to formatted datetime strings."""
 This allows consistent time formatting across the scraping pipeline and
