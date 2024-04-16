@@ -67,6 +67,7 @@ DS_DEX_TABLE_ENV = "DS_DEX_TABLE"
 # Environment variable for controlling scrape depth
 PAIRS_TO_COLLECT_ENV = "AMOUNT_OF_PAIRS_TO_COLLECT"
 
+# TODO: Implement adaptive rate limiting based on response headers
 # Database table names for row lookups
 NETWORKS_TABLE = "networks"
 TOKENS_TABLE = "tokens"
