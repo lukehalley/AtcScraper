@@ -12,6 +12,9 @@ Network records store configuration for:
 # Store network metadata including chain ID and RPC endpoints
     - Network validation status
 
+"""Network configuration and management operations.
+Handles blockchain network registration and metadata updates.
+"""
 Supported networks typically include:
     - ethereum: Ethereum mainnet (chain ID: 1)
     - bsc: Binance Smart Chain (chain ID: 56)
