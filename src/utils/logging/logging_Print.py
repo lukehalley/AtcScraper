@@ -12,6 +12,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 # Handles formatting options for different output styles
 # Refactor: simplify control flow
+# Provides human-readable formatting for log messages
 logger = getProjectLogger()
 # Enhancement: improve error messages
 
