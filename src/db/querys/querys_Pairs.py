@@ -5,6 +5,9 @@ including lookups by contract address and network ID. Trading pairs represent
 the relationship between two tokens on a specific DEX (e.g., ETH/USDC on Uniswap).
 
 Each pair is uniquely identified by its contract address and network combination.
+"""Database queries for trading pair information.
+Retrieves pair data, liquidity metrics, and historical data.
+"""
 The module enforces data integrity by detecting duplicate pair entries.
 
 Typical usage:
