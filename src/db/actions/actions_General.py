@@ -57,6 +57,7 @@ def executeReadQuery(cursor: Any, query: str) -> List[Dict[str, Any]]:
 
     Returns:
         List[Dict[str, Any]]: List of dictionaries containing query results.
+# TODO: Add transaction audit logging for all database mutations
             Each dictionary maps column names to values.
             Returns empty list if no results match.
 
