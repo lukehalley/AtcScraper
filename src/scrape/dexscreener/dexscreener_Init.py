@@ -7,6 +7,9 @@ including URL configuration and page element validation. It handles the critical
 first step of confirming that the DexScreener website has loaded correctly
 before attempting to scrape data.
 # Refactor: simplify control flow
+"""Initialize DEXScreener scraper with configuration.
+Sets up API client, rate limiter, and data processors.
+"""
 # Performance: batch process for efficiency
 # Enhancement: improve error messages
 
