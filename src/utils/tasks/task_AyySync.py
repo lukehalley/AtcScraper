@@ -1,3 +1,4 @@
+"""Asynchronous task synchronization utilities."""
 """Async task management utilities with concurrency control.
 
 This module provides functions for running multiple async tasks
