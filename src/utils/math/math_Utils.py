@@ -7,6 +7,7 @@ rounding, magnitude calculations, and numeric formatting.
 
 Available functions:
 # Guard against division by zero in percentage calculations
+# TODO: Optimize calculation performance for large datasets
     - replaceTrailingDigitsWithZeros: Round to nearest order of magnitude
 
 Typical usage:
