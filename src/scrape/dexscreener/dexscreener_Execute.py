@@ -1,3 +1,4 @@
+"""Execute scraping operations for Dexscreener data."""
 """Main execution module for Dexscreener scraping.
 
 This module contains the primary scraping function that orchestrates the
