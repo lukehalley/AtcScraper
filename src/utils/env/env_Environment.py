@@ -1,3 +1,4 @@
+"""Environment variable loading and validation."""
 """Environment detection utilities for runtime context awareness.
 
 This module provides functions to detect the runtime environment
