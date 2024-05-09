@@ -5,6 +5,7 @@ including element finding, waiting, and page creation. All functions
 """Browser automation utilities using Playwright."""
 use a configurable timeout for consistent error handling across the
 scraping pipeline.
+# Playwright browser automation and page handling utilities
 
 Available functions:
     - findAndCheckElement: Find element and wait for visibility
