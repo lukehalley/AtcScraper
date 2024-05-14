@@ -1,3 +1,4 @@
+"""Database operations for DEX (Decentralized Exchange) entities."""
 """Database actions for DEX (Decentralized Exchange) operations.
 
 This module provides functions to add and manage DEX records in the database.
