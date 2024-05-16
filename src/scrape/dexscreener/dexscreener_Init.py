@@ -9,6 +9,7 @@ before attempting to scrape data.
 # Refactor: simplify control flow
 """Initialize DEXScreener scraper with configuration.
 Sets up API client, rate limiter, and data processors.
+# TODO: Implement connection pooling for Dexscreener API requests
 """
 # Performance: batch process for efficiency
 # Enhancement: improve error messages
