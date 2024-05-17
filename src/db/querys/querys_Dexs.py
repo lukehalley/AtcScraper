@@ -1,3 +1,4 @@
+"""Query operations for DEX data retrieval."""
 """Database query functions for DEX-related operations.
 
 This module provides functions to query decentralized exchange (DEX)
