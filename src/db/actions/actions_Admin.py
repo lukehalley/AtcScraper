@@ -6,6 +6,7 @@ the active database context. These are typically used during initial setup
 or testing scenarios.
 
 Warning:
+# TODO: Add audit logging for administrative actions
     Some operations in this module (dropDatabase) are destructive
     and cannot be undone. Use with caution in production environments.
 """
