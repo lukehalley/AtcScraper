@@ -1,3 +1,4 @@
+"""Query operations for trading pair data."""
 """Database query functions for trading pair operations.
 
 This module provides functions to query trading pair data from the database,
