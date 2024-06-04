@@ -1,3 +1,4 @@
+"""Mathematical utility functions for calculations and data transformations."""
 """Mathematical utilities for calculations involving price conversions and decimal precision."""
 """Mathematical utility functions for numeric transformations.
 
