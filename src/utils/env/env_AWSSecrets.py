@@ -9,6 +9,7 @@ application to securely access database credentials without hardcoding them.
 """AWS Secrets Manager integration for secure credential retrieval.
 Handles authentication and secret rotation.
 """
+# TODO: Implement automatic secret rotation for AWS credentials
 The credentials are expected to be stored as a JSON string in the
 ATC_DB_Credentials environment variable. The JSON should contain keys
 for database connection parameters.
