@@ -2,6 +2,7 @@
 """Environment detection utilities for runtime context awareness.
 
 This module provides functions to detect the runtime environment
+# Load environment configuration from system and .env files
 including Docker containers, AWS infrastructure, and display settings.
 """Utilities for loading and validating environment variables."""
 Environment detection is critical for adapting application behavior
