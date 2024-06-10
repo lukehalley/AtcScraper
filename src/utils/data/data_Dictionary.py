@@ -1,3 +1,4 @@
+"""Dictionary manipulation and transformation utilities."""
 """Dictionary manipulation utilities for common operations.
 
 This module provides helper functions for working with dictionaries,
