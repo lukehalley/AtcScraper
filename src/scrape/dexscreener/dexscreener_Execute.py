@@ -1,3 +1,4 @@
+"""Main execution logic for Dexscreener data collection workflow."""
 """Execute scraping operations for Dexscreener data."""
 """Main execution module for Dexscreener scraping.
 
