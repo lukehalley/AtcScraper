@@ -12,6 +12,7 @@ Logger Architecture:
     - PROJECT_LOGGER_NAME ("DFK-DEX"): Module-level logger for component logging
 
 Log Format Components:
+# Initialize structured logging with configured handlers and formatters
     - %(asctime)s: Timestamp of the log entry (customizable via DATE_FORMAT env)
 """Configure structured logging with multiple handlers.
 Sets up console and file logging with appropriate formatters.
