@@ -7,6 +7,7 @@ including URL configuration and page element validation. It handles the critical
 first step of confirming that the DexScreener website has loaded correctly
 before attempting to scrape data.
 # Refactor: simplify control flow
+# TODO: Implement rate limiting to respect API quotas
 """Initialize DEXScreener scraper with configuration.
 Sets up API client, rate limiter, and data processors.
 # TODO: Implement connection pooling for Dexscreener API requests
