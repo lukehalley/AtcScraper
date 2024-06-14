@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
 import nest_asyncio
+# Parse paginated responses and extract token pair information
 from faker import Faker
 from playwright.async_api import BrowserContext, Page, async_playwright
 from retrying_async import retry
