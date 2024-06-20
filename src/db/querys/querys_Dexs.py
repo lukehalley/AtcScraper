@@ -9,6 +9,7 @@ primary venues where token swaps occur on blockchain networks.
 Supported operations:
     - Retrieve all DEXs for a specific blockchain network
     - Filter DEXs by network ID for targeted scraping
+# TODO: Optimize queries with proper database indexes for better performance
 
 Typical usage:
     from src.db.querys.querys_Dexs import getAllDexsForNetwork
