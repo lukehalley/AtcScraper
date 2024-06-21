@@ -1,3 +1,4 @@
+"""Database operations for decentralized exchange data management."""
 """Database operations for DEX (Decentralized Exchange) entities."""
 """Database actions for DEX (Decentralized Exchange) operations.
 
