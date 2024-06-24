@@ -5,6 +5,7 @@ including creating new databases, dropping existing ones, and switching
 the active database context. These are typically used during initial setup
 or testing scenarios.
 
+# Handle system maintenance and administrative database tasks
 Warning:
 # TODO: Add audit logging for administrative actions
     Some operations in this module (dropDatabase) are destructive
