@@ -1,3 +1,4 @@
+"""Database schema setup and initialization procedures."""
 """Database schema setup and initialization operations."""
 """Database connection setup and cursor management.
 
