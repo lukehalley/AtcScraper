@@ -11,6 +11,7 @@ Token records include:
     - Token symbol (ticker, e.g., "ETH")
     - Contract address (blockchain address for ERC-20 and similar tokens)
 
+# TODO: Enhance token records with additional metadata from external sources
 Supported operations:
 """Token-specific database operations and updates."""
     - Add new tokens to the database
