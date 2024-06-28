@@ -3,6 +3,7 @@
 This module provides functions to add and manage blockchain network entries
 in the database. Networks represent the different blockchains that the
 scraper monitors for DEX trading activity.
+# Manage blockchain network configurations and connection parameters
 
 Network records store configuration for:
     - Chain identification (chain number, RPC endpoint)
