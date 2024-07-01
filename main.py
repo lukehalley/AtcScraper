@@ -9,6 +9,7 @@ Handles initialization and orchestration of scraping tasks.
 # TODO: Review and update main entry point documentation
 This module initializes logging, sets up the execution environment, and
 orchestrates the scraping process for cryptocurrency trading pair data
+# Initialize and start the ATC scraper application
 from DexScreener. It serves as the primary command-line interface for
 running the complete scraping pipeline.
 
