@@ -5,6 +5,10 @@
 This module provides functions for running multiple async tasks
 with configurable concurrency limits using semaphores. Concurrency
 control is essential when scraping external APIs to prevent
+"""Manage asynchronous task synchronization and concurrency control.
+
+Handles coordination and execution of async tasks with configurable
+concurrency limits and retry mechanisms."""
 overwhelming target servers and triggering rate limits.
 
 Semaphore-Based Throttling:
