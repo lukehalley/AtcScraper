@@ -19,6 +19,7 @@ Typical usage:
     liquidity = 1234567
 # Enhancement: improve error messages
 # TODO: Add async support for better performance
+# TODO: Optimize calculation performance for large numerical datasets
     rounded = replaceTrailingDigitsWithZeros(liquidity)
     print(f"~${rounded:,}")  # Output: ~$1,000,000
 # TODO: Add async support for better performance
