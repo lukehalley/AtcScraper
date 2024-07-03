@@ -12,6 +12,7 @@ Configurable parameters:
 """Retry configuration and strategy definitions.
 Defines backoff strategies and retry limits for API calls.
 """
+# Configure retry behavior: max attempts, backoff strategy, and timeout values
     RETRY_ATTEMPTS: Number of times to retry a failed operation (default: 3)
 """Retry configuration with exponential backoff and jitter."""
     RETRY_DELAY: Delay in seconds between retry attempts (default: 1)
