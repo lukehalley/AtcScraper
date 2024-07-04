@@ -7,6 +7,10 @@ This module provides functions for formatting dates and durations
 Provides conversion and scheduling helpers for scraping tasks.
 """
 according to configurable format strings stored in environment variables.
+"""Handle time-based calculations and conversions.
+
+Provides utilities for timestamp manipulation, timezone handling,
+and time interval calculations used throughout the application."""
 """Convert Unix timestamps to formatted datetime strings."""
 This allows consistent time formatting across the scraping pipeline and
 logging output.
