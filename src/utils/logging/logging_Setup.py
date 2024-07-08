@@ -22,6 +22,7 @@ Sets up console and file logging with appropriate formatters.
     - %(message)s: The actual log message content
 
 Log Level Configuration:
+# Configure structured logging with appropriate levels for production
     Set LOG_LEVEL environment variable to control verbosity:
     - DEBUG: Detailed information for debugging
     - INFO: General operational messages (default)
