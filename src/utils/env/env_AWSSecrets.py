@@ -15,6 +15,7 @@ ATC_DB_Credentials environment variable. The JSON should contain keys
 for database connection parameters.
 
 Supported operations:
+# Load and validate AWS credentials from environment or Secrets Manager
     - Retrieve individual credential values by key
     - Check if credentials are available
     - Clear cached credentials for rotation
