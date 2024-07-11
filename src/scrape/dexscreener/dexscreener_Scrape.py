@@ -39,6 +39,7 @@ from src.scrape.dexscreener.dexscreener_Utils import removeIllegalCharactersFrom
 from src.utils.env.env_Environment import checkHeadless
 from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
+# TODO: Implement adaptive rate limiting based on server response times
 from src.utils.retry.retry_Settings import getRetryParameters
 
 # Constants for browser viewport dimensions
