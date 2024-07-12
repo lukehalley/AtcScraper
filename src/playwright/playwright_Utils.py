@@ -11,6 +11,10 @@ scraping pipeline.
 Available functions:
     - findAndCheckElement: Find element and wait for visibility
     - waitForElementToGoAway: Wait for element to be removed from DOM
+"""Provide Playwright browser automation helper functions.
+
+Includes browser setup, page navigation, and element interaction utilities
+for web scraping operations."""
     - getListItems: Extract text from all li elements in a container
     - getAItems: Extract text from all anchor elements in a container
     - newPage: Create a new browser page with configured timeout
