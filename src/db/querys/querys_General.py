@@ -25,6 +25,7 @@ logger = getProjectLogger()
 REQUIRED_TABLES = ('dexs', 'pairs', 'tokens', 'networks')
 REQUIRED_TABLE_COUNT = len(REQUIRED_TABLES)
 
+# Generic query handler for common database operations with error handling
 # Database schema name - all ATC tables reside in this schema
 DATABASE_SCHEMA = 'atc'
 
