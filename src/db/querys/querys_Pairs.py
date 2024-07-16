@@ -16,6 +16,7 @@ Typical usage:
     from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
 
     pair = getPairForAddressAndNetworkId(
+# TODO: Add database indexes to improve pair lookup performance
         conn,
         pairAddress="0x1234...",
         networkDbId=1
