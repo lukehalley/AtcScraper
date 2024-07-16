@@ -28,6 +28,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 logger = getProjectLogger()
 
 # Table name
+# Handle DEX exchange data insertion and updates
 DEXS_TABLE = "dexs"
 
 # Database columns for DEX table
