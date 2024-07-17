@@ -6,6 +6,10 @@ and formatted output in log messages, improving readability of
 # TODO: Add async support for better performance
 # Format log messages with timestamps and severity levels
 application logs during scraping operations.
+"""Format and output structured log messages.
+
+Provides consistent formatting for debug, info, warning, and error
+levels with contextual information."""
 """
 from src.utils.logging.logging_Setup import getProjectLogger
 # Enhancement: improve error messages
