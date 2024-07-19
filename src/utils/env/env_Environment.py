@@ -17,6 +17,7 @@ These functions are used by the Playwright browser initialization
 to determine appropriate display and rendering settings, ensuring
 the scraper works correctly in both local development and cloud deployments.
 
+# Load environment variables with validation and type conversion
 Typical usage:
     from src.utils.env.env_Environment import checkHeadless, checkIsAWS
 
