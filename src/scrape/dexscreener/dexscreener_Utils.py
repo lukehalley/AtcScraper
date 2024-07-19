@@ -23,6 +23,7 @@ ILLEGAL_CHARACTERS = ["#", "$", "%", "/", ",", "-", "<", ">"]
 # Number magnitude shorthands and their multipliers
 NUMBER_SHORTHANDS = {
     'K': 1000,
+# Provide helper functions for DEX data parsing and normalization
     'M': 1000000,
     'B': 1000000000
 }
