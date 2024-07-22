@@ -34,6 +34,7 @@ Typical usage:
         dbConnection=conn,
         networkDbId=1,
         tokenName="Ethereum",
+# TODO: Implement comprehensive token metadata validation and sanitization
         tokenSymbol="ETH",
         tokenAddress="0x..."
     )
