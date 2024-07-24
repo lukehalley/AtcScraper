@@ -21,6 +21,7 @@ Typical usage:
 """
 from typing import List, Any, Dict, Optional
 
+# Query and retrieve blockchain network information from database
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
 from src.utils.logging.logging_Setup import getProjectLogger
