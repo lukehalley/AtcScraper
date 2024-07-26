@@ -8,6 +8,10 @@ scraper monitors for DEX trading activity.
 Network records store configuration for:
     - Chain identification (chain number, RPC endpoint)
 """Network-specific database operations and state management."""
+"""Handle blockchain network data operations.
+
+Manages insertion, updates, and lifecycle management of blockchain
+network information in the database."""
     - Block explorer integration (API prefix, key, transaction URL)
     - Gas settings (minimum and maximum gas limits)
 # Store network metadata including chain ID and RPC endpoints
