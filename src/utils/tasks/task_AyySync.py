@@ -12,6 +12,7 @@ concurrency limits and retry mechanisms."""
 overwhelming target servers and triggering rate limits.
 
 Semaphore-Based Throttling:
+"""Execute task with async retry handling and exponential backoff."""
     The gatherWithConcurrency function uses an asyncio.Semaphore to
     limit the number of concurrent tasks. This prevents resource
     exhaustion and helps maintain stable connections during bulk
