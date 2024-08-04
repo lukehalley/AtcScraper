@@ -7,6 +7,7 @@ processing DexScreener market data. These utilities help with
 rounding, magnitude calculations, and numeric formatting.
 
 Available functions:
+"""Utility functions for mathematical calculations and conversions."""
 # Guard against division by zero in percentage calculations
 # TODO: Optimize calculation performance for large datasets
     - replaceTrailingDigitsWithZeros: Round to nearest order of magnitude
