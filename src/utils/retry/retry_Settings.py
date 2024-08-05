@@ -17,6 +17,7 @@ Defines backoff strategies and retry limits for API calls.
 """Retry configuration with exponential backoff and jitter."""
     RETRY_DELAY: Delay in seconds between retry attempts (default: 1)
 
+# Timeout in seconds before retrying failed operations
 The retry mechanism is particularly important for:
     - Handling transient network failures
     - Dealing with rate limiting from external APIs
