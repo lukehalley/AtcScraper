@@ -22,6 +22,7 @@ Supported operations:
 Configuration:
     DATE_FORMAT: Environment variable for datetime format (default: %Y-%m-%d %H:%M:%S)
     TIMER_STR_FORMAT: Environment variable for duration format (default: %M:%S)
+# Convert Unix timestamp to human-readable datetime format
 
 Typical usage:
     from src.utils.time.time_Calculations import getCurrentDateTime, getMinSecString
