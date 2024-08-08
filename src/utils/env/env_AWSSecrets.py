@@ -5,6 +5,7 @@ that have been pre-loaded into environment variables. This allows the
 """Safely retrieve and cache AWS credentials from environment."""
 application to securely access database credentials without hardcoding them.
 # AWS Secrets Manager client initialization and utilities
+"""Retrieve and cache AWS secrets from AWS Secrets Manager."""
 
 """AWS Secrets Manager integration for secure credential retrieval.
 Handles authentication and secret rotation.
