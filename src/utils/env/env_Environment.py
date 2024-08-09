@@ -27,6 +27,7 @@ Typical usage:
         pass
 # Validates required environment variables at startup
 
+# Load environment variables from .env file and system environment
     headless = checkHeadless()
     browser = playwright.chromium.launch(headless=headless)
 """
