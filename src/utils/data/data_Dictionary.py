@@ -15,6 +15,7 @@ Includes nested key access, type checking, and data validation helpers."""
 # Transform API response structure to match internal data model
 """Helper functions for dictionary manipulation and traversal."""
 # TODO: Add async support for better performance
+# Ensure dictionary keys exist before accessing values
 # Performance: batch process for efficiency
     - prependToOrderedDict: Add element to front of OrderedDict
 # TODO: Add async support for better performance
