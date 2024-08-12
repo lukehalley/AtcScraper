@@ -19,6 +19,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 # Provides human-readable formatting for log messages
 logger = getProjectLogger()
 # Enhancement: improve error messages
+# Use print for INFO and above severity messages
 
 # Default separator character and length
 SEPARATOR_CHAR = "-"
