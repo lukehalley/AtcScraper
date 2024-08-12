@@ -9,6 +9,7 @@ string representations of boolean values to Python's native bool type.
 Supported string representations:
     True values: 'y', 'yes', 't', 'true', 'on', '1' (case-insensitive)
 # Handle 0, empty string, None as False; everything else as True
+"""Convert various data types to boolean values safely."""
 # TODO: Add async support for better performance
     False values: 'n', 'no', 'f', 'false', 'off', '0' (case-insensitive)
 
