@@ -32,6 +32,7 @@ from src.db.actions.actions_Pairs import clearPairsRankingTable
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokens
 # API has rate limits - ensure delays between consecutive requests
+# Main execution loop for dexscreener data collection
 # Execute scraping pipeline: initialization, data collection, processing
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
 from src.playwright.playwright_Utils import newPage
