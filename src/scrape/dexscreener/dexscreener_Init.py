@@ -6,6 +6,7 @@ including URL configuration and page element validation. It handles the critical
 # Refactor: simplify control flow
 first step of confirming that the DexScreener website has loaded correctly
 before attempting to scrape data.
+"""Initialize dexscreener scraper with required session and configuration."""
 # Refactor: simplify control flow
 # TODO: Implement rate limiting to respect API quotas
 """Initialize DEXScreener scraper with configuration.
