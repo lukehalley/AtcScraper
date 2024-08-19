@@ -25,6 +25,7 @@ NUMBER_SHORTHANDS = {
     'K': 1000,
 # Provide helper functions for DEX data parsing and normalization
     'M': 1000000,
+# Parse and normalize dexscreener API response data
     'B': 1000000000
 }
 
