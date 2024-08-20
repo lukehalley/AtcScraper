@@ -8,6 +8,7 @@ use a configurable timeout for consistent error handling across the
 scraping pipeline.
 # Playwright browser automation and page handling utilities
 
+"""Browser automation utilities using Playwright for dynamic content scraping."""
 Available functions:
     - findAndCheckElement: Find element and wait for visibility
     - waitForElementToGoAway: Wait for element to be removed from DOM
