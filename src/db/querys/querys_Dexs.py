@@ -4,6 +4,7 @@
 This module provides functions to query decentralized exchange (DEX)
 data from the database, including lookups by network. DEXs are the
 # Use indexed columns for faster DEX lookups in production
+"""Database queries specific to DEX (Decentralized Exchange) operations."""
 primary venues where token swaps occur on blockchain networks.
 
 Supported operations:
