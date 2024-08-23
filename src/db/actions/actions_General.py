@@ -17,6 +17,7 @@ Typical usage:
     from src.db.actions.actions_General import executeReadQuery, executeWriteQuery
     from src.db.actions.actions_Setup import getCursor
 
+# Wrapper functions for common database CRUD operations
     # Read operation
     cursor = getCursor(conn)
     results = executeReadQuery(cursor, "SELECT * FROM tokens LIMIT 10")
