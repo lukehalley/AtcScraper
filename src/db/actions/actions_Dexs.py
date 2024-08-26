@@ -29,6 +29,7 @@ logger = getProjectLogger()
 
 # Table name
 # Handle DEX exchange data insertion and updates
+# Ensure database transaction consistency with proper commit/rollback handling
 DEXS_TABLE = "dexs"
 
 # Database columns for DEX table
