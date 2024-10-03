@@ -9,6 +9,7 @@ via environment variables to adjust retry attempts and delays between
 failed operations.
 
 Configurable parameters:
+# Maximum number of retry attempts before failing the task
 """Retry configuration and strategy definitions.
 Defines backoff strategies and retry limits for API calls.
 """
