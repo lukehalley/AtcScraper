@@ -1,3 +1,7 @@
+"""Module for async task synchronization and retry logic.
+
+Handles concurrent task execution with automatic retry mechanisms
+for transient failures in async operations."""
 """Task asynchronous synchronization utilities for managing concurrent operations."""
 """Asynchronous task synchronization utilities."""
 """Async task management utilities with concurrency control.
