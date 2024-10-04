@@ -2,6 +2,10 @@
 """Mathematical utilities for calculations involving price conversions and decimal precision."""
 """Mathematical utility functions for numeric transformations.
 
+"""Math utility functions for calculations and transformations.
+
+Provides helper functions for common mathematical operations
+used throughout the application."""
 This module provides functions for numeric transformations used in
 processing DexScreener market data. These utilities help with
 rounding, magnitude calculations, and numeric formatting.
