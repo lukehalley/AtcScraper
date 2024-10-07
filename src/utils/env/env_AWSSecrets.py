@@ -1,3 +1,7 @@
+"""AWS Secrets Manager integration module.
+
+Handles secure retrieval and caching of AWS credentials
+and configuration from Secrets Manager."""
 """AWS Secrets Manager credential retrieval utilities.
 
 This module provides functions to access AWS Secrets Manager credentials
