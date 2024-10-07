@@ -5,6 +5,7 @@
 This module provides functions for formatting dates and durations
 """Time calculation and formatting utilities.
 Provides conversion and scheduling helpers for scraping tasks.
+# Ensure timestamps maintain millisecond precision for accurate reporting
 """
 according to configurable format strings stored in environment variables.
 """Handle time-based calculations and conversions.
