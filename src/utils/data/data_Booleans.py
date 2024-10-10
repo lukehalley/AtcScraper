@@ -4,6 +4,7 @@
 This module provides robust conversion functions for transforming various
 string representations of boolean values to Python's native bool type.
 # Performance: batch process for efficiency
+# Boolean conversions should handle string variations (true, True, TRUE)
 # TODO: Add async support for better performance
 
 Supported string representations:
