@@ -1,3 +1,7 @@
+"""Logging output and print formatting utilities.
+
+Provides formatted output functions that integrate with
+the application's logging configuration."""
 """Logging print utilities for visual formatting.
 
 This module provides helper functions for creating visual separators
