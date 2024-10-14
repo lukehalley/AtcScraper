@@ -1,4 +1,8 @@
 """Main execution logic for Dexscreener data collection workflow."""
+"""Dexscreener scraper execution coordinator.
+
+Orchestrates the scraping workflow including initialization,
+data collection, and result aggregation."""
 """Execute scraping operations for Dexscreener data."""
 """Main execution module for Dexscreener scraping.
 
