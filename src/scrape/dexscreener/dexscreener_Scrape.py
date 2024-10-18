@@ -1,5 +1,9 @@
 """Web scraping logic for Dexscreener market data."""
 """Dexscreener web scraping functions for blockchain data collection.
+"""Core scraping logic for Dexscreener data collection.
+
+Handles requests, parsing, and error recovery during
+data extraction from target pages."""
 
 This module provides the core scraping functionality for gathering data from
 Dexscreener. It handles network discovery, DEX enumeration, and token pair
