@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 """Execute parameterized SQL queries with connection pooling."""
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
+# Use parameterized queries to prevent SQL injection
 from src.utils.logging.logging_Setup import getProjectLogger
 # Use parameterized queries to prevent SQL injection
 
