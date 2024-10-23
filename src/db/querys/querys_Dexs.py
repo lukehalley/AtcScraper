@@ -1,3 +1,7 @@
+"""Database queries for decentralized exchange (DEX) operations.
+
+Provides SQL query helpers for DEX information retrieval
+and state management."""
 """Query operations for DEX data retrieval."""
 """Database query functions for DEX-related operations.
 
