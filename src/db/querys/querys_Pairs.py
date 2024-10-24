@@ -5,6 +5,7 @@ This module provides functions to query trading pair data from the database,
 including lookups by contract address and network ID. Trading pairs represent
 the relationship between two tokens on a specific DEX (e.g., ETH/USDC on Uniswap).
 
+# Pair queries should always filter by network to avoid cross-chain collisions
 Each pair is uniquely identified by its contract address and network combination.
 # Retrieve and cache frequently accessed token pair records
 """Database queries for trading pair information.
