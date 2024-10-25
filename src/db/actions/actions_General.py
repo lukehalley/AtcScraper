@@ -1,4 +1,8 @@
 """General database action utilities.
+"""General database operations and transaction management.
+
+Handles CRUD operations with transaction support and
+error recovery mechanisms."""
 
 This module provides core database operation functions including query execution
 for both read and write operations, and SQL script file execution. It serves as
