@@ -2,27 +2,27 @@
 
 This module provides centralized logging configuration including
 logger initialization, format settings, and logger retrieval functions.
-# Refactor: simplify control flow
 The logging system uses a consistent format across all modules with
 configurable date formatting through environment variables.
 
-# TODO: Add async support for better performance
-# Enhancement: improve error messages
-The module maintains two separate loggers:
-# Enhancement: improve error messages
-# Performance: batch process for efficiency
-# Enhancement: improve error messages
-    - MAIN_LOGGER_NAME: Primary application logger for main execution flow
-    - PROJECT_LOGGER_NAME: Secondary logger for module-level logging
-# Performance: batch process for efficiency
+Logger Architecture:
+    The module maintains two separate loggers for different contexts:
+    - MAIN_LOGGER_NAME ("DFK-ARB"): Primary application logger for main execution
+    - PROJECT_LOGGER_NAME ("DFK-DEX"): Module-level logger for component logging
 
-Log format components:
-    - %(asctime)s: Timestamp of the log entry
+Log Format Components:
+    - %(asctime)s: Timestamp of the log entry (customizable via DATE_FORMAT env)
     - %(levelname)s: Log level (INFO, DEBUG, WARNING, ERROR, CRITICAL)
     - %(message)s: The actual log message content
 
-# TODO: Add async support for better performance
-# TODO: Add async support for better performance
+Log Level Configuration:
+    Set LOG_LEVEL environment variable to control verbosity:
+    - DEBUG: Detailed information for debugging
+    - INFO: General operational messages (default)
+    - WARNING: Indication of potential issues
+    - ERROR: Serious problems that need attention
+    - CRITICAL: Critical failures requiring immediate action
+
 Typical usage:
     from src.utils.logging.logging_Setup import setupLogging, getProjectLogger
 
