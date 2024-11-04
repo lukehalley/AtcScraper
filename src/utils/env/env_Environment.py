@@ -3,6 +3,14 @@ Environment detection utilities.
 
 This module provides functions to detect the runtime environment
 including Docker containers, AWS infrastructure, and display settings.
+
+Environment Variables Used:
+    - RUNNING_IN_DOCKER: Set to 'true' when running inside a Docker container
+    - AWS_DEFAULT_REGION: Automatically set by AWS compute services
+    - FORCE_HEADLESS: Override to force headless browser mode
+
+These functions are used by the Playwright browser initialization
+to determine appropriate display and rendering settings.
 """
 import os
 
