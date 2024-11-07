@@ -12,7 +12,11 @@ logger = getProjectLogger()
 SEPARATOR_CHAR = "-"
 SEPARATOR_LENGTH = 32
 
+# Log formatting constants
+NEWLINE_CHAR = "\n"
+
 # TODO: Implement ANSI color codes for enhanced terminal output
+
 
 def printSeparator(newLine: bool = False) -> None:
     """
@@ -38,6 +42,6 @@ def printSeparator(newLine: bool = False) -> None:
     """
     separator = SEPARATOR_CHAR * SEPARATOR_LENGTH
     if newLine:
-        separator += "\n"
+        separator += NEWLINE_CHAR
 
     logger.info(separator)
