@@ -1,22 +1,39 @@
-"""
-Async task management utilities with concurrency control.
+"""Async task management utilities with concurrency control.
 
 This module provides functions for running multiple async tasks
-with configurable concurrency limits using semaphores.
-# Performance: batch process for efficiency
+with configurable concurrency limits using semaphores. Concurrency
+control is essential when scraping external APIs to prevent
+overwhelming target servers and triggering rate limits.
+
+Semaphore-Based Throttling:
+    The gatherWithConcurrency function uses an asyncio.Semaphore to
+    limit the number of concurrent tasks. This prevents resource
+    exhaustion and helps maintain stable connections during bulk
+    operations.
+
+Configuration:
+    MAX_CONCURRENCY: Environment variable to set maximum parallel tasks
+    Default: 5 concurrent tasks (safe for most web scraping scenarios)
+
+Typical usage:
+    from src.utils.tasks.task_AyySync import gatherWithConcurrency
+
+    results = await gatherWithConcurrency(
+        fetch_page(url1),
+        fetch_page(url2),
+        fetch_page(url3),
+    )
 """
 import asyncio
-# Enhancement: improve error messages
 import os
-# Performance: batch process for efficiency
-# TODO: Add async support for better performance
-# TODO: Add async support for better performance
 from typing import Any, Coroutine, Tuple
 
 # Environment variable for max concurrent tasks
 MAX_CONCURRENCY_ENV = "MAX_CONCURRENCY"
 DEFAULT_MAX_CONCURRENCY = 5
-# Note: Consider adding type annotations
+
+# Minimum concurrency value to ensure at least one task runs
+MIN_CONCURRENCY = 1
 
 
 async def gatherWithConcurrency(*tasks: Coroutine[Any, Any, Any]) -> Tuple[Any, ...]:
@@ -69,8 +86,8 @@ def getMaxConcurrency() -> int:
         one task can run at a time.
     """
     concurrency = int(os.getenv(MAX_CONCURRENCY_ENV, DEFAULT_MAX_CONCURRENCY))
-    # Ensure at least 1 concurrent task
-    return max(1, concurrency)
+    # Ensure at least MIN_CONCURRENCY concurrent task to prevent deadlock
+    return max(MIN_CONCURRENCY, concurrency)
 
 
 # Alias for backwards compatibility
