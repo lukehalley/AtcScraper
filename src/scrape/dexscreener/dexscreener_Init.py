@@ -33,6 +33,9 @@ DS_ROOT_URL_ENV = "DS_ROOT_URL"
 DS_SIDEBAR_ENV = "DS_SIDEBAR"
 DS_PANEL_ENV = "DS_PANEL"
 
+# Number of required page elements for successful validation
+REQUIRED_ELEMENTS_COUNT = 2  # Sidebar + Panel
+
 
 def getDexscreenerRoot() -> str:
     """
