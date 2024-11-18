@@ -30,8 +30,12 @@ logger = getProjectLogger()
 lazyMode = strToBool(os.environ.get("LAZY_MODE"))
 
 # Browser viewport dimensions for consistent rendering
+# Using standard 1080p resolution to ensure all UI elements are visible
 BROWSER_VIEWPORT_WIDTH = 1920
 BROWSER_VIEWPORT_HEIGHT = 1080
+
+# Exit codes for scraping failure scenarios
+EXIT_CODE_NO_NETWORKS = 1
 
 
 async def scrapeDexScreener():
