@@ -35,6 +35,10 @@ logger = getProjectLogger()
 DB_ENDPOINT_ENV = "DB_ENDPOINT"
 DB_NAME_ENV = "DB_NAME"
 
+# AWS Secrets Manager key names for database credentials
+SECRET_KEY_USERNAME = "username"
+SECRET_KEY_PASSWORD = "password"
+
 
 def initDBConnection() -> Optional[MySQLConnection]:
     """
@@ -51,8 +55,8 @@ def initDBConnection() -> Optional[MySQLConnection]:
     Raises:
         Logs error messages for access denied or database not found errors
     """
-    DB_USER = getAWSSecret("username")
-    DB_PASSWORD = getAWSSecret("password")
+    DB_USER = getAWSSecret(SECRET_KEY_USERNAME)
+    DB_PASSWORD = getAWSSecret(SECRET_KEY_PASSWORD)
     DB_ENDPOINT = os.getenv(DB_ENDPOINT_ENV)
     DB_NAME = os.getenv(DB_NAME_ENV)
 
