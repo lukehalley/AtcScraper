@@ -88,7 +88,7 @@ def useDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    query = f"USE {databaseName}"
+    query = USE_DATABASE_TEMPLATE.format(databaseName)
 
     executeWriteQuery(
         dbConnection=dbConnection,

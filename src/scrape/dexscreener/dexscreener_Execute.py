@@ -43,6 +43,12 @@ NETWORKS_TO_SKIP_ENV = "NETWORKS_TO_SKIP"
 # Lazy mode filter - only scrape this network when LAZY_MODE is enabled
 LAZY_MODE_NETWORK = "ethereum"
 
+# Progress format string for network iteration display
+PROGRESS_FORMAT = "{current}/{total}"
+
+# Index offset for converting 0-based to 1-based indexing in progress display
+INDEX_OFFSET = 1
+
 
 async def scrapeDexScreener():
     """
@@ -208,8 +214,11 @@ async def scrapeDexScreener():
 
                 # Get the index of the network and form a string that we can use to
                 # count how far we are through the list of networks 1/40 etc...
-                networkIndex = finalNetworkDexs.index(network) + 1
-                networkCountStr = f"{networkIndex}/{collectedNetworks}"
+                networkIndex = finalNetworkDexs.index(network) + INDEX_OFFSET
+                networkCountStr = PROGRESS_FORMAT.format(
+                    current=networkIndex,
+                    total=collectedNetworks
+                )
 
                 # Get the networks name and dexs
                 networkName = list(network.keys())[0]
