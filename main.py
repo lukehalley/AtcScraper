@@ -39,6 +39,10 @@ load_dotenv()
 # Application name constant
 APP_NAME: Final[str] = "ATC Scraper"
 
+# Log messages for scrape lifecycle
+SCRAPE_COMPLETE_MESSAGE: Final[str] = "Dex Screener Scrape Complete"
+DURATION_PREFIX: Final[str] = "Took:"
+
 # Set up logging
 logger: logging.Logger = setupLogging()
 
@@ -70,8 +74,8 @@ def scrape() -> None:
 
     # Log that scraping is done
     printSeparator()
-    logger.info("Dex Screener Scrape Complete")
-    logger.info(f"Took: {timerString}")
+    logger.info(SCRAPE_COMPLETE_MESSAGE)
+    logger.info(f"{DURATION_PREFIX} {timerString}")
     printSeparator()
 
 
