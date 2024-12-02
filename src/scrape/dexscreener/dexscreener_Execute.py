@@ -173,7 +173,8 @@ async def scrapeDexScreener():
                 LAZY_MODE_NETWORK: [networkDictionary.pop(k) for k in list(networkDictionary.keys()) if k == LAZY_MODE_NETWORK][0]
             }
 
-        # Close the tab as we don't need it anymore
+        # Close the initial page as we don't need it anymore
+        logger.debug("Closing network discovery page")
         await page.close()
 
         # Separator
@@ -195,7 +196,8 @@ async def scrapeDexScreener():
 
         if collectedNetworks > 0:
 
-            # Close the tab as we don't need it anymore
+            # Close browser context after DEX enumeration phase
+            logger.debug("Closing browser context after DEX discovery")
             await browser.close()
 
             # Separator

@@ -33,6 +33,11 @@ DEFAULT_RETRY_DELAY = 1
 MIN_RETRY_ATTEMPTS = 1
 MIN_RETRY_DELAY = 0
 
+# Maximum values for safety - prevents infinite retry loops
+# and excessive delays that could cause timeouts
+MAX_RETRY_ATTEMPTS = 10
+MAX_RETRY_DELAY = 60
+
 
 def getRetryParameters() -> Tuple[int, int]:
     """
@@ -57,9 +62,9 @@ def getRetryParameters() -> Tuple[int, int]:
     retryAttempts = int(os.getenv(RETRY_ATTEMPTS_ENV, DEFAULT_RETRY_ATTEMPTS))
     retryDelay = int(os.getenv(RETRY_DELAY_ENV, DEFAULT_RETRY_DELAY))
 
-    # Enforce minimum values for safety
-    retryAttempts = max(MIN_RETRY_ATTEMPTS, retryAttempts)
-    retryDelay = max(MIN_RETRY_DELAY, retryDelay)
+    # Enforce minimum and maximum values for safety
+    retryAttempts = max(MIN_RETRY_ATTEMPTS, min(retryAttempts, MAX_RETRY_ATTEMPTS))
+    retryDelay = max(MIN_RETRY_DELAY, min(retryDelay, MAX_RETRY_DELAY))
 
     logger.debug(f"Retry config: {retryAttempts} attempts, {retryDelay}s delay")
 
