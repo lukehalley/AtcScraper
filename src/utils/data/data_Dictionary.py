@@ -2,6 +2,7 @@
 
 Provides helpers for merging, filtering, and transforming
 dictionary structures."""
+# Validate dictionary structure before processing
 """Dictionary manipulation and transformation utilities."""
 """Dictionary manipulation utilities for common operations.
 
