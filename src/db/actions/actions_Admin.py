@@ -26,6 +26,9 @@ CREATE_DATABASE_TEMPLATE = "CREATE DATABASE IF NOT EXISTS {}"
 DROP_DATABASE_TEMPLATE = "DROP DATABASE IF EXISTS {}"
 USE_DATABASE_TEMPLATE = "USE {}"
 
+# Log message templates for database operations
+DROP_WARNING_SUFFIX = "this operation is irreversible"
+
 
 def createDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None:
     """
@@ -61,7 +64,7 @@ def dropDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> Non
     Warning:
         This operation is destructive and cannot be undone.
     """
-    logger.warning(f"Dropping database '{databaseName}' - this operation is irreversible")
+    logger.warning(f"Dropping database '{databaseName}' - {DROP_WARNING_SUFFIX}")
 
     cursor = getCursor(dbConnection=dbConnection)
 

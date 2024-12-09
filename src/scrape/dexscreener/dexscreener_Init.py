@@ -73,9 +73,16 @@ async def validateDexscreenerInit(page: Page) -> None:
 
     Raises:
         TimeoutError: If required elements are not found within timeout
+
+    Note:
+        This function uses retry decorator to handle intermittent page load
+        failures. The retry parameters are configured via environment variables.
     """
+    logger.debug(f"Validating {REQUIRED_ELEMENTS_COUNT} required page elements")
+
     # Validate the Dexscreener sidebar is present
     dsSidebar = os.getenv(DS_SIDEBAR_ENV)
+    logger.debug(f"Checking sidebar element: {dsSidebar}")
     await findAndCheckElement(
         page=page,
         selector=dsSidebar
@@ -83,6 +90,7 @@ async def validateDexscreenerInit(page: Page) -> None:
 
     # Validate the Dexscreener panel is present
     dsPanel = os.getenv(DS_PANEL_ENV)
+    logger.debug(f"Checking panel element: {dsPanel}")
     await findAndCheckElement(
         page=page,
         selector=dsPanel
