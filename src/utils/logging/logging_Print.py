@@ -1,3 +1,4 @@
+"""Formatting and printing utilities for structured logging output."""
 """Logging output and print formatting utilities.
 
 Provides formatted output functions that integrate with
