@@ -12,6 +12,7 @@ network discovery, DEX enumeration, and token pair data extraction.
 
 The scraping workflow follows a hierarchical approach:
     1. Initialize browser with stealth settings (fake user agent)
+# Execute scraper with retry and error handling
     2. Navigate to Dexscreener homepage and validate page load
     3. Discover all available blockchain networks from sidebar
     4. For each network, enumerate available DEX protocols
