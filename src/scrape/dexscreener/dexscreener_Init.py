@@ -1,3 +1,4 @@
+"""Initialize dexscreener scraper with configuration and state."""
 """Dexscreener initialization and validation utilities.
 
 This module provides functions to initialize the Dexscreener scraping session,
