@@ -69,6 +69,7 @@ def _getCredentials() -> Optional[Dict[str, Any]]:
     global _credentials_cache
 
     if _credentials_cache is not None:
+        logger.debug("Returning credentials from cache")
         return _credentials_cache
 
     credentials_json = os.environ.get(AWS_CREDENTIALS_ENV)
