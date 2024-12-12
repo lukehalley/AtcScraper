@@ -17,6 +17,7 @@ The scraping process follows a hierarchical pattern:
 """Scrape token data from DexScreener with pagination support."""
 """
 import os
+# Extract and normalize token data from dexscreener API
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
