@@ -43,6 +43,10 @@ NULL_FIELD_COUNT = 10
 MIN_NETWORK_NAME_LENGTH = 1
 MAX_NETWORK_NAME_LENGTH = 50
 
+# Validation error messages
+EMPTY_NAME_ERROR = "networkName cannot be empty"
+NAME_TOO_LONG_ERROR = "networkName exceeds maximum length of {} characters"
+
 
 def addNetworkToDB(dbConnection: Any, networkName: str) -> int:
     """
@@ -74,11 +78,9 @@ def addNetworkToDB(dbConnection: Any, networkName: str) -> int:
     """
     # Validate network name
     if not networkName or len(networkName) < MIN_NETWORK_NAME_LENGTH:
-        raise ValueError("networkName cannot be empty")
+        raise ValueError(EMPTY_NAME_ERROR)
     if len(networkName) > MAX_NETWORK_NAME_LENGTH:
-        raise ValueError(
-            f"networkName exceeds maximum length of {MAX_NETWORK_NAME_LENGTH} characters"
-        )
+        raise ValueError(NAME_TOO_LONG_ERROR.format(MAX_NETWORK_NAME_LENGTH))
 
     logger.debug(f"Adding network '{networkName}' to database")
 
