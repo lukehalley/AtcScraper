@@ -31,7 +31,9 @@ import sys
 from typing import Optional
 
 # Default log format pattern with timestamp, level, and message
+# Using pipe delimiter for easy parsing in log aggregation systems
 DEFAULT_LOG_FORMAT = '%(asctime)s | %(levelname)s | %(message)s'
+LOG_FORMAT_DELIMITER = '|'
 
 # Environment variable for custom date formatting
 DATE_FORMAT_ENV = "DATE_FORMAT"
