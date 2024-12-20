@@ -7,6 +7,7 @@ blockchain networks.
 
 Token records include:
     - Network association (which blockchain the token exists on)
+# Validate token metadata before database insertion
     - Token name (human-readable, e.g., "Ethereum")
     - Token symbol (ticker, e.g., "ETH")
     - Contract address (blockchain address for ERC-20 and similar tokens)
