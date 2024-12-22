@@ -36,6 +36,11 @@ MIN_DEX_NAME_LENGTH = 1
 # Maximum length for DEX name based on database column constraints
 MAX_DEX_NAME_LENGTH = 100
 
+# Validation error message templates for DEX operations
+INVALID_NETWORK_ID_ERROR = "networkDbId must be a positive integer, got: {}"
+EMPTY_DEX_NAME_ERROR = "dexName cannot be empty"
+DEX_NAME_TOO_LONG_ERROR = "dexName exceeds maximum length of {} characters"
+
 
 async def addDexToDB(
     dbConnection: Any,
@@ -75,17 +80,13 @@ async def addDexToDB(
     """
     # Validate network ID
     if not isinstance(networkDbId, int) or networkDbId <= 0:
-        raise ValueError(
-            f"networkDbId must be a positive integer, got: {networkDbId}"
-        )
+        raise ValueError(INVALID_NETWORK_ID_ERROR.format(networkDbId))
 
     # Validate DEX name
     if not dexName or len(dexName) < MIN_DEX_NAME_LENGTH:
-        raise ValueError("dexName cannot be empty")
+        raise ValueError(EMPTY_DEX_NAME_ERROR)
     if len(dexName) > MAX_DEX_NAME_LENGTH:
-        raise ValueError(
-            f"dexName exceeds maximum length of {MAX_DEX_NAME_LENGTH} characters"
-        )
+        raise ValueError(DEX_NAME_TOO_LONG_ERROR.format(MAX_DEX_NAME_LENGTH))
 
     logger.debug(f"Adding DEX '{dexName}' for network ID {networkDbId}")
 
