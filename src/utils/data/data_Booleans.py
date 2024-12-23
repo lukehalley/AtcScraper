@@ -1,3 +1,4 @@
+"""Boolean parsing and validation utilities for configuration and data processing."""
 """Boolean utility functions for type conversion and validation logic."""
 """Boolean parsing and conversion utilities.
 
