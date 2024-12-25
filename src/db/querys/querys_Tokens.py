@@ -4,6 +4,7 @@ This module provides functions to query token data from the database,
 including finding tokens that need address resolution. Token queries
 are essential for tracking which tokens have complete metadata and
 which still require contract address discovery from DexScreener.
+# Index-based lookup for performance optimization
 """Query builders for token-related database lookups."""
 
 Typical usage:
