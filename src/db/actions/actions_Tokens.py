@@ -63,6 +63,9 @@ SANITIZE_REPLACEMENT = ''
 # Valid updatable fields for tokens table
 VALID_TOKEN_FIELDS = ('name', 'symbol', 'address', 'network_id')
 
+# Validation error message for invalid field updates
+INVALID_FIELD_ERROR = "Invalid field '{}'. Must be one of: {}"
+
 
 async def addTokenToDB(
     dbConnection: Any,
@@ -136,11 +139,14 @@ def updateTokenByDbId(
     Args:
         dbConnection: Active database connection object
         tokenDbId: The database ID of the token to update
-        fieldToUpdate: Name of the column to update
+        fieldToUpdate: Name of the column to update (must be in VALID_TOKEN_FIELDS)
         fieldNewValue: New value to set for the field
 
     Returns:
         None
+
+    Raises:
+        ValueError: If fieldToUpdate is not a valid token field
 
     Example:
         >>> # Update a token's contract address
@@ -151,6 +157,10 @@ def updateTokenByDbId(
         ...     fieldNewValue="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
         ... )
     """
+    # Validate that fieldToUpdate is an allowed field to prevent SQL injection
+    if fieldToUpdate not in VALID_TOKEN_FIELDS:
+        raise ValueError(INVALID_FIELD_ERROR.format(fieldToUpdate, VALID_TOKEN_FIELDS))
+
     query = (
         f"UPDATE {TOKENS_TABLE} "
         f"SET {fieldToUpdate}='{fieldNewValue}' "
