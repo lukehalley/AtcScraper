@@ -1,3 +1,4 @@
+"""Database queries for blockchain network information and configuration."""
 """Database query functions for network-related operations.
 
 This module provides functions to query blockchain network data from
