@@ -150,7 +150,6 @@ async def getAllRowsMetadata(page, networkName: str) -> List[str]:
         ['0x1234...abcd', '0x5678...efgh', ...]
     """
     selector = f"a[href^='/{networkName}/0x']"
-    js_extract = "elements => elements.map(element => element.href)"
 
-    hrefs = await page.eval_on_selector_all(selector, js_extract)
-    return [item.split("/")[-1] for item in hrefs]
+    hrefs = await page.eval_on_selector_all(selector, JS_EXTRACT_HREF)
+    return [item.split(URL_PATH_SEPARATOR)[ADDRESS_INDEX_FROM_END] for item in hrefs]

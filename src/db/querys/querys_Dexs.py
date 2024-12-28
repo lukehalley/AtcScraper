@@ -59,6 +59,10 @@ def getAllDexsForNetwork(dbConnection: Any, networkDbId: int) -> List[str]:
         >>> dexs = getAllDexsForNetwork(db_conn, network_id=999)
         >>> print(dexs)
         []
+
+    See Also:
+        querys_Networks.getNetworkDbIdByName: Look up network ID by name.
+        actions_Dexs.addDexToDB: Add a new DEX to the database.
     """
     # Validate input parameter
     if not isinstance(networkDbId, int) or networkDbId <= 0:
