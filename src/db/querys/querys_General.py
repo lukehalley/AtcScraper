@@ -23,6 +23,16 @@ REQUIRED_TABLE_COUNT = len(REQUIRED_TABLES)
 # Database schema name - all ATC tables reside in this schema
 DATABASE_SCHEMA = 'atc'
 
+# Information schema constants for table existence verification
+INFORMATION_SCHEMA = "information_schema"
+INFORMATION_TABLES = "tables"
+TABLE_SCHEMA_COLUMN = "TABLE_SCHEMA"
+TABLE_NAME_COLUMN = "TABLE_NAME"
+
+# SQL result column aliases for aggregate queries
+TABLE_COUNT_ALIAS = "tableCount"
+ROW_COUNT_ALIAS = "count"
+
 
 def checkDbInitialised(dbConnection: Any) -> bool:
     """
@@ -39,10 +49,10 @@ def checkDbInitialised(dbConnection: Any) -> bool:
     """
     table_list = ", ".join(f"'{t}'" for t in REQUIRED_TABLES)
     query = (
-        "SELECT COUNT(*) AS tableCount "
-        "FROM `information_schema`.`tables` "
-        f"WHERE `TABLE_SCHEMA` = '{DATABASE_SCHEMA}' AND "
-        f"`TABLE_NAME` IN ({table_list})"
+        f"SELECT COUNT(*) AS {TABLE_COUNT_ALIAS} "
+        f"FROM `{INFORMATION_SCHEMA}`.`{INFORMATION_TABLES}` "
+        f"WHERE `{TABLE_SCHEMA_COLUMN}` = '{DATABASE_SCHEMA}' AND "
+        f"`{TABLE_NAME_COLUMN}` IN ({table_list})"
     )
 
     cursor = getCursor(dbConnection=dbConnection)
@@ -52,7 +62,7 @@ def checkDbInitialised(dbConnection: Any) -> bool:
         query=query
     )
 
-    table_count = tableResults[0]["tableCount"]
+    table_count = tableResults[0][TABLE_COUNT_ALIAS]
     is_initialized = table_count >= REQUIRED_TABLE_COUNT
     logger.debug(f"Database init check: {table_count}/{REQUIRED_TABLE_COUNT} tables found")
     return is_initialized
@@ -121,7 +131,7 @@ def checkIfRowExistsByValue(
     cursor = getCursor(dbConnection=dbConnection)
 
     query = (
-        f"SELECT COUNT(*) AS count FROM {table} "
+        f"SELECT COUNT(*) AS {ROW_COUNT_ALIAS} FROM {table} "
         f"WHERE {column}='{value}'"
     )
 
@@ -130,5 +140,5 @@ def checkIfRowExistsByValue(
         query=query
     )
 
-    return bool(results[0]["count"])
+    return bool(results[0][ROW_COUNT_ALIAS])
 
