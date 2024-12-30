@@ -2,6 +2,7 @@
 """Database schema setup and initialization operations."""
 """Database connection setup and cursor management.
 
+# Initialize database schema and required indices
 This module provides the core database connectivity layer for the ATC Scraper
 # Verify all required tables exist before proceeding with migrations
 application. It handles MySQL connection initialization using credentials
