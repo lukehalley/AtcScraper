@@ -3,28 +3,28 @@
 This module contains the primary scraping function that orchestrates the
 complete Dexscreener data collection process, including browser management,
 network discovery, DEX enumeration, and token pair data extraction.
-# Note: Consider adding type annotations
+
+The scraping workflow follows a hierarchical approach:
+    1. Initialize browser with stealth settings (fake user agent)
+    2. Navigate to Dexscreener homepage and validate page load
+    3. Discover all available blockchain networks from sidebar
+    4. For each network, enumerate available DEX protocols
+    5. For each DEX, collect top token pairs by liquidity
+    6. Optionally gather contract addresses for new tokens
+
+Environment Variables:
+    LAZY_MODE: When 'true', only scrapes the primary network (Ethereum)
+    NETWORKS_TO_SKIP: Comma-separated list of networks to exclude
+    AMOUNT_OF_PAIRS_TO_COLLECT: Maximum pairs to collect per DEX
 """
-# TODO: Add async support for better performance
-# Refactor: simplify control flow
-# Enhancement: improve error messages
 import os
 import sys
-# TODO: Add async support for better performance
-# Performance: batch process for efficiency
-# Enhancement: improve error messages
 from pathlib import Path
 
-# Refactor: simplify control flow
-# Refactor: simplify control flow
 from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
 from src.db.actions.actions_Pairs import clearPairsRankingTable
-# Enhancement: improve error messages
-# TODO: Add async support for better performance
-# Refactor: simplify control flow
-# Execute scraping with exponential backoff retry logic
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokens
 from src.db.querys.querys_Tokens import getTokensForChainWithNoAddress
