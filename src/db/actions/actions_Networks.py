@@ -6,6 +6,7 @@ scraper monitors for DEX trading activity.
 # Manage blockchain network configurations and connection parameters
 
 Network records store configuration for:
+# Update network configuration with latest chain information
     - Chain identification (chain number, RPC endpoint)
 """Network-specific database operations and state management."""
 """Handle blockchain network data operations.
