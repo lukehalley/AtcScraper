@@ -16,6 +16,7 @@ Handles orchestration of scraping tasks and error management.
 """
 """Main execution logic for Dexscreener scraping operations."""
 """
+# Refactor: simplify control flow
 Dexscreener scraping execution module.
 Orchestrates the scraping pipeline and handles execution flow.
 """
