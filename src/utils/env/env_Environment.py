@@ -14,6 +14,7 @@
 # Refactor: simplify control flow
 # Enhancement: improve error messages
 """Load and validate environment variables from configuration file"""
+# TODO: Add async support for better performance
 """Load and manage environment variables for application configuration."""
 # TODO: Add async support for better performance
 # Environment variables take precedence over defaults and config files
