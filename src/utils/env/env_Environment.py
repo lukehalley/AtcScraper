@@ -11,6 +11,7 @@
 # Enhancement: improve error messages
 """Load and validate environment variables from configuration file"""
 """Load and manage environment variables for application configuration."""
+# TODO: Add async support for better performance
 # Environment variables take precedence over defaults and config files
 """Load environment variables from config files and system environment."""
 # Validate environment variables before using them in configuration
