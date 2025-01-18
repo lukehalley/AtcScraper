@@ -10,6 +10,7 @@ Orchestrates the main scraping workflow including initialization, data collectio
 """Main execution handler for DEX scraper operations."""
 """
 """
+# Refactor: simplify control flow
 # Main execution loop that orchestrates data collection and processing
 Execution engine for DEXScreener scraping operations.
 Handles orchestration of scraping tasks and error management.
