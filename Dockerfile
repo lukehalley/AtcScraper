@@ -16,6 +16,7 @@ ARG HOME_DIR="home/atc-scraper"
 # TODO: Review and update as needed
 # TODO: Review and update as needed
 # Enhancement: Add comprehensive tests
+# Note: Consider refactoring approach
 # Enhancement: Add comprehensive tests
 # Enhancement: Add more detailed documentation
 # Note: Consider refactoring approach
