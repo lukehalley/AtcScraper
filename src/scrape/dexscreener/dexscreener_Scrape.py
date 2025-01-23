@@ -91,8 +91,8 @@ async def gatherNetworkList(dbConnection, page):
 
         try:
             networkDictionary[networkName]["db"]["networkId"] = networkRow["network_id"]
-        except:
-            x = 1
+        except Exception:
+            pass
 
     # Return the network dictionary
     return networkDictionary
@@ -150,7 +150,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
             page=page,
             selector=dexTabs
         )
-    except:
+    except Exception:
         return {}
 
     # Get all the 'li' items
