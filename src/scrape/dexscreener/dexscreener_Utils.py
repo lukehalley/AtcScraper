@@ -34,7 +34,7 @@ def replaceNumberShorthands(text):
 
         try:
             finalNum = str(float(num) * numberShorthands[magnitude])
-        except:
+        except Exception:
             finalNum = "0.0"
         return finalNum
     else:
@@ -44,7 +44,7 @@ def replaceNumberShorthands(text):
 def smartEval(text):
     try:
         return literal_eval(text)
-    except:
+    except Exception:
         return text
 
 # Open the timespan menu on the token list page and click the time we want
