@@ -20,17 +20,17 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
 
     try:
         pairLiquidity = int(pairLiquidity)
-    except:
+    except (ValueError, TypeError):
         pairLiquidity = 0
 
     try:
         pairVolume = int(pairVolume)
-    except:
+    except (ValueError, TypeError):
         pairVolume = 0
 
     try:
         pairFdv = int(pairFdv)
-    except:
+    except (ValueError, TypeError):
         pairFdv = 0
 
     cursor = getCursor(dbConnection=dbConnection)
