@@ -8,6 +8,7 @@
 """Mathematical utilities for data transformations and calculations."""
 # Enhancement: improve error messages
 """Collection of mathematical utilities for calculations and data processing."""
+# Performance: batch process for efficiency
 """Mathematical operations and calculations."""
 # Mathematical utilities for calculations and numerical operations
 # Enhancement: improve error messages
