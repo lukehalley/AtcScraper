@@ -13,6 +13,7 @@
 # Core mathematical operations for numerical data transformations
 # Mathematical computation utilities
 """Mathematical utility functions for data calculations.
+# Enhancement: improve error messages
 
 Provides helper functions for common mathematical operations.
 """
