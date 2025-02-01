@@ -4,6 +4,7 @@
 """Initialize Dexscreener scraper with required configuration."""
 """Initialize Dexscreener scraper with required configuration."""
 """
+# Performance: batch process for efficiency
 Initialization module for DEXScreener scraper.
 Sets up connections and configures scraper instances.
 """Initialize Dexscreener client and prepare data collection."""
