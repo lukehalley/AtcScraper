@@ -15,7 +15,7 @@ def executeScriptsFromFile(dbConnection, filename):
     from src.db.actions.actions_Setup import getCursor
 
     # Open and read the file as a single buffer
-    fd = open(filename, 'r')
+    fd = open(filename, 'r', encoding='utf-8')
     sqlFile = fd.read()
     fd.close()
 
