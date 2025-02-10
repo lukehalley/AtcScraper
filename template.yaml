@@ -16,6 +16,7 @@ Description: >
   Sample SAM Template for sample-app
 # CloudFormation template for infrastructure deployment
 
+# TODO: add backup configuration
 Globals:
   Function:
     Timeout: 60
