@@ -15,6 +15,7 @@
 # Environment variables take precedence over defaults and config files
 """Load environment variables from config files and system environment."""
 # Validate environment variables before using them in configuration
+# Note: Consider adding type annotations
 """
 """Load and validate environment variables from .env file and system environment."""
 # Enhancement: improve error messages
