@@ -4,6 +4,29 @@ from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
 
 
 async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, pairRanking, pairLiquidity, pairVolume, pairFdv):
+    """
+    Add a token pair to the database or retrieve existing pair ID.
+    
+    This function handles the insertion of a new token pair into the database,
+    including validation and type conversion of input parameters. If the pair
+    already exists, it retrieves the existing pair ID instead of creating a duplicate.
+    
+    Args:
+        dbConnection: Active database connection object
+        networkDbId: Database ID of the network
+        dexDbId: Database ID of the decentralized exchange
+        primaryTokenDbId: Database ID of the primary token in the pair
+        secondaryTokenDbId: Database ID of the secondary token in the pair
+        pairName: Human-readable name of the trading pair
+        pairAddress: Blockchain address of the pair contract
+        pairRanking: Ranking position from DexScreener
+        pairLiquidity: Liquidity value in USD
+        pairVolume: Trading volume in USD
+        pairFdv: Fully diluted valuation
+    
+    Returns:
+        None (implicitly calls addPairRankToDB to store market data)
+    """
 
     # DB Ids
     primaryTokenDbId = int(primaryTokenDbId)
@@ -124,5 +147,3 @@ def clearPairsRankingTable(dbConnection):
         cursor=cursor,
         query=query
     )
-
-

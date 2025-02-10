@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
+from typing import Dict, List, Any, Optional, Tuple
 
 import nest_asyncio
 from faker import Faker
-from playwright.async_api import BrowserContext, async_playwright
+from playwright.async_api import BrowserContext, Page, async_playwright
 from retrying_async import retry
 
 from src.db.actions.actions_Dexs import addDexToDB
