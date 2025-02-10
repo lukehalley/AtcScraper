@@ -110,6 +110,26 @@ async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId,
 
 
 async def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, pairVolume, pairFdv):
+    """
+    Insert market data for a trading pair into the pair_market_data table.
+    
+    Records ranking, liquidity, volume, and FDV metrics for a specific pair
+    on a given network and DEX. Uses INSERT with NOT EXISTS to avoid duplicates.
+    
+    Args:
+        dbConnection: Active database connection object
+        cursor: Database cursor for executing queries
+        pairDbId: Database ID of the trading pair
+        networkDbId: Database ID of the network
+        dexDbId: Database ID of the decentralized exchange
+        pairRanking: Current ranking position
+        pairLiquidity: Liquidity value in USD
+        pairVolume: 24h trading volume in USD
+        pairFdv: Fully diluted valuation in USD
+    
+    Returns:
+        None
+    """
 
     keys = f"pair_id, network_id, dex_id, ranking, liquidity, volume, fdv"
 
@@ -136,7 +156,20 @@ async def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, 
         query=query
     )
 
+
 def clearPairsRankingTable(dbConnection):
+    """
+    Clear all records from the pair_market_data table.
+    
+    This function removes all market data entries, typically used before
+    refreshing the data with updated rankings and metrics from DexScreener.
+    
+    Args:
+        dbConnection: Active database connection object
+    
+    Returns:
+        Result of the DELETE query execution
+    """
 
     query = "DELETE FROM pair_market_data"
 
