@@ -71,15 +71,16 @@ async def addTokenPairToDB(
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    keys = f"primary_token_id, secondary_token_id, network_id, dex_id, name, address"
+    keys = "primary_token_id, secondary_token_id, network_id, dex_id, name, address"
 
-    selectStatement = f"SELECT " \
-                      f"{primaryTokenDbId} AS primary_token_id, " \
-                      f"{secondaryTokenDbId} AS secondary_token_id, " \
-                      f"{networkDbId} AS network_id, " \
-                      f"{dexDbId} AS dex_id, " \
-                      f"'{pairName}' AS name, " \
-                      f"'{pairAddress}' AS address"
+    selectStatement = (
+        f"SELECT {primaryTokenDbId} AS primary_token_id, "
+        f"{secondaryTokenDbId} AS secondary_token_id, "
+        f"{networkDbId} AS network_id, "
+        f"{dexDbId} AS dex_id, "
+        f"'{pairName}' AS name, "
+        f"'{pairAddress}' AS address"
+    )
 
     compareStatement = f"pairs.address = '{pairAddress}' AND pairs.network_id = {networkDbId}"
 
@@ -91,11 +92,13 @@ async def addTokenPairToDB(
 
     if not existingPairDetails:
 
-        query = f"INSERT INTO pairs({keys}) " \
-                f"SELECT * FROM ({selectStatement}) AS tmp " \
-                f"WHERE NOT EXISTS " \
-                f"(SELECT * FROM pairs WHERE {compareStatement}) " \
-                f"LIMIT 1"
+        query = (
+            f"INSERT INTO pairs({keys}) "
+            f"SELECT * FROM ({selectStatement}) AS tmp "
+            f"WHERE NOT EXISTS "
+            f"(SELECT * FROM pairs WHERE {compareStatement}) "
+            f"LIMIT 1"
+        )
 
         executeWriteQuery(
             dbConnection=dbConnection,
@@ -154,24 +157,31 @@ async def addPairRankToDB(
         None
     """
 
-    keys = f"pair_id, network_id, dex_id, ranking, liquidity, volume, fdv"
+    keys = "pair_id, network_id, dex_id, ranking, liquidity, volume, fdv"
 
-    selectStatement = f"SELECT " \
-                      f"{pairDbId} AS pair_id, " \
-                      f"{networkDbId} AS network_id, " \
-                      f"{dexDbId} AS dex_id, " \
-                      f"{pairRanking} AS ranking, " \
-                      f"{pairLiquidity} AS liquidity, " \
-                      f"{pairVolume} AS volume, " \
-                      f"{pairFdv} AS fdv"
+    selectStatement = (
+        f"SELECT {pairDbId} AS pair_id, "
+        f"{networkDbId} AS network_id, "
+        f"{dexDbId} AS dex_id, "
+        f"{pairRanking} AS ranking, "
+        f"{pairLiquidity} AS liquidity, "
+        f"{pairVolume} AS volume, "
+        f"{pairFdv} AS fdv"
+    )
 
-    compareStatement = f"pair_market_data.pair_id = '{pairDbId}' AND pair_market_data.network_id = '{networkDbId}' AND pair_market_data.dex_id = '{dexDbId}'"
+    compareStatement = (
+        f"pair_market_data.pair_id = '{pairDbId}' AND "
+        f"pair_market_data.network_id = '{networkDbId}' AND "
+        f"pair_market_data.dex_id = '{dexDbId}'"
+    )
 
-    query = f"INSERT INTO pair_market_data({keys}) " \
-            f"SELECT * FROM ({selectStatement}) AS tmp " \
-            f"WHERE NOT EXISTS " \
-            f"(SELECT * FROM pair_market_data WHERE {compareStatement}) " \
-            f"LIMIT 1"
+    query = (
+        f"INSERT INTO pair_market_data({keys}) "
+        f"SELECT * FROM ({selectStatement}) AS tmp "
+        f"WHERE NOT EXISTS "
+        f"(SELECT * FROM pair_market_data WHERE {compareStatement}) "
+        f"LIMIT 1"
+    )
 
     executeWriteQuery(
         dbConnection=dbConnection,
