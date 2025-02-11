@@ -122,7 +122,17 @@ async def addTokenPairToDB(
     )
 
 
-async def addPairRankToDB(dbConnection, cursor, pairDbId, networkDbId, dexDbId, pairRanking, pairLiquidity, pairVolume, pairFdv):
+async def addPairRankToDB(
+    dbConnection: Any,
+    cursor: Any,
+    pairDbId: int,
+    networkDbId: int,
+    dexDbId: int,
+    pairRanking: int,
+    pairLiquidity: int,
+    pairVolume: int,
+    pairFdv: int
+) -> None:
     """
     Insert market data for a trading pair into the pair_market_data table.
     
