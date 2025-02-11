@@ -1,9 +1,22 @@
+from typing import Any, Optional
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
 from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
 
 
-async def addTokenPairToDB(dbConnection, networkDbId, dexDbId, primaryTokenDbId, secondaryTokenDbId, pairName, pairAddress, pairRanking, pairLiquidity, pairVolume, pairFdv):
+async def addTokenPairToDB(
+    dbConnection: Any,
+    networkDbId: int,
+    dexDbId: int,
+    primaryTokenDbId: int,
+    secondaryTokenDbId: int,
+    pairName: str,
+    pairAddress: str,
+    pairRanking: int,
+    pairLiquidity: Optional[int],
+    pairVolume: Optional[int],
+    pairFdv: Optional[int]
+) -> None:
     """
     Add a token pair to the database or retrieve existing pair ID.
     
