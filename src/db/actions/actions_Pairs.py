@@ -180,7 +180,7 @@ async def addPairRankToDB(
     )
 
 
-def clearPairsRankingTable(dbConnection):
+def clearPairsRankingTable(dbConnection: Any) -> Any:
     """
     Clear all records from the pair_market_data table.
     
