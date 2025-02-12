@@ -1,7 +1,26 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
 from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
+
+
+def _safe_int_conversion(value: Union[int, str, None], default: int = 0) -> int:
+    """
+    Safely convert a value to integer with a default fallback.
+    
+    Args:
+        value: The value to convert (can be int, str, or None)
+        default: Default value to return if conversion fails
+    
+    Returns:
+        Integer value or default if conversion fails
+    """
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
 
 
 async def addTokenPairToDB(
@@ -41,33 +60,21 @@ async def addTokenPairToDB(
         None (implicitly calls addPairRankToDB to store market data)
     """
 
-    # DB Ids
-    primaryTokenDbId = int(primaryTokenDbId)
-    secondaryTokenDbId = int(secondaryTokenDbId)
-    networkDbId = int(networkDbId)
-    dexDbId = int(dexDbId)
+    # DB Ids - use safe conversion
+    primaryTokenDbId = _safe_int_conversion(primaryTokenDbId)
+    secondaryTokenDbId = _safe_int_conversion(secondaryTokenDbId)
+    networkDbId = _safe_int_conversion(networkDbId)
+    dexDbId = _safe_int_conversion(dexDbId)
 
     # Strings
     pairName = str(pairName)
     pairAddress = str(pairAddress)
 
-    # DexScreener Metadata
-    pairRanking = int(pairRanking)
-
-    try:
-        pairLiquidity = int(pairLiquidity)
-    except (ValueError, TypeError):
-        pairLiquidity = 0
-
-    try:
-        pairVolume = int(pairVolume)
-    except (ValueError, TypeError):
-        pairVolume = 0
-
-    try:
-        pairFdv = int(pairFdv)
-    except (ValueError, TypeError):
-        pairFdv = 0
+    # DexScreener Metadata - use safe conversion with defaults
+    pairRanking = _safe_int_conversion(pairRanking)
+    pairLiquidity = _safe_int_conversion(pairLiquidity)
+    pairVolume = _safe_int_conversion(pairVolume)
+    pairFdv = _safe_int_conversion(pairFdv)
 
     cursor = getCursor(dbConnection=dbConnection)
 
