@@ -133,8 +133,27 @@ async def gatherNetworkList(dbConnection, page) -> Dict[str, Dict[str, Any]]:
 
 
 @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
-
+async def gatherNetworkDexs(dbConnection, networkName: str, networkDetails: Dict[str, Any], browser: BrowserContext) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Gather all decentralized exchanges (DEXs) for a specific network.
+    
+    Opens a new browser page, navigates to the network's Dexscreener page,
+    and collects all available DEXs by parsing the tab elements at the top
+    of the page.
+    
+    Args:
+        dbConnection: Active database connection for storing DEX data.
+        networkName: Name of the blockchain network (e.g., 'ethereum', 'bsc').
+        networkDetails: Dictionary containing network URL and database ID.
+        browser: Playwright browser context for page creation.
+        
+    Returns:
+        Dict[str, List[Dict[str, Any]]]: Dictionary with network name as key
+            and list of DEX details as value. Returns empty dict if no DEXs found.
+            
+    Example:
+        {'ethereum': [{'name': 'uniswap', 'url': '...', 'db': {...}}, ...]}
+    """
     # Create a new page
     page = await newPage(browser=browser)
 
@@ -167,7 +186,7 @@ async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: 
         networkName: networksDexs
     }
 
-    # Log out hwo many dexs we got for this network
+    # Log out how many dexs we got for this network
     logger.info(f"{networkName.title()}: {amountOfDexs}")
 
     # Return the network details object
