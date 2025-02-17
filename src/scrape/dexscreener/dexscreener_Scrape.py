@@ -45,10 +45,27 @@ nest_asyncio.apply()
 logger = getProjectLogger()
 retryAttempts, retryDelay = getRetryParameters()
 
-# Gather all the available networks from the Dexscreener sidebar
-@retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherNetworkList(dbConnection, page):
 
+@retry(attempts=retryAttempts, delay=retryDelay)
+async def gatherNetworkList(dbConnection, page) -> Dict[str, Dict[str, Any]]:
+    """
+    Gather all available networks from the Dexscreener sidebar.
+    
+    This function scrapes the sidebar of Dexscreener to collect all supported
+    blockchain networks. For each network, it creates a URL and stores the
+    network in the database if not already present.
+    
+    Args:
+        dbConnection: Active database connection for storing network data.
+        page: Playwright page object for browser interaction.
+        
+    Returns:
+        Dict[str, Dict[str, Any]]: Dictionary mapping network names to their
+            details including URL and database ID.
+            
+    Raises:
+        Exception: If the sidebar element cannot be found after retry attempts.
+    """
     # Get the sidebar list element
     dsNetworkList = os.getenv('DS_LIST')
     networkList = await findAndCheckElement(
@@ -114,7 +131,7 @@ async def gatherNetworkList(dbConnection, page):
     # Return the network dictionary
     return networkDictionary
 
-# Gather all dexs for each network
+
 @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: BrowserContext):
 
@@ -156,7 +173,7 @@ async def gatherNetworkDexs(dbConnection, networkName, networkDetails, browser: 
     # Return the network details object
     return networkDetails
 
-# Gather the list of dexs from the top of each network page of dexscreener
+
 @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherDexListFromTabs(dbConnection, networkDetails, page):
 
@@ -231,7 +248,7 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
     # Return the dex dictionary
     return dexListDictionary
 
-# For a dex - get the top 100 tokens by liquidity
+
 @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
@@ -478,6 +495,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
 
         # Return our collected tokens
         return collectedTokens
+
 
 @retry(attempts=retryAttempts, delay=retryDelay)
 async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbConnection):
