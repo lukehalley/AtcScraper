@@ -1,17 +1,46 @@
-import logging, os, sys
+import logging
+import os
+import sys
+from typing import Optional
 
-# Setup logger
-def setupLogging():
-    logger = logging.getLogger("DFK-ARB")
+# Default log format pattern
+DEFAULT_LOG_FORMAT = '%(asctime)s | %(levelname)s | %(message)s'
 
-    log_format = '%(asctime)s | %(levelname)s | %(message)s'
-    dateFormat = os.environ.get("DATE_FORMAT")
+# Logger names
+MAIN_LOGGER_NAME = "DFK-ARB"
+PROJECT_LOGGER_NAME = "DFK-DEX"
 
-    logging.basicConfig(level=logging.INFO, format=log_format,
-                        stream=sys.stdout, datefmt=dateFormat)
+
+def setupLogging() -> logging.Logger:
+    """
+    Initialize and configure the main application logger.
+
+    Sets up logging with INFO level, stdout output, and a standardized
+    format including timestamp, level, and message. Date format is
+    read from the DATE_FORMAT environment variable.
+
+    Returns:
+        logging.Logger: Configured logger instance for the application.
+    """
+    logger = logging.getLogger(MAIN_LOGGER_NAME)
+
+    dateFormat: Optional[str] = os.environ.get("DATE_FORMAT")
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format=DEFAULT_LOG_FORMAT,
+        stream=sys.stdout,
+        datefmt=dateFormat
+    )
 
     return logger
 
-# Get the project logger
-def getProjectLogger():
-    return logging.getLogger("DFK-DEX")
+
+def getProjectLogger() -> logging.Logger:
+    """
+    Get the project-specific logger instance.
+
+    Returns:
+        logging.Logger: Logger instance for project-wide logging.
+    """
+    return logging.getLogger(PROJECT_LOGGER_NAME)
