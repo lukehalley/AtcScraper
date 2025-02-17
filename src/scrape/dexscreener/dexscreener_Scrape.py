@@ -24,6 +24,22 @@ from src.utils.logging.logging_Setup import getProjectLogger
 from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
 from src.utils.retry.retry_Settings import getRetryParameters
 
+# Constants for browser viewport dimensions
+BROWSER_VIEWPORT_WIDTH = 1920
+BROWSER_VIEWPORT_HEIGHT = 1080
+
+# Constants for pagination and data processing
+PAIRS_PER_PAGE = 100
+EXPECTED_ROW_SIZE = 13
+NULL_VALUE = "NULL"
+
+# Reference network name for finding the start of network list
+REFERENCE_NETWORK = "Ethereum"
+ALL_DEXES_TAB = "All DEXes"
+
+# Uniswap version identifiers
+UNISWAP_VERSIONS = ("V1", "V2", "V3")
+
 nest_asyncio.apply()
 
 logger = getProjectLogger()
@@ -45,7 +61,7 @@ async def gatherNetworkList(dbConnection, page):
     sidebarListItems = await allLists.all_text_contents()
 
     # Get index of ethereum - always the first
-    ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item == 'Ethereum'), -1)
+    ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item == REFERENCE_NETWORK), -1)
 
     # Filter list so we only have networks, no hot 100 tabs
     filteredList = sidebarListItems[ethereumIndex:]
@@ -159,8 +175,8 @@ async def gatherDexListFromTabs(dbConnection, networkDetails, page):
         listElement=dexTabElement
     )
 
-    # Get index of ethereum - always the first
-    allDexsIndex = next((i for i, item in enumerate(dexTabItems) if item == 'All DEXes'), -1)
+    # Get index of All DEXes tab - always first in dex list
+    allDexsIndex = next((i for i, item in enumerate(dexTabItems) if item == ALL_DEXES_TAB), -1)
 
     # Filter list so we only have networks
     filteredList = dexTabItems[allDexsIndex + 1:]
@@ -238,8 +254,8 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
-                "width": 1920,
-                "height": 1080
+                "width": BROWSER_VIEWPORT_WIDTH,
+                "height": BROWSER_VIEWPORT_HEIGHT
             },
             user_agent=fakeUserAgent
         )
@@ -265,12 +281,12 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
             pairCount = int(pairCountText[0].split(" ")[-1].replace(",", ""))
             roundCount = replaceTrailingDigitsWithZeros(number=pairCount)
 
-            if pairCount <= 100:
+            if pairCount <= PAIRS_PER_PAGE:
                 pairsPagesToIterate = 1
             elif pairCount >= pairsToCollect:
-                pairsPagesToIterate = int(pairsToCollect / 100)
+                pairsPagesToIterate = int(pairsToCollect / PAIRS_PER_PAGE)
             else:
-                pairsPagesToIterate = int((roundCount / 100) + 1)
+                pairsPagesToIterate = int((roundCount / PAIRS_PER_PAGE) + 1)
 
         else:
 
@@ -322,8 +338,8 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
             for row in finalRows:
 
                 # Check if the row has info on its uniswap version
-                hasUniswapBadge = row[1] == "V1" or row[1] == "V2" or row[1] == "V3"
-                uniswapVersion = "NULL"
+                hasUniswapBadge = row[1] in UNISWAP_VERSIONS
+                uniswapVersion = NULL_VALUE
 
                 # If it does, remove it - we can add it back later if it exists
                 if hasUniswapBadge:
@@ -332,15 +348,14 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                 # Fix some rows coming back with missing data
                 # Sometimes data is missing so we just fill the list with blanks
                 # or cut it short
-                expectedListSize = 13
                 rowLength = len(row)
-                if rowLength != 13:
-                    if rowLength > expectedListSize:
-                        row = row[0:13]
+                if rowLength != EXPECTED_ROW_SIZE:
+                    if rowLength > EXPECTED_ROW_SIZE:
+                        row = row[0:EXPECTED_ROW_SIZE]
                     else:
-                        slotsToFill = abs(13 - len(row))
+                        slotsToFill = abs(EXPECTED_ROW_SIZE - len(row))
                         for _ in range(slotsToFill):
-                            row.append("NULL")
+                            row.append(NULL_VALUE)
 
                 tokenRank = smartEval(row[0])
 
@@ -348,7 +363,7 @@ async def gatherPairsForDex(dbConnection, networkName, dexDetails):
                 if pageNumber <= 1:
                     tokenIndex = smartEval(row[0])
                 else:
-                    tokenIndex = (tokenRank - ((pageNumber - 1) * 100))
+                    tokenIndex = (tokenRank - ((pageNumber - 1) * PAIRS_PER_PAGE))
 
                 # Get the pair address for this row
                 pairAddress = pairAddresses[tokenIndex - 1]
@@ -482,8 +497,8 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
-                "width": 1920,
-                "height": 1080
+                "width": BROWSER_VIEWPORT_WIDTH,
+                "height": BROWSER_VIEWPORT_HEIGHT
             },
             user_agent=fakeUserAgent
         )
