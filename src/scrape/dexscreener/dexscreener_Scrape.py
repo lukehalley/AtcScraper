@@ -194,8 +194,28 @@ async def gatherNetworkDexs(dbConnection, networkName: str, networkDetails: Dict
 
 
 @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherDexListFromTabs(dbConnection, networkDetails, page):
-
+async def gatherDexListFromTabs(dbConnection, networkDetails: Dict[str, Any], page) -> List[Dict[str, Any]]:
+    """
+    Gather the list of DEXs from the tab navigation at the top of a network page.
+    
+    Parses the horizontal tab navigation on Dexscreener to extract all available
+    DEX names for the current network. Each DEX is stored in the database if
+    not already present, and a dictionary with DEX details is created.
+    
+    Args:
+        dbConnection: Active database connection for storing and querying DEX data.
+        networkDetails: Dictionary containing the network's database ID.
+        page: Playwright page object currently on the network's Dexscreener page.
+        
+    Returns:
+        List[Dict[str, Any]]: List of dictionaries, each containing:
+            - name: Lowercase DEX name without spaces
+            - url: Full URL to the DEX page on Dexscreener
+            - db: Dictionary with networkId and dexId from database
+            
+    Note:
+        Returns empty dict if the DEX tabs element cannot be found.
+    """
     try:
         # Get the sidebar list element
         dexTabs = os.getenv('DS_DEX_TABS')
