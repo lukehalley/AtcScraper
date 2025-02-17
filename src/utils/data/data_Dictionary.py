@@ -1,24 +1,23 @@
 import functools
 from collections import OrderedDict
+from typing import Any, Dict, Tuple
 
 
-# Append an element to an ordered dict
-def prependToOrderedDict(dictOriginal, dictAdd):
-    arr = dictOriginal
-    arr = OrderedDict(arr)
-    new = dictAdd
+def prependToOrderedDict(dictOriginal: Dict[Any, Any], dictAdd: Tuple[Any, Any]) -> OrderedDict:
+    """Append an element to an ordered dict and move it to the front."""
+    arr = OrderedDict(dictOriginal)
     items = list(arr.items())
-    items.append(new)
+    items.append(dictAdd)
     arr = OrderedDict(items)
     arr.move_to_end(dictAdd[0], last=False)
     return arr
 
 
-# Get the length of a dictionary
-def getDictLength(sub):
+def getDictLength(sub: Dict[Any, Any]) -> int:
+    """Get the length of a dictionary."""
     return len(sub)
 
 
-# Replace a value in all values in a dict
-def replaceAllValuesInDict(text, dictionary):
+def replaceAllValuesInDict(text: str, dictionary: Dict[str, str]) -> str:
+    """Replace all occurrences of keys with values from dictionary in text."""
     return functools.reduce(lambda a, kv: a.replace(*kv), dictionary.items(), text)
