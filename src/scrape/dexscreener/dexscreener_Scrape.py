@@ -289,8 +289,33 @@ async def gatherDexListFromTabs(dbConnection, networkDetails: Dict[str, Any], pa
 
 
 @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherPairsForDex(dbConnection, networkName, dexDetails):
-
+async def gatherPairsForDex(dbConnection, networkName: str, dexDetails: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Gather token pairs for a specific DEX sorted by liquidity.
+    
+    This is the main scraping function that collects token pair data from
+    Dexscreener. It navigates through paginated results, extracts pair
+    information, and stores tokens and pairs in the database.
+    
+    Args:
+        dbConnection: Active database connection for storing token and pair data.
+        networkName: Name of the blockchain network (e.g., 'ethereum').
+        dexDetails: Dictionary containing DEX name, URL, and database IDs.
+        
+    Returns:
+        List[Dict[str, Any]]: List of token pair dictionaries, each containing:
+            - rank: Liquidity ranking of the pair
+            - market: Volume, liquidity, and FDV data
+            - network: Network name and transaction count
+            - dex: DEX name and optional Uniswap version
+            - primaryToken: Token name, symbol, and database ID
+            - secondaryToken: Token symbol and database ID
+            - pair: Pair name and contract address
+            
+    Note:
+        The number of pairs collected is controlled by the AMOUNT_OF_PAIRS_TO_COLLECT
+        environment variable. Results are sorted by liquidity in descending order.
+    """
     # Get the current dexs name and url
     dexName = dexDetails["name"]
     dexURL = dexDetails["url"]
