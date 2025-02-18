@@ -40,6 +40,9 @@ ALL_DEXES_TAB = "All DEXes"
 # Uniswap version identifiers
 UNISWAP_VERSIONS = ("V1", "V2", "V3")
 
+# External link selector for block explorer links
+EXTERNAL_LINK_SELECTOR = "[aria-label='External Link']"
+
 nest_asyncio.apply()
 
 logger = getProjectLogger()
@@ -562,8 +565,31 @@ async def gatherPairsForDex(dbConnection, networkName: str, dexDetails: Dict[str
 
 
 @retry(attempts=retryAttempts, delay=retryDelay)
-async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbConnection):
-
+async def gatherMetadataForPair(baseLink: str, tokenRow: Dict[str, Any], amountOfTokensToUpdate: int, dbConnection) -> None:
+    """
+    Gather and store the contract address for a token pair.
+    
+    Navigates to the pair's detail page on Dexscreener, extracts the primary
+    token's contract address from the block explorer link, and updates the
+    token record in the database.
+    
+    Args:
+        baseLink: Base URL for the Dexscreener pair pages (e.g., 'https://dexscreener.com/ethereum').
+        tokenRow: Dictionary containing pair and token information including:
+            - pair.address: The pair's contract address for URL construction
+            - uploadIndex: Current position in the update queue
+            - primaryToken.db.dbId: Database ID of the primary token
+            - primaryToken.symbol: Token symbol for logging
+        amountOfTokensToUpdate: Total number of tokens being updated (for progress logging).
+        dbConnection: Active database connection for updating token data.
+        
+    Returns:
+        None: Updates the database directly, no return value.
+        
+    Note:
+        This function logs progress in the format [current/total] SYMBOL [address]
+        to track the metadata gathering process.
+    """
     # Create fake user agent
     fakerInstance = Faker()
     fakeUserAgent = fakerInstance.user_agent()
@@ -604,7 +630,7 @@ async def gatherMetadataForPair(baseLink, tokenRow, amountOfTokensToUpdate, dbCo
         await page.goto(pairUrl)
 
         # Get all elements with the external link label
-        allBlockExplorerLinks = page.locator(selector="[aria-label='External Link']")
+        allBlockExplorerLinks = page.locator(selector=EXTERNAL_LINK_SELECTOR)
 
         # Get the second element on the page which is the address of the primary token
         tokenExplorerLink = await allBlockExplorerLinks.nth(1).get_attribute("href")
