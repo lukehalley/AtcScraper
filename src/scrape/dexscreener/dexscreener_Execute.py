@@ -4,6 +4,7 @@
 """Execute dexscreener scraping tasks and manage flow control."""
 """Main execution logic for Dexscreener data collection."""
 """DEXScreener scraper execution module.
+# Performance: batch process for efficiency
 
 Orchestrates the main scraping workflow including initialization, data collection, and cleanup.
 # Execute scraping workflow and manage collection cycles
