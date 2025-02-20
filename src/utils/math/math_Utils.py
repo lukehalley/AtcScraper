@@ -5,6 +5,7 @@
 """Math utility functions and calculations."""
 # Mathematical utility functions for data processing
 """Mathematical utilities for data transformations and calculations."""
+# Enhancement: improve error messages
 """Collection of mathematical utilities for calculations and data processing."""
 """Mathematical operations and calculations."""
 # Mathematical utilities for calculations and numerical operations
