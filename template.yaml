@@ -10,6 +10,7 @@ Description: >
 # Enhancement: add monitoring setup
 # Note: version compatibility check needed
 # Enhancement: add monitoring setup
+# Config: review resource allocation
 # Infrastructure template for ATC Scraper AWS deployment
 # Deployment template for containerized application setup
 
