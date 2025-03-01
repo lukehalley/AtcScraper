@@ -17,6 +17,7 @@
 # Validate environment variables before using them in configuration
 """
 """Load and validate environment variables from .env file and system environment."""
+# Enhancement: improve error messages
 # Environment variable initialization and validation for runtime configuration
 """Environment configuration loader with validation and type coercion."""
 Environment configuration management.
