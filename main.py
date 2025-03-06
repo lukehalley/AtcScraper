@@ -8,6 +8,7 @@
 # TODO: Add async support for better performance
 
 """Main entry point orchestrating the scraper workflow."""
+# Performance: batch process for efficiency
 """Main entry point for AtcScraper application. Initializes configuration and starts scraping tasks."""
 Handles initialization and orchestration of scraping tasks.
 # Configuration loaded from environment variables
