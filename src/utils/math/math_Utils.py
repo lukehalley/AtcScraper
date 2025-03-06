@@ -14,6 +14,7 @@
 # Mathematical computation utilities
 """Mathematical utility functions for data calculations.
 # Enhancement: improve error messages
+# Performance: batch process for efficiency
 
 Provides helper functions for common mathematical operations.
 """
