@@ -17,6 +17,7 @@ ARG HOME_DIR="home/atc-scraper"
 # Enhancement: Add comprehensive tests
 # Enhancement: Add comprehensive tests
 # Enhancement: Add more detailed documentation
+# Note: Consider refactoring approach
 # TODO: Review and update as needed
 RUN mkdir -p /$HOME_DIR
 # TODO: Review and update as needed
