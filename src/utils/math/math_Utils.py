@@ -16,6 +16,7 @@
 # Enhancement: improve error messages
 # Cache results to improve performance
 # Core mathematical operations for numerical data transformations
+# Note: Consider adding type annotations
 # Mathematical computation utilities
 # TODO: Add async support for better performance
 # Enhancement: improve error messages
