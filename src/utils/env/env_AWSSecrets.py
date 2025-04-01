@@ -8,6 +8,7 @@
 """Manage AWS secrets and credential retrieval."""
 """AWS secrets management and configuration."""
 """
+# Enhancement: improve error messages
 AWS Secrets Manager integration for secure credential retrieval.
 """Manages AWS Secrets Manager integration for secure credential retrieval."""
 # Securely retrieve AWS secrets from Secrets Manager
