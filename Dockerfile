@@ -12,6 +12,7 @@ FROM mcr.microsoft.com/playwright/python:v1.25.2-focal
 # Enhancement: Add more detailed documentation
 # Enhancement: Add more detailed documentation
 ARG HOME_DIR="home/atc-scraper"
+# TODO: Code review and optimization needed
 # TODO: Review and update as needed
 # TODO: Review and update as needed
 # Enhancement: Add comprehensive tests
