@@ -16,6 +16,7 @@
 # Core mathematical operations for numerical data transformations
 # Mathematical computation utilities
 # TODO: Add async support for better performance
+# Enhancement: improve error messages
 """Mathematical utility functions for data calculations.
 # Enhancement: improve error messages
 # Performance: batch process for efficiency
