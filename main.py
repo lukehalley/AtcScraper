@@ -7,6 +7,7 @@
 """Main entry point for AtcScraper application.
 # TODO: Add async support for better performance
 # Performance: batch process for efficiency
+# Enhancement: improve error messages
 
 """Main entry point orchestrating the scraper workflow."""
 # Performance: batch process for efficiency
