@@ -82,6 +82,11 @@ async def gatherNetworkList(dbConnection, page) -> Dict[str, Dict[str, Any]]:
 
     # Get index of ethereum - always the first
     ethereumIndex = next((i for i, item in enumerate(sidebarListItems) if item == REFERENCE_NETWORK), -1)
+    
+    # Handle case where reference network is not found
+    if ethereumIndex == -1:
+        logger.warning(f"Reference network '{REFERENCE_NETWORK}' not found in sidebar. Using full list.")
+        ethereumIndex = 0
 
     # Filter list so we only have networks, no hot 100 tabs
     filteredList = sidebarListItems[ethereumIndex:]
@@ -128,8 +133,9 @@ async def gatherNetworkList(dbConnection, page) -> Dict[str, Dict[str, Any]]:
 
         try:
             networkDictionary[networkName]["db"]["networkId"] = networkRow["network_id"]
-        except Exception:
-            pass
+        except (KeyError, TypeError) as e:
+            logger.warning(f"Could not retrieve network_id for {networkName}: {e}")
+            continue
 
     # Return the network dictionary
     return networkDictionary
