@@ -1,34 +1,84 @@
+"""
+Playwright utility functions for web scraping operations.
+
+This module provides helper functions for common Playwright operations
+including element finding, waiting, and page creation.
+"""
 import os
+from typing import List
 
-from playwright.async_api import expect, BrowserContext
+from playwright.async_api import expect, BrowserContext, Page, Locator
 
-globalTimeout = int(os.getenv("PLAYWRIGHT_TIMEOUT_SECS")) * 1000
+# Timeout configuration in milliseconds
+PLAYWRIGHT_TIMEOUT_MS = int(os.getenv("PLAYWRIGHT_TIMEOUT_SECS")) * 1000
 
-x = 1
 
-# Find + Wait for element
-async def findAndCheckElement(page, selector):
+async def findAndCheckElement(page: Page, selector: str) -> Locator:
+    """
+    Find an element and wait for it to be visible.
+
+    Args:
+        page: The Playwright page object.
+        selector: CSS selector for the element.
+
+    Returns:
+        The first matching Locator element.
+    """
     element = page.locator(selector).first
-    await expect(element).to_be_visible(timeout=globalTimeout)
+    await expect(element).to_be_visible(timeout=PLAYWRIGHT_TIMEOUT_MS)
     return element
 
-# Wait for element to be removed from DOM
-async def waitForElementToGoAway(page, selector):
-    element = page.locator(selector)
-    await expect(element).not_to_be_visible(timeout=globalTimeout)
 
-# Get all 'li' items inside a parent element
-async def getListItems(listElement):
+async def waitForElementToGoAway(page: Page, selector: str) -> None:
+    """
+    Wait for an element to be removed from the DOM.
+
+    Args:
+        page: The Playwright page object.
+        selector: CSS selector for the element to wait for removal.
+    """
+    element = page.locator(selector)
+    await expect(element).not_to_be_visible(timeout=PLAYWRIGHT_TIMEOUT_MS)
+
+
+async def getListItems(listElement: Locator) -> List[str]:
+    """
+    Get all list item text contents from a parent element.
+
+    Args:
+        listElement: Parent Locator containing li elements.
+
+    Returns:
+        List of text contents from all li elements.
+    """
     allLists = listElement.locator(selector='li')
     return await allLists.all_text_contents()
 
-# Get all 'a' items inside a parent element
-async def getAItems(listElement):
+
+async def getAItems(listElement: Locator) -> List[str]:
+    """
+    Get all anchor element inner texts from a parent element.
+
+    Args:
+        listElement: Parent Locator containing anchor elements.
+
+    Returns:
+        List of inner texts from all anchor elements.
+    """
     allLists = listElement.locator(selector='a')
     return await allLists.all_inner_texts()
 
-# Create a new browser page
-async def newPage(browser: BrowserContext):
+
+async def newPage(browser: BrowserContext) -> Page:
+    """
+    Create a new browser page with configured timeout.
+
+    Args:
+        browser: The browser context to create the page in.
+
+    Returns:
+        A new Page object with default timeout configured.
+    """
     page = await browser.new_page()
-    page.set_default_timeout(timeout=globalTimeout)
+    page.set_default_timeout(timeout=PLAYWRIGHT_TIMEOUT_MS)
     return page
