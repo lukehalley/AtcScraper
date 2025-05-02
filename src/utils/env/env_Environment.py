@@ -1,3 +1,9 @@
+"""
+Environment detection utilities.
+
+This module provides functions to detect the runtime environment
+including Docker containers, AWS infrastructure, and display settings.
+"""
 import os
 
 from src.utils.data.data_Booleans import strToBool

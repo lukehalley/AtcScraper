@@ -1,18 +1,42 @@
+from typing import Any
+
 from src.db.actions.actions_General import executeWriteQuery
 from src.db.actions.actions_Setup import getCursor
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
-def addNetworkToDB(dbConnection, networkName):
+# Database column names for networks table
+NETWORK_COLUMNS = (
+    "name, chain_number, chain_rpc, explorer_api_prefix, "
+    "explorer_api_key, explorer_tx_url, explorer_type, symbol, "
+    "max_gas, min_gas, is_valid"
+)
 
+
+def addNetworkToDB(dbConnection: Any, networkName: str) -> int:
+    """
+    Add a new blockchain network to the database.
+
+    Creates a network record with the provided name. All other fields
+    (chain configuration, explorer settings, gas limits) are set to NULL
+    and can be updated later.
+
+    Args:
+        dbConnection: Active database connection object
+        networkName: Name of the blockchain network (e.g., 'ethereum', 'bsc')
+
+    Returns:
+        int: The database ID of the newly inserted network
+    """
     cursor = getCursor(dbConnection=dbConnection)
 
-    keys = f"name, chain_number, chain_rpc, explorer_api_prefix, explorer_api_key, explorer_tx_url, explorer_type, symbol, max_gas, min_gas, is_valid"
     values = f"'{networkName}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL"
 
-    query = f"INSERT INTO networks ({keys}) " \
-            f"VALUES ({values})"
+    query = (
+        f"INSERT INTO networks ({NETWORK_COLUMNS}) "
+        f"VALUES ({values})"
+    )
 
     executeWriteQuery(
         dbConnection=dbConnection,
