@@ -1,14 +1,17 @@
 import re
+from typing import Any, Optional
 
-from src.db.actions.actions_Pairs import addPairRankToDB
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
-from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
 
 
-
-
-async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenAddress=None):
+async def addTokenToDB(
+    dbConnection: Any,
+    networkDbId: int,
+    tokenName: Optional[str],
+    tokenSymbol: str,
+    tokenAddress: Optional[str] = None
+) -> int:
 
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -35,12 +38,29 @@ async def addTokenToDB(dbConnection, networkDbId, tokenName, tokenSymbol, tokenA
 
     return cursor.lastrowid
 
-def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
+def updateTokenByDbId(
+    dbConnection: Any,
+    tokenDbId: int,
+    fieldToUpdate: str,
+    fieldNewValue: str
+) -> None:
+    """
+    Update a specific field for a token by its database ID.
 
-    query = "" \
-            f"UPDATE tokens " \
-            f"SET {fieldToUpdate}='{fieldNewValue}' " \
-            f"WHERE token_id={tokenDbId}"
+    Args:
+        dbConnection: Active database connection object
+        tokenDbId: The database ID of the token to update
+        fieldToUpdate: Name of the column to update
+        fieldNewValue: New value to set for the field
+
+    Returns:
+        None
+    """
+    query = (
+        f"UPDATE tokens "
+        f"SET {fieldToUpdate}='{fieldNewValue}' "
+        f"WHERE token_id={tokenDbId}"
+    )
 
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -50,12 +70,26 @@ def updateTokenByDbId(dbConnection, tokenDbId, fieldToUpdate, fieldNewValue):
         query=query
     )
 
-def updateUnavailableTokens(dbConnection):
 
-    query = "" \
-            f"UPDATE tokens " \
-            f"SET address = NULL " \
-            f"WHERE address = 'None'"
+def updateUnavailableTokens(dbConnection: Any) -> None:
+    """
+    Set address to NULL for all tokens with 'None' string as address.
+
+    This cleanup function handles tokens that were scraped but couldn't
+    have their address retrieved, converting the 'None' string to a
+    proper NULL value in the database.
+
+    Args:
+        dbConnection: Active database connection object
+
+    Returns:
+        None
+    """
+    query = (
+        "UPDATE tokens "
+        "SET address = NULL "
+        "WHERE address = 'None'"
+    )
 
     cursor = getCursor(dbConnection=dbConnection)
 
