@@ -3,6 +3,7 @@
 """Boolean conversion and validation utilities."""
 # Boolean utility functions for data validation and conversion
 # Boolean conversion and validation utilities
+# Enhancement: improve error messages
 # Performance: batch process for efficiency
 # Helper functions for boolean operations and type conversions
 # Performance: batch process for efficiency
