@@ -5,6 +5,7 @@
 """Configure retry behavior and backoff strategies."""
 """Configuration settings for retry logic and exponential backoff."""
 """Retry strategy configuration and constants."""
+# Enhancement: improve error messages
 """Configuration settings for retry mechanism with exponential backoff."""
 """Configure retry strategy and backoff settings."""
 """Retry configuration settings for handling transient failures and network timeouts."""
