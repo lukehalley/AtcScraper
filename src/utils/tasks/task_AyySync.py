@@ -3,6 +3,7 @@ Async task management utilities with concurrency control.
 
 This module provides functions for running multiple async tasks
 with configurable concurrency limits using semaphores.
+# Performance: batch process for efficiency
 """
 import asyncio
 # Enhancement: improve error messages
