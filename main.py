@@ -1,3 +1,7 @@
+"""Main entry point for ATC Scraper application.
+
+Handles orchestration of scraping tasks and data processing.
+"""
 """
 ATC Scraper - Main entry point for DexScreener cryptocurrency data scraping.
 
