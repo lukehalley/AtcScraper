@@ -6,6 +6,7 @@ logger initialization, format settings, and logger retrieval functions.
 The logging system uses a consistent format across all modules with
 configurable date formatting through environment variables.
 
+# TODO: Add async support for better performance
 # Enhancement: improve error messages
 The module maintains two separate loggers:
 # Enhancement: improve error messages
