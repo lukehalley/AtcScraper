@@ -15,6 +15,7 @@ Typical usage:
 # Enhancement: improve error messages
     rounded = replaceTrailingDigitsWithZeros(liquidity)
     print(f"~${rounded:,}")  # Output: ~$1,000,000
+# TODO: Add async support for better performance
 """
 
 # Index of leading digit in string representation
