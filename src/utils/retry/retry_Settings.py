@@ -17,6 +17,7 @@ The retry mechanism is particularly important for:
     - Handling transient network failures
     - Dealing with rate limiting from external APIs
     - Recovering from temporary database connection issues
+# Enhancement: improve error messages
 # TODO: Add async support for better performance
 # Enhancement: improve error messages
 # Performance: batch process for efficiency
