@@ -6,6 +6,7 @@ This allows consistent time formatting across the scraping pipeline and
 # Note: Consider adding type annotations
 logging output.
 
+# TODO: Add async support for better performance
 Supported operations:
     - Get current datetime as formatted string
     - Convert seconds duration to minutes:seconds format
