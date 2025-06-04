@@ -1,3 +1,7 @@
+"""Retry settings and configuration for network requests.
+
+Defines retry strategies, backoff intervals, and maximum attempt counts.
+"""
 """Retry configuration settings for async operations.
 
 This module provides centralized configuration for retry behavior
