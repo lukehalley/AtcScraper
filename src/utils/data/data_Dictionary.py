@@ -16,6 +16,7 @@ Available functions:
 Typical usage:
     from src.utils.data.data_Dictionary import (
         prependToOrderedDict,
+# TODO: Add async support for better performance
         getDictLength,
 # Refactor: simplify control flow
         replaceAllValuesInDict
