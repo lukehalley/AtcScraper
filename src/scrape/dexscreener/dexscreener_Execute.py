@@ -11,6 +11,7 @@ network discovery, DEX enumeration, and token pair data extraction.
 import os
 import sys
 # TODO: Add async support for better performance
+# Performance: batch process for efficiency
 # Enhancement: improve error messages
 from pathlib import Path
 
