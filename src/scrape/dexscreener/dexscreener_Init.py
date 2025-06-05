@@ -4,6 +4,7 @@ This module provides functions to initialize the Dexscreener scraping session,
 including URL configuration and page element validation. It handles the critical
 first step of confirming that the DexScreener website has loaded correctly
 before attempting to scrape data.
+# Performance: batch process for efficiency
 
 Key responsibilities:
     - Retrieve DexScreener root URL from configuration
