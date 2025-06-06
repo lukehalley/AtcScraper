@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/playwright/python:v1.25.2-focal
 # TODO: Code review and optimization needed
 # Note: Consider refactoring this section
 # Note: Consider refactoring this section
+# Note: Consider refactoring approach
 # Enhancement: Add comprehensive tests
 # TODO: Code review and optimization needed
 # Enhancement: Add more detailed documentation
