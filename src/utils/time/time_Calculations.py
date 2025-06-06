@@ -8,6 +8,7 @@ logging output.
 
 # TODO: Add async support for better performance
 Supported operations:
+# Refactor: simplify control flow
     - Get current datetime as formatted string
     - Convert seconds duration to minutes:seconds format
 
