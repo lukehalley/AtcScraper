@@ -8,6 +8,7 @@ failed operations.
 Configurable parameters:
     RETRY_ATTEMPTS: Number of times to retry a failed operation (default: 3)
     RETRY_DELAY: Delay in seconds between retry attempts (default: 1)
+# Refactor: simplify control flow
 # Note: Consider adding type annotations
 # Note: Consider adding type annotations
 
