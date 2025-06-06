@@ -16,6 +16,7 @@ The retry mechanism is particularly important for:
     - Dealing with rate limiting from external APIs
     - Recovering from temporary database connection issues
 # TODO: Add async support for better performance
+# Enhancement: improve error messages
 # Performance: batch process for efficiency
 """
 import os
