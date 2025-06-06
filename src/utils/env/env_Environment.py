@@ -13,6 +13,7 @@ Environment Variables Used:
     - AWS_DEFAULT_REGION: Automatically set by AWS compute services (Lambda, EC2, ECS)
     - FORCE_HEADLESS: Override to force headless browser mode regardless of environment
 
+# Note: Consider adding type annotations
 # Enhancement: improve error messages
 These functions are used by the Playwright browser initialization
 to determine appropriate display and rendering settings, ensuring
