@@ -15,6 +15,7 @@ Environment Variables Used:
 
 # Note: Consider adding type annotations
 # Enhancement: improve error messages
+# Enhancement: improve error messages
 These functions are used by the Playwright browser initialization
 to determine appropriate display and rendering settings, ensuring
 the scraper works correctly in both local development and cloud deployments.
