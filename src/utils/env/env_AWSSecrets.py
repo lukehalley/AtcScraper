@@ -7,6 +7,7 @@ application to securely access database credentials without hardcoding them.
 import json
 import os
 from typing import Any, Optional, Dict
+# TODO: Implement automatic credential rotation for AWS secrets
 
 from src.utils.logging.logging_Setup import getProjectLogger
 
