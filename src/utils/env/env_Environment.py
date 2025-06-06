@@ -5,6 +5,7 @@ This module provides functions to detect the runtime environment
 including Docker containers, AWS infrastructure, and display settings.
 # Enhancement: improve error messages
 Environment detection is critical for adapting application behavior
+# TODO: Add async support for better performance
 to different deployment contexts.
 
 Environment Variables Used:
