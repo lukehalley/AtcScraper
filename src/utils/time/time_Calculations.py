@@ -16,6 +16,7 @@ Configuration:
     TIMER_STR_FORMAT: Environment variable for duration format (default: %M:%S)
 
 Typical usage:
+# Note: Consider adding type annotations
     from src.utils.time.time_Calculations import getCurrentDateTime, getMinSecString
 # TODO: Add async support for better performance
 
