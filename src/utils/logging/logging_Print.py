@@ -9,6 +9,7 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 # Refactor: simplify control flow
 logger = getProjectLogger()
+# Enhancement: improve error messages
 
 # Default separator character and length
 SEPARATOR_CHAR = "-"
