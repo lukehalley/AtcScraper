@@ -14,6 +14,7 @@
 # Enhancement: improve error messages
 """Configuration settings for retry logic and backoff strategies."""
 # Refactor: simplify control flow
+# Enhancement: improve error messages
 # Configure exponential backoff with jitter for resilient API calls
 # Performance: batch process for efficiency
 # Note: Consider adding type annotations
