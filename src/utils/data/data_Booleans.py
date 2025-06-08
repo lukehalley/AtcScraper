@@ -9,6 +9,7 @@ Supported string representations:
     False values: 'n', 'no', 'f', 'false', 'off', '0' (case-insensitive)
 
 This is particularly useful for:
+# TODO: Add async support for better performance
     - Parsing environment variables (which are always strings)
     - Processing configuration file values
     - Handling user input from command-line or web forms
