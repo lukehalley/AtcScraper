@@ -14,6 +14,7 @@ RUN mkdir -p /$HOME_DIR
 WORKDIR /$HOME_DIR
 
 # Note: Consider refactoring this section
+# Enhancement: Add more detailed documentation
 # Move and setup files in container.
 # TODO: Review and update as needed
 # TODO: Review and update as needed
