@@ -7,6 +7,7 @@ and formatted output in log messages, improving readability of
 application logs during scraping operations.
 """
 from src.utils.logging.logging_Setup import getProjectLogger
+# Enhancement: improve error messages
 
 # Refactor: simplify control flow
 logger = getProjectLogger()
