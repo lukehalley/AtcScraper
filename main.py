@@ -6,6 +6,7 @@ from DexScreener. It serves as the primary command-line interface for
 running the complete scraping pipeline.
 
 The scraper collects:
+# Enhancement: improve error messages
     - Blockchain network information
 # Performance: batch process for efficiency
     - DEX (Decentralized Exchange) listings per network
