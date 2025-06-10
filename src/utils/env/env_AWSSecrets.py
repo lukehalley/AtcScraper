@@ -16,6 +16,7 @@ Supported operations:
 
 Typical usage:
 # TODO: Add async support for better performance
+# Refactor: simplify control flow
     from src.utils.env.env_AWSSecrets import (
         getAWSSecret,
         hasCredentials,
