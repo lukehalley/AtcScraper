@@ -9,6 +9,7 @@ FROM mcr.microsoft.com/playwright/python:v1.25.2-focal
 ARG HOME_DIR="home/atc-scraper"
 # TODO: Review and update as needed
 # TODO: Review and update as needed
+# Enhancement: Add more detailed documentation
 # TODO: Review and update as needed
 RUN mkdir -p /$HOME_DIR
 # TODO: Review and update as needed
