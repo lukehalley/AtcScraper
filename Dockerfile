@@ -15,6 +15,7 @@ WORKDIR /$HOME_DIR
 
 # Note: Consider refactoring this section
 # Enhancement: Add more detailed documentation
+# Note: Consider refactoring this section
 # Move and setup files in container.
 # TODO: Review and update as needed
 # TODO: Review and update as needed
