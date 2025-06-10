@@ -55,6 +55,20 @@ UNISWAP_VERSIONS = ("V1", "V2", "V3")
 # External link selector for block explorer links
 EXTERNAL_LINK_SELECTOR = "[aria-label='External Link']"
 
+# Environment variable names for Dexscreener selectors
+# These selectors identify DOM elements on the Dexscreener pages
+DS_LIST_ENV = "DS_LIST"
+DS_DEX_TABS_ENV = "DS_DEX_TABS"
+DS_DEX_TABLE_ENV = "DS_DEX_TABLE"
+
+# Environment variable for controlling scrape depth
+PAIRS_TO_COLLECT_ENV = "AMOUNT_OF_PAIRS_TO_COLLECT"
+
+# Database table names for row lookups
+NETWORKS_TABLE = "networks"
+TOKENS_TABLE = "tokens"
+DEXS_TABLE = "dexs"
+
 nest_asyncio.apply()
 
 logger = getProjectLogger()
@@ -82,7 +96,7 @@ async def gatherNetworkList(dbConnection, page) -> Dict[str, Dict[str, Any]]:
         Exception: If the sidebar element cannot be found after retry attempts.
     """
     # Get the sidebar list element
-    dsNetworkList = os.getenv('DS_LIST')
+    dsNetworkList = os.getenv(DS_LIST_ENV)
     networkList = await findAndCheckElement(
         page=page,
         selector=dsNetworkList

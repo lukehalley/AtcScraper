@@ -14,6 +14,7 @@ Supported operations:
     - Clear cached credentials for rotation
 
 Typical usage:
+# TODO: Add async support for better performance
     from src.utils.env.env_AWSSecrets import (
         getAWSSecret,
         hasCredentials,

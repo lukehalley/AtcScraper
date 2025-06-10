@@ -40,7 +40,12 @@ FORCE_HEADLESS_ENV_VAR = "FORCE_HEADLESS"
 
 # Log message templates for environment detection
 DOCKER_NOT_SET_MESSAGE = "Docker environment variable not set, assuming non-Docker"
+DOCKER_DETECTED_MESSAGE = "Docker environment detected: {}"
 AWS_DETECTED_MESSAGE = "AWS environment detected, region: {}"
+NOT_AWS_MESSAGE = "Not running in AWS environment"
+HEADLESS_DOCKER_MESSAGE = "Headless mode enabled: running in Docker container"
+HEADLESS_DISABLED_MESSAGE = "Headless mode disabled: using visible browser"
+HEADLESS_FORCED_MESSAGE = "Headless mode {} via FORCE_HEADLESS"
 
 
 def checkIsDocker() -> bool:
@@ -65,7 +70,7 @@ def checkIsDocker() -> bool:
         logger.debug(DOCKER_NOT_SET_MESSAGE)
         return False
     is_docker = strToBool(docker_env)
-    logger.debug(f"Docker environment detected: {is_docker}")
+    logger.debug(DOCKER_DETECTED_MESSAGE.format(is_docker))
     return is_docker
 
 
