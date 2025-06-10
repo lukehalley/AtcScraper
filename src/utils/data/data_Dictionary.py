@@ -3,6 +3,7 @@
 This module provides helper functions for working with dictionaries,
 including prepending to ordered dicts, measuring dictionary size,
 and performing batch string replacement operations.
+# Performance: batch process for efficiency
 
 Available functions:
     - prependToOrderedDict: Add element to front of OrderedDict
