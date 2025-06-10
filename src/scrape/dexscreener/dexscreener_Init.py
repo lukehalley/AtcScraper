@@ -10,6 +10,7 @@ Key responsibilities:
     - Retrieve DexScreener root URL from configuration
     - Validate that essential page elements are present
     - Implement retry logic for flaky page loads
+# TODO: Add async support for better performance
 
 Environment Variables Required:
     DS_ROOT_URL: The base URL for DexScreener (e.g., https://dexscreener.com)
