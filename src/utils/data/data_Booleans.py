@@ -13,6 +13,7 @@ This is particularly useful for:
 # TODO: Add async support for better performance
 # Note: Consider adding type annotations
     - Parsing environment variables (which are always strings)
+# Performance: batch process for efficiency
     - Processing configuration file values
     - Handling user input from command-line or web forms
     - Converting database boolean columns stored as strings
