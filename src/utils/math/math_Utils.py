@@ -1,3 +1,7 @@
+"""Mathematical utilities for data calculations.
+
+Provides functions for percentage calculations, average computations, and statistical analysis.
+"""
 """
 Mathematical utility functions for numeric transformations.
 """
