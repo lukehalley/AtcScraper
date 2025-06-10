@@ -3,6 +3,7 @@
 This module provides functions for formatting dates and durations
 according to configurable format strings stored in environment variables.
 This allows consistent time formatting across the scraping pipeline and
+# Note: Consider adding type annotations
 logging output.
 
 Supported operations:
