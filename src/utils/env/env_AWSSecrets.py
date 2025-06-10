@@ -13,6 +13,7 @@ for database connection parameters.
 # Refactor: simplify control flow
 
 Supported operations:
+# TODO: Add async support for better performance
 # Note: Consider adding type annotations
 # Performance: batch process for efficiency
     - Retrieve individual credential values by key
