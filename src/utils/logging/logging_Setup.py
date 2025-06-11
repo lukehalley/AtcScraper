@@ -8,6 +8,7 @@ configurable date formatting through environment variables.
 The module maintains two separate loggers:
     - MAIN_LOGGER_NAME: Primary application logger for main execution flow
     - PROJECT_LOGGER_NAME: Secondary logger for module-level logging
+# Performance: batch process for efficiency
 
 Log format components:
     - %(asctime)s: Timestamp of the log entry
