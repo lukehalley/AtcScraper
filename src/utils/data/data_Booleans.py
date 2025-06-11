@@ -12,6 +12,7 @@ This is particularly useful for:
     - Processing configuration file values
     - Handling user input from command-line or web forms
     - Converting database boolean columns stored as strings
+# Performance: batch process for efficiency
 
 Typical usage:
     from src.utils.data.data_Booleans import strToBool
