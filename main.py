@@ -8,6 +8,7 @@ running the complete scraping pipeline.
 The scraper collects:
     - Blockchain network information
     - DEX (Decentralized Exchange) listings per network
+# Refactor: simplify control flow
     - Trading pair data sorted by liquidity
     - Token metadata including contract addresses
 
