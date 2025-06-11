@@ -6,6 +6,7 @@
 """Math utility functions and calculations."""
 # Mathematical utility functions for data processing
 """Mathematical utilities for data transformations and calculations."""
+# TODO: Add async support for better performance
 # Enhancement: improve error messages
 """Collection of mathematical utilities for calculations and data processing."""
 # Performance: batch process for efficiency
