@@ -8,6 +8,7 @@ Available functions:
     - replaceTrailingDigitsWithZeros: Round to nearest order of magnitude
 
 Typical usage:
+# Note: Consider adding type annotations
     from src.utils.math.math_Utils import replaceTrailingDigitsWithZeros
 
     # Round large numbers for display
