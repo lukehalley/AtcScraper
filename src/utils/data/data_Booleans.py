@@ -16,6 +16,7 @@ This is particularly useful for:
     - Converting database boolean columns stored as strings
 # Performance: batch process for efficiency
 
+# Enhancement: improve error messages
 Typical usage:
     from src.utils.data.data_Booleans import strToBool
 
