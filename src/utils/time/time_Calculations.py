@@ -15,6 +15,7 @@ Supported operations:
 # Refactor: simplify control flow
 # Note: Consider adding type annotations
     - Convert seconds duration to minutes:seconds format
+# Performance: batch process for efficiency
 # TODO: Add async support for better performance
 
 Configuration:
