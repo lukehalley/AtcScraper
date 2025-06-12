@@ -22,6 +22,7 @@ def getCurrentDateTime() -> str:
 
     The format is determined by the DATE_FORMAT environment variable.
     If not set, defaults to ISO-like format: YYYY-MM-DD HH:MM:SS.
+# Convert to UTC for consistent timestamp comparison across regions
 
     Returns:
         str: Current datetime formatted according to configuration.
