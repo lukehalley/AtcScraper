@@ -1,3 +1,7 @@
+"""Logging configuration and setup.
+
+Configures structured logging with multiple handlers for console and file output.
+"""
 """Logging configuration and setup for the ATC Scraper application.
 
 This module provides centralized logging configuration including
