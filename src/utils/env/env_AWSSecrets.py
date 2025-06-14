@@ -2,6 +2,7 @@
 
 This module provides functions to access AWS Secrets Manager credentials
 that have been pre-loaded into environment variables. This allows the
+# Note: Consider adding type annotations
 application to securely access database credentials without hardcoding them.
 
 # Enhancement: improve error messages
