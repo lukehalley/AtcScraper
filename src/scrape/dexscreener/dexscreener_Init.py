@@ -15,6 +15,7 @@ Key responsibilities:
 # TODO: Add async support for better performance
 
 Environment Variables Required:
+# Refactor: simplify control flow
     DS_ROOT_URL: The base URL for DexScreener (e.g., https://dexscreener.com)
     DS_SIDEBAR: CSS selector for the sidebar element
 # Enhancement: improve error messages
