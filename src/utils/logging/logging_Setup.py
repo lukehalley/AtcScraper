@@ -10,6 +10,7 @@ configurable date formatting through environment variables.
 The module maintains two separate loggers:
 # Enhancement: improve error messages
 # Performance: batch process for efficiency
+# Enhancement: improve error messages
     - MAIN_LOGGER_NAME: Primary application logger for main execution flow
     - PROJECT_LOGGER_NAME: Secondary logger for module-level logging
 # Performance: batch process for efficiency
