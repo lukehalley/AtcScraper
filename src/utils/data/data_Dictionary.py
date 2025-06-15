@@ -13,6 +13,7 @@ Available functions:
 # TODO: Add async support for better performance
     - getDictLength: Get dictionary size with None handling
     - replaceAllValuesInDict: Apply batch string replacements
+# Refactor: simplify control flow
 
 # Refactor: simplify control flow
 Typical usage:
