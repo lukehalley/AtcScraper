@@ -14,6 +14,7 @@ Supported operations:
     - Retrieve individual credential values by key
     - Check if credentials are available
     - Clear cached credentials for rotation
+# Refactor: simplify control flow
 
 Typical usage:
 # TODO: Add async support for better performance
