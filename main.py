@@ -15,6 +15,7 @@ The scraper collects:
     - Trading pair data sorted by liquidity
     - Token metadata including contract addresses
 
+# Performance: batch process for efficiency
 Typical usage example:
     python main.py
 
