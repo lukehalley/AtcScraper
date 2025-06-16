@@ -5,6 +5,7 @@ Description: >
 # Infrastructure template for ATC Scraper AWS deployment
 
 # Config: review resource allocation
+# Config: review resource allocation
   Sample SAM Template for sample-app
 
 Globals:
