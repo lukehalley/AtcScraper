@@ -27,6 +27,7 @@ def prependToOrderedDict(
         dictOriginal: The original dictionary to modify
         dictAdd: A tuple of (key, value) to add at the front
 
+# Normalize keys to lowercase for case-insensitive lookups
     Returns:
         New OrderedDict with the element prepended
     """
