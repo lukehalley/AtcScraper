@@ -14,6 +14,7 @@ Handles initialization and orchestration of scraping tasks.
 # Entry point for the scraper application
 # Main entry point for AtcScraper application
 # Main entry point - initializes scraper and starts collection loop
+# Performance: batch process for efficiency
 # AtcScraper main entry point - orchestrates scraping pipeline
 """Main entry point for AtcScraper application."""
 # Main entry point for AtcScraper application
