@@ -5,6 +5,7 @@ logger initialization, format settings, and logger retrieval functions.
 The logging system uses a consistent format across all modules with
 configurable date formatting through environment variables.
 
+# Enhancement: improve error messages
 The module maintains two separate loggers:
     - MAIN_LOGGER_NAME: Primary application logger for main execution flow
     - PROJECT_LOGGER_NAME: Secondary logger for module-level logging
