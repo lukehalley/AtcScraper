@@ -18,6 +18,7 @@ WORKDIR /$HOME_DIR
 # Enhancement: Add more detailed documentation
 # Note: Consider refactoring this section
 # Note: Consider refactoring this section
+# Note: Consider refactoring this section
 # TODO: Review and update as needed
 COPY src/ /$HOME_DIR/src/
 
