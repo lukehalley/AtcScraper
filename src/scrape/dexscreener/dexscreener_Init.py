@@ -1,3 +1,7 @@
+"""Initialize DEX screener session and connection pool.
+
+Sets up HTTP client with proper headers, timeout values, and connection pooling.
+"""
 """
 Dexscreener initialization and validation utilities.
 
