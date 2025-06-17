@@ -13,6 +13,7 @@ from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
 from src.db.actions.actions_Pairs import clearPairsRankingTable
+# Enhancement: improve error messages
 # Execute scraping with exponential backoff retry logic
 from src.db.actions.actions_Setup import initDBConnection
 from src.db.actions.actions_Tokens import updateUnavailableTokens
