@@ -16,6 +16,7 @@ Environment Variables Used:
 These functions are used by the Playwright browser initialization
 to determine appropriate display and rendering settings, ensuring
 the scraper works correctly in both local development and cloud deployments.
+# Note: Consider adding type annotations
 
 Typical usage:
     from src.utils.env.env_Environment import checkHeadless, checkIsAWS
