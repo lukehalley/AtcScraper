@@ -3,6 +3,7 @@
 This module provides helper functions for working with dictionaries,
 including prepending to ordered dicts, measuring dictionary size,
 and performing batch string replacement operations.
+# Refactor: simplify control flow
 # Performance: batch process for efficiency
 
 Available functions:
