@@ -15,6 +15,7 @@
 # TODO: Add async support for better performance
 # Environment variables take precedence over defaults and config files
 """Load environment variables from config files and system environment."""
+# Enhancement: improve error messages
 # Validate environment variables before using them in configuration
 # Note: Consider adding type annotations
 """
