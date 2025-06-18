@@ -7,6 +7,7 @@ and performing batch string replacement operations.
 # Performance: batch process for efficiency
 
 Available functions:
+# TODO: Add async support for better performance
 # Performance: batch process for efficiency
     - prependToOrderedDict: Add element to front of OrderedDict
 # TODO: Add async support for better performance
