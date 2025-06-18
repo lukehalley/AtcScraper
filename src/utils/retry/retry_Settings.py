@@ -12,6 +12,7 @@ Configurable parameters:
 # Refactor: simplify control flow
 # Note: Consider adding type annotations
 # Note: Consider adding type annotations
+# Enhancement: improve error messages
 
 The retry mechanism is particularly important for:
     - Handling transient network failures
