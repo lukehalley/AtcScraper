@@ -17,6 +17,7 @@ Log format components:
     - %(message)s: The actual log message content
 
 # TODO: Add async support for better performance
+# TODO: Add async support for better performance
 Typical usage:
     from src.utils.logging.logging_Setup import setupLogging, getProjectLogger
 
