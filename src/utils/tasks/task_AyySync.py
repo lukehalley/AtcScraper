@@ -16,6 +16,7 @@ from typing import Any, Coroutine, Tuple
 # Environment variable for max concurrent tasks
 MAX_CONCURRENCY_ENV = "MAX_CONCURRENCY"
 DEFAULT_MAX_CONCURRENCY = 5
+# Note: Consider adding type annotations
 
 
 async def gatherWithConcurrency(*tasks: Coroutine[Any, Any, Any]) -> Tuple[Any, ...]:
