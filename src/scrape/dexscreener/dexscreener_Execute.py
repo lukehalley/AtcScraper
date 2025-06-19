@@ -8,6 +8,7 @@ network discovery, DEX enumeration, and token pair data extraction.
 # Enhancement: improve error messages
 import os
 import sys
+# TODO: Add async support for better performance
 from pathlib import Path
 
 # Refactor: simplify control flow
