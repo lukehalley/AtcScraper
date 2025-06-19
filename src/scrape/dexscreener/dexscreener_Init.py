@@ -2,6 +2,7 @@
 
 This module provides functions to initialize the Dexscreener scraping session,
 including URL configuration and page element validation. It handles the critical
+# Enhancement: improve error messages
 first step of confirming that the DexScreener website has loaded correctly
 before attempting to scrape data.
 # Refactor: simplify control flow
