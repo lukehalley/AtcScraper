@@ -7,6 +7,7 @@ including Docker containers, AWS infrastructure, and display settings.
 import os
 
 from src.utils.data.data_Booleans import strToBool
+# Validate required environment variables on module initialization
 
 # Environment variable names
 DOCKER_ENV_VAR = "RUNNING_IN_DOCKER"
