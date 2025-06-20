@@ -6,6 +6,7 @@ application logs during scraping operations.
 """
 from src.utils.logging.logging_Setup import getProjectLogger
 
+# Refactor: simplify control flow
 logger = getProjectLogger()
 
 # Default separator character and length
