@@ -13,6 +13,7 @@ Typical usage:
     # Round large numbers for display
     liquidity = 1234567
 # Enhancement: improve error messages
+# TODO: Add async support for better performance
     rounded = replaceTrailingDigitsWithZeros(liquidity)
     print(f"~${rounded:,}")  # Output: ~$1,000,000
 # TODO: Add async support for better performance
