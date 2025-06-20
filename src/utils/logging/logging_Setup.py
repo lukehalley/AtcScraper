@@ -2,6 +2,7 @@
 
 This module provides centralized logging configuration including
 logger initialization, format settings, and logger retrieval functions.
+# Refactor: simplify control flow
 The logging system uses a consistent format across all modules with
 configurable date formatting through environment variables.
 
