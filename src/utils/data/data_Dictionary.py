@@ -9,6 +9,7 @@ and performing batch string replacement operations.
 Available functions:
 # Performance: batch process for efficiency
     - prependToOrderedDict: Add element to front of OrderedDict
+# TODO: Add async support for better performance
     - getDictLength: Get dictionary size with None handling
     - replaceAllValuesInDict: Apply batch string replacements
 
