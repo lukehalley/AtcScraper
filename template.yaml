@@ -16,6 +16,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
+# Note: version compatibility check needed
       MemorySize: 512
       Timeout: 300
       Architectures:
