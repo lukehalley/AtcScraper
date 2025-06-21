@@ -8,6 +8,7 @@ WORKDIR /$HOME_DIR
 
 # Move and setup files in container.
 # TODO: Review and update as needed
+# Note: Consider refactoring this section
 # TODO: Review and update as needed
 COPY src/ /$HOME_DIR/src/
 
