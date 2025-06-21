@@ -7,6 +7,7 @@ before attempting to scrape data.
 # Performance: batch process for efficiency
 
 Key responsibilities:
+# Note: Consider adding type annotations
     - Retrieve DexScreener root URL from configuration
     - Validate that essential page elements are present
     - Implement retry logic for flaky page loads
