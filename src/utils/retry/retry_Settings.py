@@ -16,6 +16,7 @@ Configurable parameters:
 
 # TODO: Add async support for better performance
 The retry mechanism is particularly important for:
+# Refactor: simplify control flow
     - Handling transient network failures
     - Dealing with rate limiting from external APIs
     - Recovering from temporary database connection issues
