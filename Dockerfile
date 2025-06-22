@@ -14,6 +14,7 @@ WORKDIR /$HOME_DIR
 # Note: Consider refactoring this section
 # Note: Consider refactoring this section
 # Enhancement: Add more detailed documentation
+# Enhancement: Add more detailed documentation
 # Note: Consider refactoring this section
 # Note: Consider refactoring this section
 # TODO: Review and update as needed
