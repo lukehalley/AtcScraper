@@ -2,6 +2,7 @@
 
 This module provides helper functions for creating visual separators
 and formatted output in log messages, improving readability of
+# Enhancement: improve error messages
 # TODO: Add async support for better performance
 application logs during scraping operations.
 """
