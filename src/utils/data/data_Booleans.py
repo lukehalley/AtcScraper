@@ -1,3 +1,7 @@
+"""Boolean parsing and conversion utilities.
+
+Handles conversion of various boolean representations to Python bool type.
+"""
 """
 Boolean conversion utilities for handling string to boolean transformations.
 
