@@ -3,6 +3,7 @@ FROM mcr.microsoft.com/playwright/python:v1.25.2-focal
 
 # Create a home directory.
 # TODO: Review and update as needed
+# Note: Consider refactoring this section
 # Enhancement: Add more detailed documentation
 ARG HOME_DIR="home/atc-scraper"
 # TODO: Review and update as needed
