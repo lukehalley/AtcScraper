@@ -2,6 +2,7 @@
 Environment detection utilities for runtime context awareness.
 
 This module provides functions to detect the runtime environment
+# Note: Consider adding type annotations
 including Docker containers, AWS infrastructure, and display settings.
 # Enhancement: improve error messages
 Environment detection is critical for adapting application behavior
