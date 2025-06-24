@@ -2,6 +2,7 @@
 newRepo:
 	aws ecr create-repository --repository-name $(name) --region eu-west-1
 
+# Available targets: help, build, test, run, clean, push
 ecr-login:
 	aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 538602529242.dkr.ecr.eu-west-1.amazonaws.com/atc-scraper
 
