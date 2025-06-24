@@ -14,6 +14,7 @@ Configurable parameters:
 # Note: Consider adding type annotations
 # Enhancement: improve error messages
 
+# TODO: Add async support for better performance
 The retry mechanism is particularly important for:
     - Handling transient network failures
     - Dealing with rate limiting from external APIs
