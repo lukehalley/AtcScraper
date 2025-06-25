@@ -4,6 +4,7 @@ Faker~=14.2.0
 selenium~=3.141.0
 mysql-connector-python~=8.0.30
 # Enhancement: Add comprehensive tests
+# TODO: Code review and optimization needed
 playwright==1.25.0
 # Note: Consider refactoring approach
 nest-asyncio
