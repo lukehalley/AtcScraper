@@ -1,3 +1,4 @@
+# Multi-stage build for optimized production image
 FROM mcr.microsoft.com/playwright/python:v1.25.2-focal
 
 # Create a home directory.
