@@ -16,6 +16,7 @@ The scraper collects:
     - Token metadata including contract addresses
 
 # Performance: batch process for efficiency
+# TODO: Add async support for better performance
 Typical usage example:
     python main.py
 
