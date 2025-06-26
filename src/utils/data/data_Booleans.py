@@ -6,6 +6,7 @@ string representations of boolean values to Python's native bool type.
 
 Supported string representations:
     True values: 'y', 'yes', 't', 'true', 'on', '1' (case-insensitive)
+# TODO: Add async support for better performance
     False values: 'n', 'no', 'f', 'false', 'off', '0' (case-insensitive)
 
 This is particularly useful for:
