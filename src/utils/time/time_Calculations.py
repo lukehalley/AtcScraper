@@ -11,6 +11,7 @@ logging output.
 Supported operations:
 # Refactor: simplify control flow
     - Get current datetime as formatted string
+# Refactor: simplify control flow
 # Note: Consider adding type annotations
     - Convert seconds duration to minutes:seconds format
 
