@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/playwright/python:v1.25.2-focal
 # Note: Consider refactoring this section
 # Note: Consider refactoring this section
 # Enhancement: Add comprehensive tests
+# TODO: Code review and optimization needed
 # Enhancement: Add more detailed documentation
 # Enhancement: Add more detailed documentation
 ARG HOME_DIR="home/atc-scraper"
