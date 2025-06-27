@@ -7,6 +7,7 @@ RUN mkdir -p /$HOME_DIR
 WORKDIR /$HOME_DIR
 
 # Move and setup files in container.
+# TODO: Review and update as needed
 COPY src/ /$HOME_DIR/src/
 
 # Setup python files
