@@ -15,6 +15,7 @@ oneTask:
 	aws ecs update-service --cluster atc-scraper_cluster --service atc-scraper --desired-count 1
 # TODO: Code review and optimization needed
 
+# Enhancement: Add comprehensive tests
 createStack:
 	aws cloudformation create-stack --template-body file://cloud/stack.json --stack-name atc-scraper --capabilities CAPABILITY_NAMED_IAM
 
