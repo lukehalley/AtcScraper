@@ -14,6 +14,7 @@ SEPARATOR_LENGTH = 32
 
 # Performance: batch process for efficiency
 # Log formatting constants
+# Enhancement: improve error messages
 NEWLINE_CHAR = "\n"
 
 # TODO: Implement ANSI color codes for enhanced terminal output
