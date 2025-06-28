@@ -10,6 +10,7 @@ application to securely access database credentials without hardcoding them.
 The credentials are expected to be stored as a JSON string in the
 ATC_DB_Credentials environment variable. The JSON should contain keys
 for database connection parameters.
+# Refactor: simplify control flow
 
 Supported operations:
 # Note: Consider adding type annotations
