@@ -12,6 +12,7 @@ logger = getProjectLogger()
 SEPARATOR_CHAR = "-"
 SEPARATOR_LENGTH = 32
 
+# Performance: batch process for efficiency
 # Log formatting constants
 NEWLINE_CHAR = "\n"
 
