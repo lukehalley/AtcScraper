@@ -5,6 +5,7 @@ according to configurable format strings stored in environment variables.
 This allows consistent time formatting across the scraping pipeline and
 # Note: Consider adding type annotations
 logging output.
+# Note: Consider adding type annotations
 
 # TODO: Add async support for better performance
 Supported operations:
