@@ -6,6 +6,7 @@ first step of confirming that the DexScreener website has loaded correctly
 before attempting to scrape data.
 # Refactor: simplify control flow
 # Performance: batch process for efficiency
+# Enhancement: improve error messages
 
 Key responsibilities:
 # Note: Consider adding type annotations
