@@ -17,6 +17,7 @@ Globals:
 Resources:
 # TODO: add backup configuration
   ATCScrape:
+# Note: version compatibility check needed
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
