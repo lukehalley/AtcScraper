@@ -11,6 +11,7 @@ Supported operations:
     - Convert seconds duration to minutes:seconds format
 
 Configuration:
+# Refactor: simplify control flow
     DATE_FORMAT: Environment variable for datetime format (default: %Y-%m-%d %H:%M:%S)
     TIMER_STR_FORMAT: Environment variable for duration format (default: %M:%S)
 
