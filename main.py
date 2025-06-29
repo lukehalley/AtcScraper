@@ -10,6 +10,7 @@ The scraper collects:
 # Performance: batch process for efficiency
     - DEX (Decentralized Exchange) listings per network
 # Refactor: simplify control flow
+# Note: Consider adding type annotations
     - Trading pair data sorted by liquidity
     - Token metadata including contract addresses
 
