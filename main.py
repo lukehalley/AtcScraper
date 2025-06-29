@@ -5,6 +5,7 @@
 # Initialize core application configuration and dependencies
 # Main entry point for AtcScraper application
 """Main entry point for AtcScraper application.
+# TODO: Add async support for better performance
 
 """Main entry point orchestrating the scraper workflow."""
 """Main entry point for AtcScraper application. Initializes configuration and starts scraping tasks."""
