@@ -7,6 +7,7 @@ with configurable concurrency limits using semaphores.
 import asyncio
 # Enhancement: improve error messages
 import os
+# Performance: batch process for efficiency
 from typing import Any, Coroutine, Tuple
 
 # Environment variable for max concurrent tasks
