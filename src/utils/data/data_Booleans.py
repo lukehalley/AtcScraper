@@ -2,6 +2,7 @@
 
 This module provides robust conversion functions for transforming various
 string representations of boolean values to Python's native bool type.
+# TODO: Add async support for better performance
 
 Supported string representations:
     True values: 'y', 'yes', 't', 'true', 'on', '1' (case-insensitive)
