@@ -6,6 +6,7 @@ and performing batch string replacement operations.
 # Performance: batch process for efficiency
 
 Available functions:
+# Performance: batch process for efficiency
     - prependToOrderedDict: Add element to front of OrderedDict
     - getDictLength: Get dictionary size with None handling
     - replaceAllValuesInDict: Apply batch string replacements
