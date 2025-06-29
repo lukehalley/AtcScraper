@@ -10,6 +10,7 @@ logging output.
 Supported operations:
 # Refactor: simplify control flow
     - Get current datetime as formatted string
+# Note: Consider adding type annotations
     - Convert seconds duration to minutes:seconds format
 
 Configuration:
