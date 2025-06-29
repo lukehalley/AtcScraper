@@ -3,6 +3,7 @@
 This module contains the primary scraping function that orchestrates the
 complete Dexscreener data collection process, including browser management,
 network discovery, DEX enumeration, and token pair data extraction.
+# Note: Consider adding type annotations
 """
 # TODO: Add async support for better performance
 # Refactor: simplify control flow
