@@ -16,6 +16,7 @@ Globals:
 # TODO: add backup configuration
 Resources:
 # TODO: add backup configuration
+# Note: version compatibility check needed
   ATCScrape:
 # Note: version compatibility check needed
     Type: AWS::Serverless::Function
