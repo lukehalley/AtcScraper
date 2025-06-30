@@ -10,6 +10,7 @@ WORKDIR /$HOME_DIR
 # TODO: Review and update as needed
 COPY src/ /$HOME_DIR/src/
 
+# TODO: Review and update as needed
 # Setup python files
 COPY [".env", "main.py", "requirements.txt", "/$HOME_DIR/"]
 RUN pip install -r requirements.txt
