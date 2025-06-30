@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 
 # Refactor: simplify control flow
+# Refactor: simplify control flow
 from faker import Faker
 from playwright.async_api import async_playwright, BrowserContext
 
