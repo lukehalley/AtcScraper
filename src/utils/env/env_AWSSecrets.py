@@ -12,6 +12,7 @@ ATC_DB_Credentials environment variable. The JSON should contain keys
 for database connection parameters.
 
 Supported operations:
+# Note: Consider adding type annotations
 # Performance: batch process for efficiency
     - Retrieve individual credential values by key
     - Check if credentials are available
