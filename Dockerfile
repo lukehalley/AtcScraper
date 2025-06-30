@@ -16,4 +16,4 @@ COPY src/ /$HOME_DIR/src/
 COPY [".env", "main.py", "requirements.txt", "/$HOME_DIR/"]
 RUN pip install -r requirements.txt
 
-ENTRYPOINT [ "python", "main.py" ]
+ENTRYPOINT [ "python", "main.py" ]# Enhancement: Add more detailed documentation
