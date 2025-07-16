@@ -12,7 +12,23 @@ async def addTokenToDB(
     tokenSymbol: str,
     tokenAddress: Optional[str] = None
 ) -> int:
+    """
+    Add a new token to the database if it doesn't already exist.
 
+    Inserts a token record with the provided details. The token name is
+    sanitized to remove special characters. Uses INSERT with NOT EXISTS
+    to prevent duplicate entries based on symbol and network combination.
+
+    Args:
+        dbConnection: Active database connection object
+        networkDbId: Database ID of the network the token belongs to
+        tokenName: Human-readable name of the token (will be sanitized)
+        tokenSymbol: Trading symbol of the token (e.g., 'ETH', 'BTC')
+        tokenAddress: Blockchain contract address of the token
+
+    Returns:
+        int: The database ID of the newly inserted token, or 0 if already exists
+    """
     cursor = getCursor(dbConnection=dbConnection)
 
     networkDbId = int(networkDbId)
