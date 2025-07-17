@@ -1,16 +1,37 @@
+from typing import Any, Dict, List, Optional
+
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeReadQuery
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
-def checkDbInitialised(dbConnection):
+# Required tables for database initialization check
+REQUIRED_TABLES = ('dexs', 'pairs', 'tokens', 'networks')
+REQUIRED_TABLE_COUNT = len(REQUIRED_TABLES)
+DATABASE_SCHEMA = 'atc'
 
-    query = "" \
-            "SELECT COUNT(*) AS tableCount " \
-            "FROM `information_schema`.`tables` " \
-            "WHERE `TABLE_SCHEMA` = 'atc' AND " \
-            "`TABLE_NAME` IN ('dexs', 'pairs', 'tokens', 'networks')"
+
+def checkDbInitialised(dbConnection: Any) -> bool:
+    """
+    Check if the database has all required tables initialized.
+
+    Queries the information_schema to verify that all essential tables
+    (dexs, pairs, tokens, networks) exist in the database.
+
+    Args:
+        dbConnection: Active database connection object
+
+    Returns:
+        bool: True if all required tables exist, False otherwise
+    """
+    table_list = ", ".join(f"'{t}'" for t in REQUIRED_TABLES)
+    query = (
+        "SELECT COUNT(*) AS tableCount "
+        "FROM `information_schema`.`tables` "
+        f"WHERE `TABLE_SCHEMA` = '{DATABASE_SCHEMA}' AND "
+        f"`TABLE_NAME` IN ({table_list})"
+    )
 
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -19,51 +40,71 @@ def checkDbInitialised(dbConnection):
         query=query
     )
 
-    return tableResults[0]["tableCount"] >= 4
+    return tableResults[0]["tableCount"] >= REQUIRED_TABLE_COUNT
 
-def getRowByValue(dbConnection, table, conditions):
+def getRowByValue(
+    dbConnection: Any,
+    table: str,
+    conditions: List[Dict[str, Any]]
+) -> Optional[Dict[str, Any]]:
+    """
+    Retrieve a single row from a table based on column conditions.
 
+    Args:
+        dbConnection: Active database connection object
+        table: Name of the database table to query
+        conditions: List of condition dictionaries, each with column:value pairs
+
+    Returns:
+        Dictionary containing the row data if found, None otherwise
+
+    Example:
+        getRowByValue(conn, 'tokens', [{'symbol': 'ETH'}, {'network_id': 1}])
+    """
     cursor = getCursor(dbConnection=dbConnection)
 
-    amountOfConditions = len(conditions)
+    # Build WHERE clause from conditions
+    where_clauses = []
+    for condition in conditions:
+        columnName = list(condition.keys())[0]
+        rowValue = condition[columnName]
+        where_clauses.append(f"{columnName}='{rowValue}'")
 
-    columnName = list(conditions[0].keys())[0]
-    rowValue = conditions[0][columnName]
-
-    query = f"SELECT * FROM " \
-            f"{table} WHERE " \
-            f"{columnName}='{rowValue}'"
-
-    if amountOfConditions > 1:
-
-        del conditions[0]
-
-        for condition in conditions:
-            columnName = list(condition.keys())[0]
-            rowValue = condition[columnName]
-
-            query = \
-                query + \
-                " AND WHERE " \
-                f"{columnName}='{rowValue}'"
+    where_statement = " AND ".join(where_clauses)
+    query = f"SELECT * FROM {table} WHERE {where_statement}"
 
     results = executeReadQuery(
         cursor=cursor,
         query=query
     )
 
-    if results:
-        return results[0]
-    else:
-        return None
+    return results[0] if results else None
 
-def checkIfRowExistsByValue(dbConnection, table, column, value):
 
+def checkIfRowExistsByValue(
+    dbConnection: Any,
+    table: str,
+    column: str,
+    value: Any
+) -> bool:
+    """
+    Check if a row exists in a table with the specified column value.
+
+    Args:
+        dbConnection: Active database connection object
+        table: Name of the database table to query
+        column: Name of the column to check
+        value: Value to search for in the column
+
+    Returns:
+        bool: True if a matching row exists, False otherwise
+    """
     cursor = getCursor(dbConnection=dbConnection)
 
-    query = f"SELECT COUNT(*) count FROM " \
-            f"{table} WHERE " \
-            f"{column}='{value}'"
+    query = (
+        f"SELECT COUNT(*) AS count FROM {table} "
+        f"WHERE {column}='{value}'"
+    )
 
     results = executeReadQuery(
         cursor=cursor,
