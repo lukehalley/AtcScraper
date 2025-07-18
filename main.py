@@ -1,19 +1,26 @@
+"""
+ATC Scraper - Main entry point for DexScreener cryptocurrency data scraping.
+
+This module initializes logging, sets up the execution environment, and
+orchestrates the scraping process for cryptocurrency trading pair data
+from DexScreener.
+"""
 import asyncio
 import time
 
 from dotenv import load_dotenv
 from retry import retry
 
-from src.utils.time.time_Calculations import getMinSecString
-
-load_dotenv()
-
-# Import helpers
 from src.scrape.dexscreener.dexscreener_Execute import scrapeDexScreener
-
-# Load the .env file
 from src.utils.logging.logging_Print import printSeparator
 from src.utils.logging.logging_Setup import setupLogging
+from src.utils.time.time_Calculations import getMinSecString
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Application name constant
+APP_NAME = "ATC Scraper"
 
 # Set up logging
 logger = setupLogging()
@@ -22,12 +29,19 @@ logger = setupLogging()
 startingTime = time.perf_counter()
 
 printSeparator()
-logger.info(f"ATC Scraper")
+logger.info(APP_NAME)
 printSeparator(newLine=True)
 
-@retry()
-def scrape():
 
+@retry()
+def scrape() -> None:
+    """
+    Execute the DexScreener scraping process with automatic retry on failure.
+
+    Creates an async event loop and runs the DexScreener scraper. Logs the
+    total execution time upon completion. The @retry decorator provides
+    automatic retry functionality if the scraping fails.
+    """
     # Create an async event loop
     loop = asyncio.get_event_loop()
 
@@ -37,11 +51,12 @@ def scrape():
     # Get our ending time
     timerString = getMinSecString(time.perf_counter() - startingTime)
 
-    # Log that out scraping is done
+    # Log that scraping is done
     printSeparator()
-    logger.info(f"Dex Screener Scrape Complete ✅")
+    logger.info("Dex Screener Scrape Complete")
     logger.info(f"Took: {timerString}")
     printSeparator()
+
 
 if __name__ == '__main__':
     scrape()
