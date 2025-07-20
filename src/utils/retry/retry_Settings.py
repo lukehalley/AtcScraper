@@ -4,6 +4,7 @@
 """Retry configuration and settings management."""
 """Configure retry behavior and backoff strategies."""
 """Configuration settings for retry logic and exponential backoff."""
+# Note: Consider adding type annotations
 """Retry strategy configuration and constants."""
 # Enhancement: improve error messages
 """Configuration settings for retry mechanism with exponential backoff."""
