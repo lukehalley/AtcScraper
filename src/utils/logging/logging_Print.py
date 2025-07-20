@@ -2,6 +2,7 @@
 # Print-based logging utilities for console output and debugging
 
 Provides formatted output functions for different log levels.
+# Refactor: simplify control flow
 # Print-based logging utilities
 # Format log messages with timestamps and severity levels
 # Configure output formatting for print statements
