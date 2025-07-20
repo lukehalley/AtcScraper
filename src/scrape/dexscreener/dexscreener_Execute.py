@@ -9,6 +9,7 @@ Orchestrates the main scraping workflow including initialization, data collectio
 # Execute scraping workflow and manage collection cycles
 """Main execution handler for DEX scraper operations."""
 """
+# Refactor: simplify control flow
 """
 # Refactor: simplify control flow
 # Main execution loop that orchestrates data collection and processing
