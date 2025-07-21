@@ -1,10 +1,35 @@
+"""
+Dictionary manipulation utilities for common operations.
+
+Provides helper functions for working with dictionaries including
+prepending to ordered dicts and string replacement operations.
+"""
 import functools
 from collections import OrderedDict
 from typing import Any, Dict, Tuple
 
+# Type aliases for clarity
+KeyValuePair = Tuple[Any, Any]
+ReplacementMap = Dict[str, str]
 
-def prependToOrderedDict(dictOriginal: Dict[Any, Any], dictAdd: Tuple[Any, Any]) -> OrderedDict:
-    """Append an element to an ordered dict and move it to the front."""
+
+def prependToOrderedDict(
+    dictOriginal: Dict[Any, Any],
+    dictAdd: KeyValuePair
+) -> OrderedDict:
+    """
+    Add an element to an ordered dict and move it to the front.
+
+    Creates a new OrderedDict with the added element at the beginning
+    while preserving the order of existing elements.
+
+    Args:
+        dictOriginal: The original dictionary to modify
+        dictAdd: A tuple of (key, value) to add at the front
+
+    Returns:
+        New OrderedDict with the element prepended
+    """
     arr = OrderedDict(dictOriginal)
     items = list(arr.items())
     items.append(dictAdd)
@@ -13,11 +38,36 @@ def prependToOrderedDict(dictOriginal: Dict[Any, Any], dictAdd: Tuple[Any, Any])
     return arr
 
 
-def getDictLength(sub: Dict[Any, Any]) -> int:
-    """Get the length of a dictionary."""
-    return len(sub)
+def getDictLength(dictionary: Dict[Any, Any]) -> int:
+    """
+    Get the number of key-value pairs in a dictionary.
+
+    Args:
+        dictionary: The dictionary to measure
+
+    Returns:
+        Number of items in the dictionary
+    """
+    return len(dictionary)
 
 
-def replaceAllValuesInDict(text: str, dictionary: Dict[str, str]) -> str:
-    """Replace all occurrences of keys with values from dictionary in text."""
-    return functools.reduce(lambda a, kv: a.replace(*kv), dictionary.items(), text)
+def replaceAllValuesInDict(text: str, replacements: ReplacementMap) -> str:
+    """
+    Replace all occurrences of dictionary keys with their values in text.
+
+    Iteratively applies string replacements using the dictionary's
+    key-value pairs. Each key found in the text is replaced with
+    its corresponding value.
+
+    Args:
+        text: The original string to modify
+        replacements: Dictionary mapping strings to find to replacement values
+
+    Returns:
+        Modified string with all replacements applied
+    """
+    return functools.reduce(
+        lambda a, kv: a.replace(*kv),
+        replacements.items(),
+        text
+    )
