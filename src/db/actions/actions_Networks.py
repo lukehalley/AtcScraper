@@ -1,3 +1,9 @@
+"""Database actions for managing blockchain network records.
+
+This module provides functions to add and manage blockchain network entries
+in the database. Networks represent the different blockchains that the
+scraper monitors for DEX trading activity.
+"""
 from typing import Any
 
 from src.db.actions.actions_General import executeWriteQuery
