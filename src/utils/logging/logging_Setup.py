@@ -1,3 +1,10 @@
+"""Logging configuration and setup for the ATC Scraper application.
+
+This module provides centralized logging configuration including
+logger initialization, format settings, and logger retrieval functions.
+The logging system uses a consistent format across all modules with
+configurable date formatting through environment variables.
+"""
 import logging
 import os
 import sys
