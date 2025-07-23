@@ -29,6 +29,11 @@ def getAllNetworks(dbConnection: Any) -> List[str]:
 
     Returns:
         List[str]: List of all network names in the database.
+
+    Example:
+        >>> networks = getAllNetworks(db_conn)
+        >>> print(networks)
+        ['ethereum', 'polygon', 'bsc', 'arbitrum']
     """
     query = (
         f"SELECT {NETWORK_NAME_COLUMN} "
@@ -60,6 +65,11 @@ def getNetworkDbIdByName(dbConnection: Any, networkName: str) -> Optional[int]:
 
     Returns:
         Optional[int]: The network's database ID, or None if not found.
+
+    Example:
+        >>> network_id = getNetworkDbIdByName(db_conn, 'ethereum')
+        >>> print(network_id)
+        1
     """
     query = (
         f"SELECT {NETWORK_ID_COLUMN} "
@@ -75,7 +85,10 @@ def getNetworkDbIdByName(dbConnection: Any, networkName: str) -> Optional[int]:
     )
 
     if results:
-        return results[0][NETWORK_ID_COLUMN]
+        network_id = results[0][NETWORK_ID_COLUMN]
+        logger.debug(f"Found network '{networkName}' with ID {network_id}")
+        return network_id
+    logger.debug(f"Network '{networkName}' not found in database")
     return None
 
 
