@@ -11,6 +11,9 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
+# Table name
+DEXS_TABLE = "dexs"
+
 # Database columns for DEX table
 DEX_COLUMNS = "network_id, name, factory, router"
 
@@ -35,10 +38,12 @@ async def addDexToDB(
     Returns:
         int: The database ID of the newly inserted DEX record
     """
+    logger.debug(f"Adding DEX '{dexName}' for network ID {networkDbId}")
+
     cursor = getCursor(dbConnection=dbConnection)
 
     query = (
-        f"INSERT IGNORE INTO dexs ({DEX_COLUMNS}) "
+        f"INSERT IGNORE INTO {DEXS_TABLE} ({DEX_COLUMNS}) "
         f"VALUES ('{networkDbId}', '{dexName}', NULL, NULL)"
     )
 
@@ -48,5 +53,8 @@ async def addDexToDB(
         query=query
     )
 
-    return cursor.lastrowid
+    dex_id = cursor.lastrowid
+    logger.debug(f"DEX '{dexName}' added with ID {dex_id}")
+
+    return dex_id
 

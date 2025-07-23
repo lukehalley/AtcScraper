@@ -1,7 +1,22 @@
 """Database query functions for trading pair operations.
 
 This module provides functions to query trading pair data from the database,
-including lookups by contract address and network ID.
+including lookups by contract address and network ID. Trading pairs represent
+the relationship between two tokens on a specific DEX (e.g., ETH/USDC on Uniswap).
+
+Each pair is uniquely identified by its contract address and network combination.
+The module enforces data integrity by detecting duplicate pair entries.
+
+Typical usage:
+    from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
+
+    pair = getPairForAddressAndNetworkId(
+        conn,
+        pairAddress="0x1234...",
+        networkDbId=1
+    )
+    if pair:
+        print(f"Found pair: {pair['name']}")
 """
 import sys
 from typing import Any, Dict, Optional
@@ -12,8 +27,16 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
+# Database table and column names
+PAIRS_TABLE = "pairs"
+ADDRESS_COLUMN = "address"
+NETWORK_ID_COLUMN = "network_id"
+
 # Exit code for data integrity errors
 DATA_INTEGRITY_ERROR_CODE = 1
+
+# Expected number of results for unique pair lookup
+EXPECTED_UNIQUE_RESULT = 1
 
 
 def getPairForAddressAndNetworkId(
@@ -39,11 +62,16 @@ def getPairForAddressAndNetworkId(
     Raises:
         SystemExit: If multiple pairs are found with the same address
             and network (indicates data integrity issue)
+
+    Note:
+        This function exits the application if data integrity is violated
+        to prevent corrupt data from propagating through the system.
     """
+    # Build query using table/column constants
     query = (
-        f"SELECT * FROM pairs "
-        f"WHERE pairs.address = '{pairAddress}' "
-        f"AND pairs.network_id = {networkDbId}"
+        f"SELECT * FROM {PAIRS_TABLE} "
+        f"WHERE {PAIRS_TABLE}.{ADDRESS_COLUMN} = '{pairAddress}' "
+        f"AND {PAIRS_TABLE}.{NETWORK_ID_COLUMN} = {networkDbId}"
     )
 
     cursor = getCursor(dbConnection=dbConnection)
@@ -53,16 +81,23 @@ def getPairForAddressAndNetworkId(
         query=query
     )
 
-    pairResultsLen = len(pairResults)
+    result_count = len(pairResults)
 
-    if pairResultsLen > 1:
+    # Validate data integrity - should never have duplicate pairs
+    if result_count > EXPECTED_UNIQUE_RESULT:
         error_msg = (
-            f"Data integrity error: Multiple pairs found with "
-            f"address '{pairAddress}' on network ID {networkDbId}"
+            f"Data integrity error: Found {result_count} pairs with "
+            f"address '{pairAddress}' on network ID {networkDbId}. "
+            f"Expected at most {EXPECTED_UNIQUE_RESULT}."
         )
         logger.error(error_msg)
-        sys.exit(error_msg)
+        sys.exit(DATA_INTEGRITY_ERROR_CODE)
 
-    return pairResults[0] if pairResultsLen == 1 else None
+    # Return the pair if found, None otherwise
+    if result_count == EXPECTED_UNIQUE_RESULT:
+        logger.debug(f"Found pair with address {pairAddress[:10]}...")
+        return pairResults[0]
+
+    return None
 
 
