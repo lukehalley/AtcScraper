@@ -46,8 +46,18 @@ def getDictLength(dictionary: Dict[Any, Any]) -> int:
         dictionary: The dictionary to measure
 
     Returns:
-        Number of items in the dictionary
+        Number of items in the dictionary, or 0 if None is passed
+
+    Examples:
+        >>> getDictLength({'a': 1, 'b': 2})
+        2
+        >>> getDictLength({})
+        0
+        >>> getDictLength(None)
+        0
     """
+    if dictionary is None:
+        return 0
     return len(dictionary)
 
 

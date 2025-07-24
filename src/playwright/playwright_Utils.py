@@ -28,7 +28,14 @@ async def findAndCheckElement(page: Page, selector: str) -> Locator:
         selector: CSS selector for the element.
 
     Returns:
-        The first matching Locator element.
+        Locator: The first matching Locator element.
+
+    Raises:
+        TimeoutError: If element is not visible within PLAYWRIGHT_TIMEOUT_MS.
+
+    Example:
+        >>> button = await findAndCheckElement(page, 'button.submit')
+        >>> await button.click()
     """
     element = page.locator(selector).first
     await expect(element).to_be_visible(timeout=PLAYWRIGHT_TIMEOUT_MS)
@@ -42,6 +49,12 @@ async def waitForElementToGoAway(page: Page, selector: str) -> None:
     Args:
         page: The Playwright page object.
         selector: CSS selector for the element to wait for removal.
+
+    Raises:
+        TimeoutError: If element is still visible after PLAYWRIGHT_TIMEOUT_MS.
+
+    Example:
+        >>> await waitForElementToGoAway(page, '.loading-spinner')
     """
     element = page.locator(selector)
     await expect(element).not_to_be_visible(timeout=PLAYWRIGHT_TIMEOUT_MS)
@@ -83,7 +96,11 @@ async def newPage(browser: BrowserContext) -> Page:
         browser: The browser context to create the page in.
 
     Returns:
-        A new Page object with default timeout configured.
+        Page: A new Page object with default timeout configured.
+
+    Example:
+        >>> page = await newPage(browser)
+        >>> await page.goto('https://example.com')
     """
     page = await browser.new_page()
     page.set_default_timeout(timeout=PLAYWRIGHT_TIMEOUT_MS)
