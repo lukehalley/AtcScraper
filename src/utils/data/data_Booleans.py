@@ -5,13 +5,16 @@ Provides robust conversion functions that handle various string representations
 of boolean values (e.g., 'true', 'yes', '1', 'on').
 """
 from distutils.util import strtobool
-from typing import Union
+from typing import Optional, Union
 
 # Type alias for values that can be converted to boolean
-BoolConvertible = Union[str, bool]
+BoolConvertible = Union[str, bool, None]
+
+# Default return value for None/empty inputs
+DEFAULT_BOOL_VALUE = False
 
 
-def strToBool(value: BoolConvertible) -> bool:
+def strToBool(value: Optional[BoolConvertible]) -> bool:
     """
     Convert a string or boolean value to a boolean.
 

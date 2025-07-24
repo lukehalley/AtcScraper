@@ -113,6 +113,10 @@ async def openTimespan(page, timeToSelect: str) -> None:
     Args:
         page: Playwright page object
         timeToSelect: Shorthand for time range ('5M', '1H', '6H', '24H')
+
+    Example:
+        >>> await openTimespan(page, '24H')  # Select last 24 hours
+        >>> await openTimespan(page, '1H')   # Select last hour
     """
     text = TIMESPAN_LABELS.get(timeToSelect, DEFAULT_TIMESPAN)
     await page.locator(f'text={text}').first.click()
@@ -131,6 +135,11 @@ async def getAllRowsMetadata(page, networkName: str) -> List[str]:
 
     Returns:
         List[str]: List of pair contract addresses
+
+    Example:
+        >>> addresses = await getAllRowsMetadata(page, 'ethereum')
+        >>> print(addresses)
+        ['0x1234...abcd', '0x5678...efgh', ...]
     """
     selector = f"a[href^='/{networkName}/0x']"
     js_extract = "elements => elements.map(element => element.href)"
