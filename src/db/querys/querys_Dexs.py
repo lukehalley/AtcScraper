@@ -30,6 +30,11 @@ def getAllDexsForNetwork(dbConnection: Any, networkDbId: int) -> List[str]:
     Returns:
         List[str]: List of DEX names associated with the given network.
             Returns empty list if no DEXs found for the network.
+
+    Example:
+        >>> dexs = getAllDexsForNetwork(db_conn, network_id=1)
+        >>> print(dexs)
+        ['uniswap', 'sushiswap', 'curve']
     """
     query = (
         f"SELECT {DEX_NAME_COLUMN} "
