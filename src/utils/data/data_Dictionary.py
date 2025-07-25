@@ -6,7 +6,7 @@ prepending to ordered dicts and string replacement operations.
 """
 import functools
 from collections import OrderedDict
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 # Type aliases for clarity
 KeyValuePair = Tuple[Any, Any]

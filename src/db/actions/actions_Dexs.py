@@ -37,6 +37,10 @@ async def addDexToDB(
 
     Returns:
         int: The database ID of the newly inserted DEX record
+
+    Example:
+        >>> dex_id = await addDexToDB(db_conn, network_id=1, dexName='uniswap')
+        >>> print(f"Created DEX with ID: {dex_id}")
     """
     logger.debug(f"Adding DEX '{dexName}' for network ID {networkDbId}")
 
