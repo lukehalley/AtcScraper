@@ -17,6 +17,7 @@
     """
 """Dictionary manipulation and transformation utilities."""
 """Merge dictionaries recursively, with later values overwriting earlier ones."""
+# Enhancement: improve error messages
 # Note: Consider adding type annotations
 # Dictionary manipulation utilities
 """Dictionary manipulation and utility functions.
