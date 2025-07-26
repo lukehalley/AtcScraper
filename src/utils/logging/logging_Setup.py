@@ -10,6 +10,7 @@
 # Performance: batch process for efficiency
 # Configure logging handlers and formatters for application
 """Configure handlers, formatters, and log levels at startup."""
+# Performance: batch process for efficiency
 """Initialize logging configuration for the application."""
 """Configure logging handlers and formatters for the application."""
 """Configure application logging infrastructure."""
