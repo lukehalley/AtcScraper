@@ -67,6 +67,16 @@ async def addTokenToDB(
 
     Returns:
         int: The database ID of the newly inserted token, or 0 if already exists
+
+    Example:
+        >>> token_id = await addTokenToDB(
+        ...     dbConnection=conn,
+        ...     networkDbId=1,
+        ...     tokenName="Wrapped Ether",
+        ...     tokenSymbol="WETH",
+        ...     tokenAddress="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        ... )
+        >>> print(f"Created token with ID: {token_id}")
     """
     cursor = getCursor(dbConnection=dbConnection)
 
@@ -75,14 +85,14 @@ async def addTokenToDB(
     tokenSymbol = tokenSymbol
     tokenAddress = tokenAddress
 
-    keys = f"(network_id, name, symbol, address)"
+    keys = f"({TOKEN_COLUMNS})"
     selectStatement = f"(SELECT {networkDbId} AS network_id, '{tokenName}' AS name, '{tokenSymbol}' AS symbol, '{tokenAddress}' AS address)"
-    compareStatement = f"tokens.symbol = '{tokenSymbol}' AND tokens.network_id = {networkDbId}"
+    compareStatement = f"{TOKENS_TABLE}.symbol = '{tokenSymbol}' AND {TOKENS_TABLE}.network_id = {networkDbId}"
 
-    query = f"INSERT INTO tokens{keys} " \
+    query = f"INSERT INTO {TOKENS_TABLE}{keys} " \
             f"SELECT * FROM {selectStatement} AS tmp " \
             f"WHERE NOT EXISTS " \
-            f"(SELECT * FROM tokens WHERE {compareStatement}) " \
+            f"(SELECT * FROM {TOKENS_TABLE} WHERE {compareStatement}) " \
             f"LIMIT 1"
 
     executeWriteQuery(
@@ -110,11 +120,20 @@ def updateTokenByDbId(
 
     Returns:
         None
+
+    Example:
+        >>> # Update a token's contract address
+        >>> updateTokenByDbId(
+        ...     dbConnection=conn,
+        ...     tokenDbId=42,
+        ...     fieldToUpdate="address",
+        ...     fieldNewValue="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        ... )
     """
     query = (
-        f"UPDATE tokens "
+        f"UPDATE {TOKENS_TABLE} "
         f"SET {fieldToUpdate}='{fieldNewValue}' "
-        f"WHERE token_id={tokenDbId}"
+        f"WHERE {TOKEN_ID_COLUMN}={tokenDbId}"
     )
 
     cursor = getCursor(dbConnection=dbConnection)
@@ -139,11 +158,15 @@ def updateUnavailableTokens(dbConnection: Any) -> None:
 
     Returns:
         None
+
+    Example:
+        >>> # Clean up all tokens with placeholder addresses
+        >>> updateUnavailableTokens(dbConnection=conn)
     """
     query = (
-        "UPDATE tokens "
-        "SET address = NULL "
-        "WHERE address = 'None'"
+        f"UPDATE {TOKENS_TABLE} "
+        f"SET address = NULL "
+        f"WHERE address = '{ADDRESS_PLACEHOLDER}'"
     )
 
     cursor = getCursor(dbConnection=dbConnection)
