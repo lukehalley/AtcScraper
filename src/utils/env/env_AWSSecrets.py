@@ -3,11 +3,36 @@
 This module provides functions to access AWS Secrets Manager credentials
 that have been pre-loaded into environment variables. This allows the
 application to securely access database credentials without hardcoding them.
+
+The credentials are expected to be stored as a JSON string in the
+ATC_DB_Credentials environment variable. The JSON should contain keys
+for database connection parameters.
+
+Supported operations:
+    - Retrieve individual credential values by key
+    - Check if credentials are available
+    - Clear cached credentials for rotation
+
+Typical usage:
+    from src.utils.env.env_AWSSecrets import (
+        getAWSSecret,
+        hasCredentials,
+        clearCredentialsCache,
+        CREDENTIAL_USERNAME,
+        CREDENTIAL_PASSWORD
+    )
+
+    # Check if credentials are configured
+    if hasCredentials():
+        username = getAWSSecret(CREDENTIAL_USERNAME)
+        password = getAWSSecret(CREDENTIAL_PASSWORD)
+
+    # Clear cache after credential rotation
+    clearCredentialsCache()
 """
 import json
 import os
 from typing import Any, Optional, Dict
-# TODO: Implement automatic credential rotation for AWS secrets
 
 from src.utils.logging.logging_Setup import getProjectLogger
 
@@ -15,6 +40,13 @@ logger = getProjectLogger()
 
 # Environment variable containing AWS secrets JSON
 AWS_CREDENTIALS_ENV = "ATC_DB_Credentials"
+
+# Standard credential key names used in AWS Secrets Manager
+CREDENTIAL_USERNAME = "username"
+CREDENTIAL_PASSWORD = "password"
+CREDENTIAL_HOST = "host"
+CREDENTIAL_PORT = "port"
+CREDENTIAL_DATABASE = "dbname"
 
 # Cache for parsed credentials to avoid repeated JSON parsing
 _credentials_cache: Optional[Dict[str, Any]] = None
@@ -24,8 +56,15 @@ def _getCredentials() -> Optional[Dict[str, Any]]:
     """
     Get and cache the parsed credentials from environment variable.
 
+    This is an internal function that handles the JSON parsing and caching
+    of credentials. It should not be called directly; use getAWSSecret()
+    or hasCredentials() instead.
+
     Returns:
         Optional[Dict[str, Any]]: Parsed credentials dict or None if not set.
+
+    Raises:
+        json.JSONDecodeError: If the environment variable contains invalid JSON.
     """
     global _credentials_cache
 
@@ -39,10 +78,56 @@ def _getCredentials() -> Optional[Dict[str, Any]]:
 
     try:
         _credentials_cache = json.loads(credentials_json)
+        logger.debug("Successfully parsed AWS credentials from environment")
         return _credentials_cache
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse AWS credentials JSON: {e}")
         raise
+
+
+def clearCredentialsCache() -> None:
+    """
+    Clear the cached credentials to force a fresh read on next access.
+
+    This function should be called after credential rotation to ensure
+    the application picks up new credentials from the environment variable.
+    It does not affect the environment variable itself.
+
+    Returns:
+        None
+
+    Example:
+        >>> # After rotating credentials in AWS Secrets Manager
+        >>> clearCredentialsCache()
+        >>> # Next call to getAWSSecret() will re-read from environment
+        >>> new_password = getAWSSecret(CREDENTIAL_PASSWORD)
+    """
+    global _credentials_cache
+    _credentials_cache = None
+    logger.debug("Credentials cache cleared")
+
+
+def hasCredentials() -> bool:
+    """
+    Check if AWS credentials are available without retrieving specific values.
+
+    This is useful for conditional logic where you need to verify credentials
+    exist before attempting database connections.
+
+    Returns:
+        bool: True if credentials are configured and parseable, False otherwise.
+
+    Example:
+        >>> if hasCredentials():
+        ...     connect_to_database()
+        ... else:
+        ...     logger.error("Database credentials not configured")
+    """
+    try:
+        credentials = _getCredentials()
+        return credentials is not None
+    except json.JSONDecodeError:
+        return False
 
 
 def getAWSSecret(key: str) -> Optional[Any]:
@@ -53,15 +138,34 @@ def getAWSSecret(key: str) -> Optional[Any]:
     with database credentials (username, password, etc.) that was retrieved
     from AWS Secrets Manager.
 
+    Use the CREDENTIAL_* constants for standard database credential keys
+    to ensure consistency across the application.
+
     Args:
-        key: The key to look up in the credentials JSON (e.g., 'username', 'password').
+        key: The key to look up in the credentials JSON. Common keys include:
+            - CREDENTIAL_USERNAME: Database username
+            - CREDENTIAL_PASSWORD: Database password
+            - CREDENTIAL_HOST: Database host address
+            - CREDENTIAL_PORT: Database port number
+            - CREDENTIAL_DATABASE: Database name
 
     Returns:
         The value associated with the key, or None if credentials are not set.
+        The return type depends on how the value was stored in Secrets Manager
+        (string, number, etc.).
 
     Raises:
         json.JSONDecodeError: If the credentials string is not valid JSON.
         KeyError: If the specified key does not exist in the credentials.
+
+    Example:
+        >>> # Using credential constants for standard keys
+        >>> username = getAWSSecret(CREDENTIAL_USERNAME)
+        >>> password = getAWSSecret(CREDENTIAL_PASSWORD)
+        >>> host = getAWSSecret(CREDENTIAL_HOST)
+        >>>
+        >>> # Using string key for custom credential values
+        >>> custom_value = getAWSSecret("my_custom_key")
     """
     credentials = _getCredentials()
     if credentials is None:
