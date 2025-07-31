@@ -1,8 +1,38 @@
-"""
-Playwright utility functions for web scraping operations.
+"""Playwright utility functions for web scraping operations.
 
 This module provides helper functions for common Playwright operations
-including element finding, waiting, and page creation.
+including element finding, waiting, and page creation. All functions
+use a configurable timeout for consistent error handling across the
+scraping pipeline.
+
+Available functions:
+    - findAndCheckElement: Find element and wait for visibility
+    - waitForElementToGoAway: Wait for element to be removed from DOM
+    - getListItems: Extract text from all li elements in a container
+    - getAItems: Extract text from all anchor elements in a container
+    - newPage: Create a new browser page with configured timeout
+
+Configuration:
+    PLAYWRIGHT_TIMEOUT_SECS: Environment variable to set timeout in seconds.
+        Default is 30 seconds if not set.
+
+Typical usage:
+    from src.playwright.playwright_Utils import (
+        newPage,
+        findAndCheckElement,
+        waitForElementToGoAway
+    )
+
+    # Create page and navigate
+    page = await newPage(browser)
+    await page.goto('https://example.com')
+
+    # Wait for loading state to complete
+    await waitForElementToGoAway(page, '.loading-spinner')
+
+    # Find and interact with elements
+    button = await findAndCheckElement(page, 'button.submit')
+    await button.click()
 """
 import os
 from typing import List
