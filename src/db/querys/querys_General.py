@@ -52,7 +52,11 @@ def checkDbInitialised(dbConnection: Any) -> bool:
         query=query
     )
 
-    return tableResults[0]["tableCount"] >= REQUIRED_TABLE_COUNT
+    table_count = tableResults[0]["tableCount"]
+    is_initialized = table_count >= REQUIRED_TABLE_COUNT
+    logger.debug(f"Database init check: {table_count}/{REQUIRED_TABLE_COUNT} tables found")
+    return is_initialized
+
 
 def getRowByValue(
     dbConnection: Any,
