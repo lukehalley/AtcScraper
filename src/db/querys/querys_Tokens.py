@@ -46,16 +46,33 @@ def getTokensForChainWithNoAddress(
 
     Args:
         dbConnection: Active database connection object
-        networkDbId: Database ID of the network to query tokens for
+        networkDbId: Database ID of the network to query tokens for.
+            Must be a positive integer corresponding to a valid network.
 
     Returns:
-        List[str]: List of token symbols without addresses
+        List[str]: List of token symbols without addresses.
+            Returns an empty list if no tokens are found or if
+            the network has no tokens pending address resolution.
+
+    Raises:
+        ValueError: If networkDbId is not a positive integer.
 
     Example:
         >>> tokens = getTokensForChainWithNoAddress(conn, network_id=1)
         >>> print(tokens)
         ['PEPE', 'SHIB', 'DOGE']
+
+        >>> # Empty result when all tokens have addresses
+        >>> tokens = getTokensForChainWithNoAddress(conn, network_id=999)
+        >>> print(tokens)
+        []
     """
+    # Validate network ID is a positive integer
+    if not isinstance(networkDbId, int) or networkDbId <= 0:
+        raise ValueError(
+            f"networkDbId must be a positive integer, got: {networkDbId}"
+        )
+
     # Build query using table/column constants for maintainability
     query = (
         f"SELECT {SYMBOL_COLUMN} "
