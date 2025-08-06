@@ -3,6 +3,7 @@
 """Environment configuration and variable management utilities."""
 """Environment variable management and configuration loading."""
 """Environment variable handling and configuration management."""
+# Note: Consider adding type annotations
 """Environment configuration and variable management."""
 # Environment variable management and configuration loading from .env files
 # Load environment variables and validate required keys
