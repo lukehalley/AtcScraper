@@ -1,7 +1,20 @@
 """Database actions for DEX (Decentralized Exchange) operations.
 
 This module provides functions to add and manage DEX records in the database.
-Each DEX is associated with a specific blockchain network.
+Each DEX is associated with a specific blockchain network and represents
+a trading venue where token swaps can occur.
+
+DEX records store:
+    - Network association (which blockchain the DEX operates on)
+    - DEX name (e.g., 'uniswap', 'sushiswap', 'pancakeswap')
+    - Factory contract address (where new pairs are created)
+    - Router contract address (where swaps are executed)
+
+Typical usage:
+    from src.db.actions.actions_Dexs import addDexToDB
+
+    # Add a new DEX for Ethereum network
+    dex_id = await addDexToDB(db_conn, networkDbId=1, dexName='uniswap')
 """
 from typing import Any
 
@@ -16,6 +29,12 @@ DEXS_TABLE = "dexs"
 
 # Database columns for DEX table
 DEX_COLUMNS = "network_id, name, factory, router"
+
+# Minimum length for DEX name to be considered valid
+MIN_DEX_NAME_LENGTH = 1
+
+# Maximum length for DEX name based on database column constraints
+MAX_DEX_NAME_LENGTH = 100
 
 
 async def addDexToDB(
@@ -32,16 +51,42 @@ async def addDexToDB(
 
     Args:
         dbConnection: Active database connection object
-        networkDbId: Database ID of the network the DEX operates on
-        dexName: Name of the decentralized exchange (e.g., 'uniswap', 'sushiswap')
+        networkDbId: Database ID of the network the DEX operates on.
+            Must be a positive integer referencing an existing network.
+        dexName: Name of the decentralized exchange (e.g., 'uniswap', 'sushiswap').
+            Must be a non-empty string with length between 1 and 100 characters.
 
     Returns:
-        int: The database ID of the newly inserted DEX record
+        int: The database ID of the newly inserted DEX record.
+            Returns 0 if the DEX already exists (INSERT IGNORE behavior).
+
+    Raises:
+        ValueError: If networkDbId is not a positive integer.
+        ValueError: If dexName is empty or exceeds maximum length.
 
     Example:
         >>> dex_id = await addDexToDB(db_conn, network_id=1, dexName='uniswap')
         >>> print(f"Created DEX with ID: {dex_id}")
+
+    Note:
+        The INSERT IGNORE clause means duplicate DEX entries are silently
+        ignored rather than raising an error. Check the return value to
+        determine if a new record was actually created (ID > 0).
     """
+    # Validate network ID
+    if not isinstance(networkDbId, int) or networkDbId <= 0:
+        raise ValueError(
+            f"networkDbId must be a positive integer, got: {networkDbId}"
+        )
+
+    # Validate DEX name
+    if not dexName or len(dexName) < MIN_DEX_NAME_LENGTH:
+        raise ValueError("dexName cannot be empty")
+    if len(dexName) > MAX_DEX_NAME_LENGTH:
+        raise ValueError(
+            f"dexName exceeds maximum length of {MAX_DEX_NAME_LENGTH} characters"
+        )
+
     logger.debug(f"Adding DEX '{dexName}' for network ID {networkDbId}")
 
     cursor = getCursor(dbConnection=dbConnection)
