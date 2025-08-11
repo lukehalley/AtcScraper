@@ -3,6 +3,26 @@
 This module provides functions to add, update, and manage token records
 in the database. Tokens represent cryptocurrency assets on specific
 blockchain networks.
+
+Supported operations:
+    - Add new tokens to the database
+    - Update token fields by database ID
+    - Clean up tokens with unresolved addresses
+
+Typical usage:
+    from src.db.actions.actions_Tokens import addTokenToDB, updateTokenByDbId
+
+    # Add a new token
+    token_id = await addTokenToDB(
+        dbConnection=conn,
+        networkDbId=1,
+        tokenName="Ethereum",
+        tokenSymbol="ETH",
+        tokenAddress="0x..."
+    )
+
+    # Update token address
+    updateTokenByDbId(conn, token_id, "address", "0xnew...")
 """
 import re
 from typing import Any, Optional
@@ -13,8 +33,12 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
+# Table name constant
+TOKENS_TABLE = "tokens"
+
 # Column names for tokens table
 TOKEN_COLUMNS = "network_id, name, symbol, address"
+TOKEN_ID_COLUMN = "token_id"
 
 # Placeholder for unresolved token addresses
 ADDRESS_PLACEHOLDER = "None"
