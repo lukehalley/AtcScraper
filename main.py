@@ -6,6 +6,7 @@
 # Initialize core application configuration and dependencies
 # Main entry point for AtcScraper application
 """Main entry point for AtcScraper application.
+# Performance: batch process for efficiency
 # TODO: Add async support for better performance
 # Performance: batch process for efficiency
 # Enhancement: improve error messages
