@@ -4,10 +4,21 @@ This module provides functions to add, update, and manage token records
 in the database. Tokens represent cryptocurrency assets on specific
 blockchain networks.
 
+Token records include:
+    - Network association (which blockchain the token exists on)
+    - Token name (human-readable, e.g., "Ethereum")
+    - Token symbol (ticker, e.g., "ETH")
+    - Contract address (blockchain address for ERC-20 and similar tokens)
+
 Supported operations:
     - Add new tokens to the database
     - Update token fields by database ID
     - Clean up tokens with unresolved addresses
+
+Duplicate prevention:
+    Token uniqueness is enforced by the combination of symbol + network_id.
+    Attempting to add a token with an existing symbol on the same network
+    will return 0 and not create a duplicate entry.
 
 Typical usage:
     from src.db.actions.actions_Tokens import addTokenToDB, updateTokenByDbId
@@ -42,6 +53,15 @@ TOKEN_ID_COLUMN = "token_id"
 
 # Placeholder for unresolved token addresses
 ADDRESS_PLACEHOLDER = "None"
+
+# Regex pattern for sanitizing token names (alphanumeric and spaces only)
+TOKEN_NAME_SANITIZE_PATTERN = '[^A-Za-z0-9 ]+'
+
+# Empty string replacement for sanitization
+SANITIZE_REPLACEMENT = ''
+
+# Valid updatable fields for tokens table
+VALID_TOKEN_FIELDS = ('name', 'symbol', 'address', 'network_id')
 
 
 async def addTokenToDB(
@@ -80,10 +100,11 @@ async def addTokenToDB(
     """
     cursor = getCursor(dbConnection=dbConnection)
 
+    # Convert and sanitize input values
     networkDbId = int(networkDbId)
-    tokenName = re.sub('[^A-Za-z0-9 ]+', '', str(tokenName))
-    tokenSymbol = tokenSymbol
-    tokenAddress = tokenAddress
+    tokenName = re.sub(TOKEN_NAME_SANITIZE_PATTERN, SANITIZE_REPLACEMENT, str(tokenName))
+    tokenSymbol = str(tokenSymbol)
+    tokenAddress = str(tokenAddress) if tokenAddress else ADDRESS_PLACEHOLDER
 
     keys = f"({TOKEN_COLUMNS})"
     selectStatement = f"(SELECT {networkDbId} AS network_id, '{tokenName}' AS name, '{tokenSymbol}' AS symbol, '{tokenAddress}' AS address)"
