@@ -38,6 +38,12 @@ DATA_INTEGRITY_ERROR_CODE = 1
 # Expected number of results for unique pair lookup
 EXPECTED_UNIQUE_RESULT = 1
 
+# Minimum length for valid blockchain address (includes '0x' prefix)
+MIN_ADDRESS_LENGTH = 10
+
+# Standard Ethereum address length (42 chars: '0x' + 40 hex chars)
+STANDARD_ADDRESS_LENGTH = 42
+
 
 def getPairForAddressAndNetworkId(
     dbConnection: Any,
@@ -53,20 +59,48 @@ def getPairForAddressAndNetworkId(
 
     Args:
         dbConnection: Active database connection object
-        pairAddress: Blockchain contract address of the trading pair
-        networkDbId: Database ID of the network the pair belongs to
+        pairAddress: Blockchain contract address of the trading pair.
+            Should be a valid hex address starting with '0x'.
+        networkDbId: Database ID of the network the pair belongs to.
+            Must be a positive integer.
 
     Returns:
-        Dictionary containing pair data if found, None if not found
+        Optional[Dict[str, Any]]: Dictionary containing pair data if found.
+            Includes fields like 'name', 'address', 'token0', 'token1'.
+            Returns None if no matching pair is found.
 
     Raises:
+        ValueError: If pairAddress is empty or too short.
+        ValueError: If networkDbId is not a positive integer.
         SystemExit: If multiple pairs are found with the same address
-            and network (indicates data integrity issue)
+            and network (indicates data integrity issue).
+
+    Example:
+        >>> pair = getPairForAddressAndNetworkId(
+        ...     conn,
+        ...     pairAddress="0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852",
+        ...     networkDbId=1
+        ... )
+        >>> if pair:
+        ...     print(f"Found: {pair['name']}")
+        Found: ETH/USDT
 
     Note:
         This function exits the application if data integrity is violated
         to prevent corrupt data from propagating through the system.
     """
+    # Validate pair address
+    if not pairAddress or len(pairAddress) < MIN_ADDRESS_LENGTH:
+        raise ValueError(
+            f"pairAddress must be at least {MIN_ADDRESS_LENGTH} characters"
+        )
+
+    # Validate network ID
+    if not isinstance(networkDbId, int) or networkDbId <= 0:
+        raise ValueError(
+            f"networkDbId must be a positive integer, got: {networkDbId}"
+        )
+
     # Build query using table/column constants
     query = (
         f"SELECT * FROM {PAIRS_TABLE} "
