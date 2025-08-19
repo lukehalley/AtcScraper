@@ -3,6 +3,33 @@
 This module provides functions for creating and managing token pair entries
 in the database, including pair creation, market data recording, and
 table maintenance operations for the scraping application.
+
+Trading pairs represent the relationship between two tokens on a DEX:
+    - Primary token: The token being traded (e.g., PEPE)
+    - Secondary token: The quote token (e.g., WETH, USDC)
+
+Market data tracked for each pair includes:
+    - Ranking: Position in DexScreener's top pairs list
+    - Liquidity: Total liquidity locked in the pair contract
+    - Volume: 24-hour trading volume
+    - FDV: Fully diluted valuation
+
+Typical usage:
+    from src.db.actions.actions_Pairs import addTokenPairToDB
+
+    await addTokenPairToDB(
+        dbConnection=conn,
+        networkDbId=1,
+        dexDbId=1,
+        primaryTokenDbId=100,
+        secondaryTokenDbId=200,
+        pairName="PEPE/WETH",
+        pairAddress="0x...",
+        pairRanking=5,
+        pairLiquidity=1000000,
+        pairVolume=500000,
+        pairFdv=10000000
+    )
 """
 from typing import Any, Optional, Union
 
@@ -17,23 +44,43 @@ logger = getProjectLogger()
 PAIRS_TABLE = "pairs"
 MARKET_DATA_TABLE = "pair_market_data"
 
+# Default value for numeric fields when conversion fails
+DEFAULT_NUMERIC_VALUE = 0
 
-def _safe_int_conversion(value: Union[int, str, None], default: int = 0) -> int:
+
+def _safe_int_conversion(
+    value: Union[int, str, None],
+    default: int = DEFAULT_NUMERIC_VALUE
+) -> int:
     """
     Safely convert a value to integer with a default fallback.
-    
+
+    This utility function handles the various formats that numeric data
+    may arrive in from the DexScreener API, including strings, integers,
+    floats, and None values.
+
     Args:
-        value: The value to convert (can be int, str, or None)
-        default: Default value to return if conversion fails
-    
+        value: The value to convert (can be int, str, float, or None)
+        default: Default value to return if conversion fails.
+            Defaults to DEFAULT_NUMERIC_VALUE (0).
+
     Returns:
-        Integer value or default if conversion fails
+        int: Integer value if conversion succeeds, default otherwise.
+
+    Example:
+        >>> _safe_int_conversion("1000000")
+        1000000
+        >>> _safe_int_conversion(None)
+        0
+        >>> _safe_int_conversion("invalid", default=-1)
+        -1
     """
     if value is None:
         return default
     try:
         return int(value)
     except (ValueError, TypeError):
+        logger.debug(f"Failed to convert '{value}' to int, using default: {default}")
         return default
 
 
