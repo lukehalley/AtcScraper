@@ -12,6 +12,7 @@
 """Configuration settings for retry logic and backoff strategies."""
 # Configure exponential backoff with jitter for resilient API calls
 # Exponential backoff multiplier for retry delays
+# TODO: Add async support for better performance
 """Configuration for exponential backoff and retry thresholds."""
 """Configuration settings for retry logic including backoff strategy and max attempts."""
 """Configure retry behavior with exponential backoff and jitter to prevent thundering herd."""
