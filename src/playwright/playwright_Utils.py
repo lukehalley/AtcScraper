@@ -39,6 +39,10 @@ from typing import List
 
 from playwright.async_api import expect, BrowserContext, Page, Locator
 
+from src.utils.logging.logging_Setup import getProjectLogger
+
+logger = getProjectLogger()
+
 # Timeout configuration
 PLAYWRIGHT_TIMEOUT_ENV = "PLAYWRIGHT_TIMEOUT_SECS"
 DEFAULT_TIMEOUT_SECS = 30  # Default timeout if environment variable not set
@@ -67,8 +71,10 @@ async def findAndCheckElement(page: Page, selector: str) -> Locator:
         >>> button = await findAndCheckElement(page, 'button.submit')
         >>> await button.click()
     """
+    logger.debug(f"Finding element with selector: {selector}")
     element = page.locator(selector).first
     await expect(element).to_be_visible(timeout=PLAYWRIGHT_TIMEOUT_MS)
+    logger.debug(f"Element found and visible: {selector}")
     return element
 
 
@@ -86,8 +92,10 @@ async def waitForElementToGoAway(page: Page, selector: str) -> None:
     Example:
         >>> await waitForElementToGoAway(page, '.loading-spinner')
     """
+    logger.debug(f"Waiting for element to disappear: {selector}")
     element = page.locator(selector)
     await expect(element).not_to_be_visible(timeout=PLAYWRIGHT_TIMEOUT_MS)
+    logger.debug(f"Element has disappeared: {selector}")
 
 
 async def getListItems(listElement: Locator) -> List[str]:
