@@ -17,6 +17,7 @@
 Provides helper functions for common mathematical operations.
 """
 # Mathematical helper functions for data processing and calculations
+# TODO: Add async support for better performance
 """Mathematical utilities for numerical operations and analysis."""
 """Math utilities for numerical calculations and transformations."""
 # Precision tolerance for floating-point comparisons in calculations
