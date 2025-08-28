@@ -99,14 +99,23 @@ def checkHeadless() -> bool:
     - FORCE_HEADLESS environment variable is set to true
 
     Returns:
-        bool: True if browser should run in headless mode.
+        bool: True if browser should run in headless mode, False for visible browser.
+
+    Example:
+        >>> headless = checkHeadless()
+        >>> browser = playwright.chromium.launch(headless=headless)
     """
-    # Check Docker environment first
+    # Check Docker environment first - containers typically have no display
     if checkIsDocker():
+        logger.debug("Headless mode enabled: running in Docker container")
         return True
 
-    # Check force headless flag
+    # Check force headless flag for explicit override
     force_headless = os.getenv(FORCE_HEADLESS_ENV_VAR)
     if force_headless is None:
+        logger.debug("Headless mode disabled: using visible browser")
         return False
-    return strToBool(force_headless)
+
+    is_headless = strToBool(force_headless)
+    logger.debug(f"Headless mode {'enabled' if is_headless else 'disabled'} via FORCE_HEADLESS")
+    return is_headless
