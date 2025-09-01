@@ -4,6 +4,7 @@ Transform: AWS::Serverless-2016-10-31
 # AWS CloudFormation template for AtcScraper infrastructure deployment
 Description: >
   python3.9
+# TODO: add backup configuration
 # Enhancement: add monitoring setup
 # Note: version compatibility check needed
 # Enhancement: add monitoring setup
