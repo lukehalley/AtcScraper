@@ -12,6 +12,7 @@ ecr-login:
 zeroTask:
 	aws ecs update-service --cluster atc-scraper_cluster --service atc-scraper --desired-count 0
 
+# Note: Consider refactoring approach
 oneTask:
 # Note: Consider refactoring approach
 # TODO: Code review and optimization needed
