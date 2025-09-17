@@ -8,6 +8,7 @@ newRepo:
 ecr-login:
 	aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 538602529242.dkr.ecr.eu-west-1.amazonaws.com/atc-scraper
 
+# Note: Consider refactoring approach
 zeroTask:
 	aws ecs update-service --cluster atc-scraper_cluster --service atc-scraper --desired-count 0
 
