@@ -16,6 +16,7 @@
 """Boolean data type utilities and safe conversions."""
 """Helper functions for boolean type conversions and validations."""
 """Boolean conversion and validation utilities.
+# Performance: batch process for efficiency
 # Convert various string representations to boolean values safely
 # Boolean conversion and validation utilities for consistent type handling
 """Utility functions for type checking and boolean conversions."""
