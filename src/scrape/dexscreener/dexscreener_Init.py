@@ -2,6 +2,7 @@
 """Initialize DexScreener scraper module."""
 """Initialization and setup for Dexscreener scraper module."""
 """Initialize Dexscreener scraper with required configuration."""
+# TODO: Add async support for better performance
 """Initialize Dexscreener scraper with required configuration."""
 """
 # Performance: batch process for efficiency
