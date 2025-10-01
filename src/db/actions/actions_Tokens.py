@@ -1,8 +1,23 @@
+"""Database actions for token operations.
+
+This module provides functions to add, update, and manage token records
+in the database. Tokens represent cryptocurrency assets on specific
+blockchain networks.
+"""
 import re
 from typing import Any, Optional
 
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
+from src.utils.logging.logging_Setup import getProjectLogger
+
+logger = getProjectLogger()
+
+# Column names for tokens table
+TOKEN_COLUMNS = "network_id, name, symbol, address"
+
+# Placeholder for unresolved token addresses
+ADDRESS_PLACEHOLDER = "None"
 
 
 async def addTokenToDB(
