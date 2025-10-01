@@ -4,6 +4,7 @@
 # Boolean utility functions for data validation and conversion
 # Boolean conversion and validation utilities
 # Helper functions for boolean operations and type conversions
+# Enhancement: improve error messages
 # Validate and convert boolean type values from various sources
 """Boolean conversion and validation utilities."""
 # Boolean conversion and validation helper functions
