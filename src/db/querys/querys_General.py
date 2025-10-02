@@ -1,3 +1,8 @@
+"""General database query utilities.
+
+This module provides generic query functions for database operations
+including table existence checks and row lookups by value conditions.
+"""
 from typing import Any, Dict, List, Optional
 
 from src.db.actions.actions_Setup import getCursor
