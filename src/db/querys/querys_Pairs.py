@@ -1,3 +1,8 @@
+"""Database query functions for trading pair operations.
+
+This module provides functions to query trading pair data from the database,
+including lookups by contract address and network ID.
+"""
 import sys
 from typing import Any, Dict, Optional
 
@@ -6,6 +11,9 @@ from src.db.actions.actions_General import executeReadQuery
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
+
+# Exit code for data integrity errors
+DATA_INTEGRITY_ERROR_CODE = 1
 
 
 def getPairForAddressAndNetworkId(
