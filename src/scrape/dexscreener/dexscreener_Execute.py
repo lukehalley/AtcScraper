@@ -28,8 +28,34 @@ from src.utils.tasks.task_AyySync import gatherWithConcurrency, getmaxConcurrenc
 logger = getProjectLogger()
 lazyMode = strToBool(os.environ.get("LAZY_MODE"))
 
-# Function which runs the scraping of Dexscreener
+# Browser viewport dimensions for consistent rendering
+BROWSER_VIEWPORT_WIDTH = 1920
+BROWSER_VIEWPORT_HEIGHT = 1080
+
+
 async def scrapeDexScreener():
+    """
+    Main orchestration function for scraping Dexscreener cryptocurrency data.
+
+    This function coordinates the complete scraping workflow:
+    1. Initializes Playwright browser with configured viewport and user agent
+    2. Validates Dexscreener page has loaded correctly
+    3. Discovers all available blockchain networks
+    4. Enumerates DEXs for each network
+    5. Collects token pair data sorted by liquidity
+    6. Stores all data in MySQL database
+
+    The function uses async concurrency controls to manage multiple
+    scraping tasks efficiently while respecting rate limits.
+
+    Returns:
+        Dict[str, Dict[str, List]]: Nested dictionary containing scraped data
+            organized by network -> DEX -> list of token pairs.
+            Returns None if no networks were successfully scraped.
+
+    Raises:
+        SystemExit: If no networks could be scraped from Dexscreener.
+    """
 
     # Log setup message
     printSeparator()
@@ -58,8 +84,8 @@ async def scrapeDexScreener():
             headless=runHeadless,
             user_data_dir=f"{Path.home()}/.config/chromium",
             viewport={
-                "width": 1920,
-                "height": 1080
+                "width": BROWSER_VIEWPORT_WIDTH,
+                "height": BROWSER_VIEWPORT_HEIGHT
             },
             user_agent=fakeUserAgent
         )
