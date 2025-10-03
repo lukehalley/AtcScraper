@@ -1,9 +1,20 @@
+"""General database action utilities.
+
+This module provides core database operation functions including query execution
+for both read and write operations, and SQL script file execution.
+"""
 from typing import Any, List, Dict, Optional
 
 from mysql.connector import OperationalError
 from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
+
+# Default encoding for SQL file reading
+SQL_FILE_ENCODING = "utf-8"
+
+# Delimiter used to split SQL commands in script files
+SQL_COMMAND_DELIMITER = ";"
 
 
 def executeReadQuery(cursor: Any, query: str) -> List[Dict[str, Any]]:
