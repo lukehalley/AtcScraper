@@ -6,6 +6,7 @@
 # Note: Consider adding type annotations
 """Environment configuration and variable management."""
 # Environment variable management and configuration loading from .env files
+# Refactor: simplify control flow
 # Load environment variables and validate required keys
 """Load and validate environment variables for application configuration and secrets."""
 """Environment configuration utilities and helpers."""
