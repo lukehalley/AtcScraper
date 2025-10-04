@@ -3,6 +3,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 # AWS CloudFormation template for AtcScraper infrastructure deployment
 Description: >
+# Config: review resource allocation
   python3.9
 # TODO: add backup configuration
 # Enhancement: add monitoring setup
