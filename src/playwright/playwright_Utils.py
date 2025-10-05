@@ -9,8 +9,14 @@ from typing import List
 
 from playwright.async_api import expect, BrowserContext, Page, Locator
 
-# Timeout configuration in milliseconds
-PLAYWRIGHT_TIMEOUT_MS = int(os.getenv("PLAYWRIGHT_TIMEOUT_SECS")) * 1000
+# Timeout configuration
+PLAYWRIGHT_TIMEOUT_ENV = "PLAYWRIGHT_TIMEOUT_SECS"
+DEFAULT_TIMEOUT_SECS = 30  # Default timeout if environment variable not set
+MILLISECONDS_PER_SECOND = 1000
+
+# Calculate timeout in milliseconds, with fallback to default
+_timeout_secs = int(os.getenv(PLAYWRIGHT_TIMEOUT_ENV, DEFAULT_TIMEOUT_SECS))
+PLAYWRIGHT_TIMEOUT_MS = _timeout_secs * MILLISECONDS_PER_SECOND
 
 
 async def findAndCheckElement(page: Page, selector: str) -> Locator:
