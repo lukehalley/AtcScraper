@@ -42,7 +42,9 @@ def getAllNetworks(dbConnection: Any) -> List[str]:
         query=query
     )
 
-    return [network[NETWORK_NAME_COLUMN] for network in allNetworksDict]
+    network_names = [network[NETWORK_NAME_COLUMN] for network in allNetworksDict]
+    logger.debug(f"Retrieved {len(network_names)} networks from database")
+    return network_names
 
 
 def getNetworkDbIdByName(dbConnection: Any, networkName: str) -> Optional[int]:
