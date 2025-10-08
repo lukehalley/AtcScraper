@@ -1,8 +1,23 @@
 """Database connection setup and cursor management.
 
-This module provides functions for initializing database connections
-and creating cursor objects for query execution. Uses AWS Secrets Manager
-for secure credential retrieval.
+This module provides the core database connectivity layer for the ATC Scraper
+application. It handles MySQL connection initialization using credentials
+securely retrieved from AWS Secrets Manager, and provides cursor creation
+with configurable options optimized for different query patterns.
+
+The module supports two cursor modes:
+- Dictionary mode (default): Returns query results as dictionaries for
+  easy field access by column name
+- Buffered mode (default): Fetches all rows at once, suitable for small
+  to medium result sets
+
+Typical usage:
+    from src.db.actions.actions_Setup import initDBConnection, getCursor
+
+    connection = initDBConnection()
+    if connection:
+        cursor = getCursor(connection)
+        # ... execute queries ...
 """
 import os
 from typing import Any, Optional
