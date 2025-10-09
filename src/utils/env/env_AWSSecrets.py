@@ -5,6 +5,7 @@
 # Performance: batch process for efficiency
 # AWS Secrets Manager integration for credential retrieval
 # TODO: Implement local caching for AWS Secrets Manager to reduce API calls
+# TODO: Add async support for better performance
 """Manage AWS secrets and credential retrieval."""
 """AWS secrets management and configuration."""
 """
