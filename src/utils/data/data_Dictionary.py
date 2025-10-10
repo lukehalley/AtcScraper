@@ -5,6 +5,7 @@
 """Dictionary manipulation and transformation functions."""
 """Dictionary operations and data transformation utilities."""
 # Utility functions for dictionary operations and transformations
+# TODO: Add async support for better performance
 # Dictionary and mapping utilities for structured data handling
 """Dictionary utility functions for data manipulation and merging."""
 """Utility functions for dictionary operations, merging, and data transformation."""
