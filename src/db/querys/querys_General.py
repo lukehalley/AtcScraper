@@ -12,8 +12,15 @@ from src.utils.logging.logging_Setup import getProjectLogger
 logger = getProjectLogger()
 
 # Required tables for database initialization check
+# These tables form the core data model for the ATC scraper:
+# - dexs: Decentralized exchanges (Uniswap, SushiSwap, etc.)
+# - pairs: Trading pairs (ETH/USDC, BTC/ETH, etc.)
+# - tokens: Individual cryptocurrency tokens
+# - networks: Blockchain networks (Ethereum, Polygon, BSC, etc.)
 REQUIRED_TABLES = ('dexs', 'pairs', 'tokens', 'networks')
 REQUIRED_TABLE_COUNT = len(REQUIRED_TABLES)
+
+# Database schema name - all ATC tables reside in this schema
 DATABASE_SCHEMA = 'atc'
 
 
@@ -68,9 +75,12 @@ def getRowByValue(
     """
     cursor = getCursor(dbConnection=dbConnection)
 
-    # Build WHERE clause from conditions
+    # Build WHERE clause from conditions list
+    # Each condition dict is expected to have a single key-value pair
+    # Multiple conditions are joined with AND for precise matching
     where_clauses = []
     for condition in conditions:
+        # Extract the single key-value pair from each condition dict
         columnName = list(condition.keys())[0]
         rowValue = condition[columnName]
         where_clauses.append(f"{columnName}='{rowValue}'")
