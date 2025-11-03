@@ -46,3 +46,9 @@ def getMaxConcurrency() -> int:
         Maximum concurrency limit as an integer.
     """
     return int(os.getenv(MAX_CONCURRENCY_ENV, DEFAULT_MAX_CONCURRENCY))
+
+
+# Alias for backwards compatibility
+def getmaxConcurrency() -> int:
+    """Deprecated: Use getMaxConcurrency instead."""
+    return getMaxConcurrency()
