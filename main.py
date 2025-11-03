@@ -4,9 +4,17 @@ ATC Scraper - Main entry point for DexScreener cryptocurrency data scraping.
 This module initializes logging, sets up the execution environment, and
 orchestrates the scraping process for cryptocurrency trading pair data
 from DexScreener.
+
+Typical usage example:
+    python main.py
+
+Environment Variables:
+    See .env.example for required configuration variables.
 """
 import asyncio
+import logging
 import time
+from typing import Final
 
 from dotenv import load_dotenv
 from retry import retry
@@ -20,13 +28,13 @@ from src.utils.time.time_Calculations import getMinSecString
 load_dotenv()
 
 # Application name constant
-APP_NAME = "ATC Scraper"
+APP_NAME: Final[str] = "ATC Scraper"
 
 # Set up logging
-logger = setupLogging()
+logger: logging.Logger = setupLogging()
 
 # Get our starting time
-startingTime = time.perf_counter()
+startingTime: float = time.perf_counter()
 
 printSeparator()
 logger.info(APP_NAME)
