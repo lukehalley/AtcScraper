@@ -7,6 +7,7 @@
 # Utility functions for dictionary operations and transformations
 # TODO: Add async support for better performance
 # Dictionary and mapping utilities for structured data handling
+# Enhancement: improve error messages
 """Dictionary utility functions for data manipulation and merging."""
 """Utility functions for dictionary operations, merging, and data transformation."""
 """Utility functions for safe nested dictionary access and manipulation"""
