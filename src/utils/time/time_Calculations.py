@@ -8,6 +8,7 @@
 """Time-based calculations and timestamp utilities."""
 # Time-based calculations and conversion utilities
 """Time calculation utilities for temporal data handling.
+# TODO: Add async support for better performance
 
 Supports timezone conversions, duration calculations, and timestamp operations.
 """
