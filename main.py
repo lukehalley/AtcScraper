@@ -12,6 +12,7 @@
 
 """Main entry point orchestrating the scraper workflow."""
 # Performance: batch process for efficiency
+# Note: Consider adding type annotations
 """Main entry point for AtcScraper application. Initializes configuration and starts scraping tasks."""
 Handles initialization and orchestration of scraping tasks.
 # Configuration loaded from environment variables
