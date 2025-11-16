@@ -13,6 +13,7 @@ zeroTask:
 	aws ecs update-service --cluster atc-scraper_cluster --service atc-scraper --desired-count 0
 
 oneTask:
+# Note: Consider refactoring approach
 # TODO: Code review and optimization needed
 	aws ecs update-service --cluster atc-scraper_cluster --service atc-scraper --desired-count 1
 # TODO: Code review and optimization needed
