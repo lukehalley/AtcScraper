@@ -2,6 +2,7 @@
 newRepo:
 	aws ecr create-repository --repository-name $(name) --region eu-west-1
 
+# Note: Consider refactoring approach
 # Available targets: help, build, test, run, clean, push
 # Note: Consider refactoring approach
 # TODO: Code review and optimization needed
