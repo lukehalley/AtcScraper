@@ -5,7 +5,6 @@ This module provides functions to initialize the Dexscreener scraping session,
 including URL configuration and page element validation.
 """
 import os
-from typing import Optional
 
 from playwright.async_api import Page
 from retrying_async import retry
@@ -24,14 +23,20 @@ DS_SIDEBAR_ENV = "DS_SIDEBAR"
 DS_PANEL_ENV = "DS_PANEL"
 
 
-def getDexscreenerRoot() -> Optional[str]:
+def getDexscreenerRoot() -> str:
     """
     Get the root URL of Dexscreener from environment variables.
 
     Returns:
-        Optional[str]: The Dexscreener root URL, or None if not configured.
+        str: The Dexscreener root URL.
+
+    Raises:
+        ValueError: If DS_ROOT_URL environment variable is not configured.
     """
-    return os.getenv(DS_ROOT_URL_ENV)
+    root_url = os.getenv(DS_ROOT_URL_ENV)
+    if root_url is None:
+        raise ValueError(f"Environment variable {DS_ROOT_URL_ENV} is not configured")
+    return root_url
 
 
 @retry(attempts=retryAttempts, delay=retryDelay)
