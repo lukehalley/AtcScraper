@@ -1,72 +1,139 @@
+"""Utility functions for Dexscreener data processing.
+
+This module provides helper functions for cleaning and transforming
+scraped data from Dexscreener, including text sanitization and
+number format conversion.
+"""
 import re
 from ast import literal_eval
+from typing import List, Union
 
-# Remove any illegal characters from the raw HTML we scrape
-# when getting the rows from the token lists for a dex
-def removeIllegalCharactersFromElements(elementList):
+from src.utils.logging.logging_Setup import getProjectLogger
+
+logger = getProjectLogger()
+
+# Characters to remove from scraped HTML elements
+ILLEGAL_CHARACTERS = ["#", "$", "%", "/", ",", "-", "<", ">"]
+
+# Number magnitude shorthands and their multipliers
+NUMBER_SHORTHANDS = {
+    'K': 1000,
+    'M': 1000000,
+    'B': 1000000000
+}
+
+# Default value for failed number conversions
+DEFAULT_NUMBER_VALUE = "0.0"
+
+
+def removeIllegalCharactersFromElements(elementList: List[str]) -> List[str]:
+    """
+    Remove illegal characters from a list of scraped HTML elements.
+
+    Cleans the raw text content extracted from token list rows by removing
+    special characters that interfere with data parsing.
+
+    Args:
+        elementList: List of raw text strings from scraped HTML
+
+    Returns:
+        List[str]: Cleaned strings with illegal characters removed
+    """
     cleanList = []
-    charsToRemove = ["#", "$", "%", "/", ",", "-", "<", ">"]
     for el in elementList:
-        for c in charsToRemove:
-            el = el.replace(c, "")
+        for char in ILLEGAL_CHARACTERS:
+            el = el.replace(char, "")
         cleanList.append(el)
     return cleanList
 
-# Turn 1L, 13M, 211B into ints
-def replaceNumberShorthands(text):
 
-    # Convert dict
-    numberShorthands = {
-        'K': 1000,
-        'M': 1000000,
-        'B': 1000000000
-    }
+def replaceNumberShorthands(text: str) -> str:
+    """
+    Convert shorthand number notation to full numeric strings.
 
-    # Check if the string has this symbol
-    hasSymbol = any(n in text for n in numberShorthands.keys())
+    Transforms numbers with K/M/B suffixes (e.g., '1.5M', '200K', '3B')
+    into their full numeric representation as strings.
 
-    # If it does, turn it back into a number
+    Args:
+        text: String potentially containing shorthand notation
+
+    Returns:
+        str: Full numeric string or original text if no shorthand found
+    """
+    # Check if the string has a magnitude symbol
+    hasSymbol = any(n in text for n in NUMBER_SHORTHANDS.keys())
+
     if hasSymbol:
-
         num, magnitude = text[:-1], text[-1]
         num = num.replace(" ", "")
         num = re.sub('[^0-9.]', '', replaceNumberShorthands(num))
 
         try:
-            finalNum = str(float(num) * numberShorthands[magnitude])
-        except Exception:
-            finalNum = "0.0"
+            finalNum = str(float(num) * NUMBER_SHORTHANDS[magnitude])
+        except (ValueError, KeyError) as e:
+            logger.debug(f"Number conversion failed for '{text}': {e}")
+            finalNum = DEFAULT_NUMBER_VALUE
         return finalNum
     else:
         return text
 
-# Automatically convert a string into its normal format
-def smartEval(text):
+
+def smartEval(text: str) -> Union[int, float, str]:
+    """
+    Safely evaluate a string to its Python literal type.
+
+    Attempts to convert string representations of numbers, lists,
+    or other literals to their native Python types.
+
+    Args:
+        text: String to evaluate
+
+    Returns:
+        The evaluated Python literal, or original string if evaluation fails
+    """
     try:
         return literal_eval(text)
-    except Exception:
+    except (ValueError, SyntaxError):
         return text
 
-# Open the timespan menu on the token list page and click the time we want
-async def openTimespan(page, timeToSelect):
+# Timespan display text mapping
+TIMESPAN_LABELS = {
+    "5M": "Last 5 minutes",
+    "1H": "Last hour",
+    "6H": "Last 6 hours",
+    "24H": "Last 24 hours"
+}
+DEFAULT_TIMESPAN = "Last 24 hours"
 
-    if timeToSelect == "5M":
-        text="Last 5 minutes"
 
-    elif timeToSelect == "1H":
-        text="Last hour"
+async def openTimespan(page, timeToSelect: str) -> None:
+    """
+    Open the timespan filter menu and select a time range.
 
-    elif timeToSelect == "6H":
-        text="Last 6 hours"
-    else:
-        text="Last 24 hours"
-
+    Args:
+        page: Playwright page object
+        timeToSelect: Shorthand for time range ('5M', '1H', '6H', '24H')
+    """
+    text = TIMESPAN_LABELS.get(timeToSelect, DEFAULT_TIMESPAN)
     await page.locator(f'text={text}').first.click()
 
-# Get the address of the pair, primary and secondary token as well as the network explorer url
-async def getAllRowsMetadata(page, networkName):
 
-    hrefs = await page.eval_on_selector_all(f"a[href^='/{networkName}/0x']", "elements => elements.map(element => element.href)")
-    pairAddresses = [item.split("/")[-1] for item in hrefs]
+async def getAllRowsMetadata(page, networkName: str) -> List[str]:
+    """
+    Extract pair contract addresses from all token rows on the page.
 
-    return pairAddresses
+    Finds all anchor elements linking to pair pages and extracts the
+    contract addresses from their href attributes.
+
+    Args:
+        page: Playwright page object
+        networkName: Name of the blockchain network (e.g., 'ethereum')
+
+    Returns:
+        List[str]: List of pair contract addresses
+    """
+    selector = f"a[href^='/{networkName}/0x']"
+    js_extract = "elements => elements.map(element => element.href)"
+
+    hrefs = await page.eval_on_selector_all(selector, js_extract)
+    return [item.split("/")[-1] for item in hrefs]
