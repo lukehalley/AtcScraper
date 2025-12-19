@@ -1,5 +1,13 @@
-"""
-Database administration operations for creating, dropping, and selecting databases.
+"""Database administration operations for creating, dropping, and selecting databases.
+
+This module provides functions for database lifecycle management operations
+including creating new databases, dropping existing ones, and switching
+the active database context. These are typically used during initial setup
+or testing scenarios.
+
+Warning:
+    Some operations in this module (dropDatabase) are destructive
+    and cannot be undone. Use with caution in production environments.
 """
 from typing import Any
 
@@ -21,6 +29,8 @@ def createDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> N
         dbConnection: Active database connection object
         databaseName: Name of the database to create (default: 'atc')
     """
+    logger.info(f"Creating database '{databaseName}' if it doesn't exist")
+
     cursor = getCursor(dbConnection=dbConnection)
 
     query = f"CREATE DATABASE IF NOT EXISTS {databaseName}"
@@ -30,6 +40,8 @@ def createDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> N
         cursor=cursor,
         query=query
     )
+
+    logger.debug(f"Database '{databaseName}' creation command executed successfully")
 
 
 def dropDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None:
@@ -43,6 +55,8 @@ def dropDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> Non
     Warning:
         This operation is destructive and cannot be undone.
     """
+    logger.warning(f"Dropping database '{databaseName}' - this operation is irreversible")
+
     cursor = getCursor(dbConnection=dbConnection)
 
     query = f"DROP DATABASE IF EXISTS {databaseName}"
@@ -53,6 +67,8 @@ def dropDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> Non
         query=query
     )
 
+    logger.info(f"Database '{databaseName}' has been dropped")
+
 
 def useDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None:
     """
@@ -62,6 +78,8 @@ def useDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None
         dbConnection: Active database connection object
         databaseName: Name of the database to use (default: 'atc')
     """
+    logger.debug(f"Switching to database '{databaseName}'")
+
     cursor = getCursor(dbConnection=dbConnection)
 
     query = f"USE {databaseName}"
@@ -71,3 +89,5 @@ def useDatabase(dbConnection: Any, databaseName: str = DEFAULT_DATABASE) -> None
         cursor=cursor,
         query=query
     )
+
+    logger.debug(f"Now using database '{databaseName}'")

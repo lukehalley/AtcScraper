@@ -1,3 +1,9 @@
+"""Database connection setup and cursor management.
+
+This module provides functions for initializing database connections
+and creating cursor objects for query execution. Uses AWS Secrets Manager
+for secure credential retrieval.
+"""
 import os
 from typing import Any, Optional
 
