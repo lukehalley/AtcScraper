@@ -1,5 +1,15 @@
+"""Retry configuration settings for async operations.
+
+This module provides centralized configuration for retry behavior
+used throughout the scraping application. Settings can be customized
+via environment variables to adjust retry attempts and delays.
+"""
 import os
 from typing import Tuple
+
+from src.utils.logging.logging_Setup import getProjectLogger
+
+logger = getProjectLogger()
 
 # Environment variable names for retry configuration
 RETRY_ATTEMPTS_ENV = "RETRY_ATTEMPTS"
@@ -25,8 +35,14 @@ def getRetryParameters() -> Tuple[int, int]:
 
     Raises:
         ValueError: If environment variables contain non-integer values.
+
+    Example:
+        >>> attempts, delay = getRetryParameters()
+        >>> print(f"Will retry {attempts} times with {delay}s delay")
     """
     retryAttempts = int(os.getenv(RETRY_ATTEMPTS_ENV, DEFAULT_RETRY_ATTEMPTS))
     retryDelay = int(os.getenv(RETRY_DELAY_ENV, DEFAULT_RETRY_DELAY))
+
+    logger.debug(f"Retry config: {retryAttempts} attempts, {retryDelay}s delay")
 
     return retryAttempts, retryDelay
