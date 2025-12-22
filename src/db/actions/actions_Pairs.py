@@ -1,7 +1,21 @@
+"""Database actions for managing trading pair records.
+
+This module provides functions for creating and managing token pair entries
+in the database, including pair creation, market data recording, and
+table maintenance operations for the scraping application.
+"""
 from typing import Any, Optional, Union
+
 from src.db.actions.actions_Setup import getCursor
 from src.db.actions.actions_General import executeWriteQuery
 from src.db.querys.querys_Pairs import getPairForAddressAndNetworkId
+from src.utils.logging.logging_Setup import getProjectLogger
+
+logger = getProjectLogger()
+
+# Table names
+PAIRS_TABLE = "pairs"
+MARKET_DATA_TABLE = "pair_market_data"
 
 
 def _safe_int_conversion(value: Union[int, str, None], default: int = 0) -> int:
@@ -200,23 +214,27 @@ async def addPairRankToDB(
 def clearPairsRankingTable(dbConnection: Any) -> Any:
     """
     Clear all records from the pair_market_data table.
-    
+
     This function removes all market data entries, typically used before
     refreshing the data with updated rankings and metrics from DexScreener.
-    
+
     Args:
         dbConnection: Active database connection object
-    
+
     Returns:
         Result of the DELETE query execution
     """
+    logger.info(f"Clearing all records from {MARKET_DATA_TABLE} table")
 
-    query = "DELETE FROM pair_market_data"
+    query = f"DELETE FROM {MARKET_DATA_TABLE}"
 
     cursor = getCursor(dbConnection=dbConnection)
 
-    return executeWriteQuery(
+    result = executeWriteQuery(
         dbConnection=dbConnection,
         cursor=cursor,
         query=query
     )
+
+    logger.debug(f"Successfully cleared {MARKET_DATA_TABLE} table")
+    return result
