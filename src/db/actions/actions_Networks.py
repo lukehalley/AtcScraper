@@ -12,6 +12,9 @@ from src.utils.logging.logging_Setup import getProjectLogger
 
 logger = getProjectLogger()
 
+# Table name
+NETWORKS_TABLE = "networks"
+
 # Database column names for networks table
 NETWORK_COLUMNS = (
     "name, chain_number, chain_rpc, explorer_api_prefix, "
@@ -35,12 +38,14 @@ def addNetworkToDB(dbConnection: Any, networkName: str) -> int:
     Returns:
         int: The database ID of the newly inserted network
     """
+    logger.debug(f"Adding network '{networkName}' to database")
+
     cursor = getCursor(dbConnection=dbConnection)
 
     values = f"'{networkName}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL"
 
     query = (
-        f"INSERT INTO networks ({NETWORK_COLUMNS}) "
+        f"INSERT INTO {NETWORKS_TABLE} ({NETWORK_COLUMNS}) "
         f"VALUES ({values})"
     )
 
@@ -50,5 +55,8 @@ def addNetworkToDB(dbConnection: Any, networkName: str) -> int:
         query=query
     )
 
-    return cursor.lastrowid
+    network_id = cursor.lastrowid
+    logger.debug(f"Network '{networkName}' added with ID {network_id}")
+
+    return network_id
 
