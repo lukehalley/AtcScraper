@@ -1,3 +1,15 @@
+"""Dexscreener web scraping functions for blockchain data collection.
+
+This module provides the core scraping functionality for gathering data from
+Dexscreener. It handles network discovery, DEX enumeration, and token pair
+extraction using Playwright for browser automation.
+
+The scraping process follows a hierarchical pattern:
+1. Gather all available blockchain networks
+2. For each network, discover available DEXs
+3. For each DEX, collect token pairs sorted by liquidity
+4. Optionally gather metadata (contract addresses) for pairs
+"""
 import os
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
