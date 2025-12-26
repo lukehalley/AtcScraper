@@ -14,7 +14,7 @@ def replaceTrailingDigitsWithZeros(number: int) -> int:
         number: The positive integer to transform
 
     Returns:
-        Integer with only the leading digit preserved
+        Integer with only the leading digit preserved, or 0 for non-positive inputs
 
     Examples:
         >>> replaceTrailingDigitsWithZeros(12345)
@@ -23,7 +23,13 @@ def replaceTrailingDigitsWithZeros(number: int) -> int:
         900
         >>> replaceTrailingDigitsWithZeros(5)
         5
+        >>> replaceTrailingDigitsWithZeros(0)
+        0
     """
+    # Handle edge cases
+    if number <= 0:
+        return 0
+
     numberStr = str(number)
     leadingDigit = numberStr[0]
     trailingZeroCount = len(numberStr) - 1
