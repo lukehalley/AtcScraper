@@ -38,7 +38,12 @@ def strToBool(value: Optional[BoolConvertible]) -> bool:
         False
         >>> strToBool(True)
         True
+        >>> strToBool(None)
+        False
     """
+    # Handle None and empty values gracefully
+    if value is None:
+        return DEFAULT_BOOL_VALUE
     if isinstance(value, bool):
         return value
     return bool(strtobool(value))
