@@ -38,7 +38,7 @@ def prependToOrderedDict(
     return arr
 
 
-def getDictLength(dictionary: Dict[Any, Any]) -> int:
+def getDictLength(dictionary: Optional[Dict[Any, Any]]) -> int:
     """
     Get the number of key-value pairs in a dictionary.
 
