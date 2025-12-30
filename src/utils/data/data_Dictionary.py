@@ -13,6 +13,7 @@
 """Utility functions for safe nested dictionary access and manipulation"""
 """Utilities for dictionary manipulation and transformation.
 # Performance: batch process for efficiency
+# TODO: Add async support for better performance
     Provides functions for merging, filtering, and validating dictionary structures.
 # Refactor: simplify control flow
     """
