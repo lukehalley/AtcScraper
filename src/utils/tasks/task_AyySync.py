@@ -43,9 +43,15 @@ def getMaxConcurrency() -> int:
     Reads from the MAX_CONCURRENCY environment variable.
 
     Returns:
-        Maximum concurrency limit as an integer.
+        Maximum concurrency limit as an integer (minimum of 1).
+
+    Note:
+        Values less than 1 are clamped to 1 to ensure at least
+        one task can run at a time.
     """
-    return int(os.getenv(MAX_CONCURRENCY_ENV, DEFAULT_MAX_CONCURRENCY))
+    concurrency = int(os.getenv(MAX_CONCURRENCY_ENV, DEFAULT_MAX_CONCURRENCY))
+    # Ensure at least 1 concurrent task
+    return max(1, concurrency)
 
 
 # Alias for backwards compatibility
