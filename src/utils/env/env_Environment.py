@@ -20,8 +20,16 @@ def checkIsDocker() -> bool:
 
     Returns:
         bool: True if RUNNING_IN_DOCKER environment variable is set to a truthy value.
+
+    Examples:
+        >>> os.environ['RUNNING_IN_DOCKER'] = 'true'
+        >>> checkIsDocker()
+        True
     """
-    return strToBool(os.environ.get(DOCKER_ENV_VAR, False))
+    docker_env = os.environ.get(DOCKER_ENV_VAR)
+    if docker_env is None:
+        return False
+    return strToBool(docker_env)
 
 
 def checkIsAWS() -> bool:
@@ -49,4 +57,12 @@ def checkHeadless() -> bool:
     Returns:
         bool: True if browser should run in headless mode.
     """
-    return checkIsDocker() or strToBool(os.getenv(FORCE_HEADLESS_ENV_VAR, False))
+    # Check Docker environment first
+    if checkIsDocker():
+        return True
+
+    # Check force headless flag
+    force_headless = os.getenv(FORCE_HEADLESS_ENV_VAR)
+    if force_headless is None:
+        return False
+    return strToBool(force_headless)
